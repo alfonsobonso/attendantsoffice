@@ -11,17 +11,23 @@ import org.springframework.security.core.context.SecurityContextHolder;
 public class SecurityContext {
 
     /**
-     * @return extract the currently authenticated user id, empty if no authentication
+     * @return extract the currently authenticated user, empty if no authentication
      */
-    public static Optional<Integer> extractAuthenticatedUserId() {
+    public static Optional<CustomUserDetails> extractAuthenticatedUser() {
         if (SecurityContextHolder.getContext() == null || SecurityContextHolder.getContext()
                 .getAuthentication() == null) {
             return Optional.empty();
         }
-
         CustomUserDetails user = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal();
-        return Optional.ofNullable(user).map(CustomUserDetails::getUserId);
+        return Optional.ofNullable(user);
+    }
+
+    /**
+     * @return extract the currently authenticated user id, empty if no authentication
+     */
+    public static Optional<Integer> extractAuthenticatedUserId() {
+        return extractAuthenticatedUser().map(CustomUserDetails::getUserId);
     };
 
     /**
