@@ -1,13 +1,13 @@
 package org.attendantsoffice.eventmanager.mvc.error;
 
 import org.attendantsoffice.eventmanager.user.security.PasswordNotSetAuthenticationException;
+import org.attendantsoffice.eventmanager.user.security.UserNameNotFoundException;
+import org.attendantsoffice.eventmanager.user.security.WrongPasswordException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -25,25 +25,15 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
         return buildResponseEntity(new ErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY, "Password not set", ex));
     }
 
-    @ExceptionHandler(AuthenticationException.class)
-    protected ResponseEntity<Object> handleAuthenticationException(AuthenticationException ex) {
-        return buildResponseEntity(new ErrorResponse(HttpStatus.UNAUTHORIZED, "Password not set", ex));
+    @ExceptionHandler(UserNameNotFoundException.class)
+    protected ResponseEntity<Object> handleUserNameNotFoundException(UserNameNotFoundException ex) {
+        return buildResponseEntity(new ErrorResponse(HttpStatus.UNAUTHORIZED, "User name not found", ex));
     }
 
-    @ExceptionHandler(BadCredentialsException.class)
-    protected ResponseEntity<Object> handleBadCredentialsException(BadCredentialsException ex) {
-        return buildResponseEntity(new ErrorResponse(HttpStatus.BAD_REQUEST, "Bad credentials", ex));
+    @ExceptionHandler(WrongPasswordException.class)
+    protected ResponseEntity<Object> handleWrongPasswordException(WrongPasswordException ex) {
+        return buildResponseEntity(new ErrorResponse(HttpStatus.UNAUTHORIZED, "Bad credentials", ex));
     }
-
-    // @ExceptionHandler(NoHandlerFoundException.class)
-    // protected ResponseEntity<Object> handleNoHandlerFoundException(NoHandlerFoundException ex) {
-    // return buildResponseEntity(new ErrorResponse(HttpStatus.NOT_FOUND, "No handler found", ex));
-    // }
-    //
-    // @ExceptionHandler(Exception.class)
-    // protected ResponseEntity<Object> handleException(Exception ex) {
-    // return buildResponseEntity(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex));
-    // }
 
     @Override
     protected ResponseEntity<Object> handleNoHandlerFoundException(NoHandlerFoundException ex, HttpHeaders headers,

@@ -2,20 +2,30 @@ package org.attendantsoffice.eventmanager.authentication;
 
 import java.util.Optional;
 
-import org.attendantsoffice.eventmanager.user.security.CustomUserDetails;
+import org.attendantsoffice.eventmanager.user.security.EventManagerUser;
+import org.attendantsoffice.eventmanager.user.security.PasswordNotSetAuthenticationException;
 import org.attendantsoffice.eventmanager.user.security.SecurityContext;
+import org.attendantsoffice.eventmanager.user.security.UserAuthenticationService;
+import org.attendantsoffice.eventmanager.user.security.UserNameNotFoundException;
+import org.attendantsoffice.eventmanager.user.security.WrongPasswordException;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Create some specific end points that deal with the authentication flow
+ * Create some specific end points that deal with the authentication flow.
+ * These are marked as public urls, accessible without authentication
  */
 @RestController
 public class AuthenticationController {
     private final AuthenticationTokenApplicationService authenticationTokenApplicationService;
+    private final UserAuthenticationService userAuthenticationService;
 
-    public AuthenticationController(AuthenticationTokenApplicationService authenticationTokenApplicationService) {
+    public AuthenticationController(AuthenticationTokenApplicationService authenticationTokenApplicationService,
+            UserAuthenticationService userAuthenticationService) {
         this.authenticationTokenApplicationService = authenticationTokenApplicationService;
+        this.userAuthenticationService = userAuthenticationService;
     }
 
     /**
@@ -24,10 +34,24 @@ public class AuthenticationController {
      */
     @GetMapping(value = "/authentication")
     public AuthenticationInformation fetchAuthenticationInformation() {
-        Optional<CustomUserDetails> userDetails = SecurityContext.extractAuthenticatedUser();
+        Optional<EventManagerUser> userDetails = SecurityContext.extractAuthenticatedUser();
         AuthenticationInformation information = userDetails.map(ud -> AuthenticationInformation.authenticated(ud
                 .getUsername())).orElse(AuthenticationInformation.notAuthenticated());
         return information;
+    }
+
+    /**
+     * Attempt to log in.
+     * @param email email address
+     * @param password password
+     * @return authentication token, to be passed in subsequent requests as the Authorization: Bearer header
+     */
+    @PostMapping("/authentication/login")
+    public LoginOutput login(@RequestBody LoginInput loginInput) throws UserNameNotFoundException,
+            PasswordNotSetAuthenticationException, WrongPasswordException {
+        String token = userAuthenticationService.login(loginInput.getEmail(), loginInput.getPassword());
+
+        return new LoginOutput(token);
     }
 
     // /**

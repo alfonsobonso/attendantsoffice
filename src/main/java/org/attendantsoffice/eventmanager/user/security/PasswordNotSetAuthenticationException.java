@@ -1,12 +1,10 @@
 package org.attendantsoffice.eventmanager.user.security;
 
-import org.springframework.security.core.AuthenticationException;
-
 /**
  * When the user has been created but there is no password defined, we want to inform the user and allow them to send a
  * create password link to their email.
  */
-public class PasswordNotSetAuthenticationException extends AuthenticationException {
+public class PasswordNotSetAuthenticationException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
     private final Integer userId;

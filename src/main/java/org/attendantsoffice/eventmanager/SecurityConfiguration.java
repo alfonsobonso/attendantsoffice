@@ -1,18 +1,29 @@
 package org.attendantsoffice.eventmanager;
 
-import org.attendantsoffice.eventmanager.user.security.CustomAuthenticationFailureHandler;
-import org.attendantsoffice.eventmanager.user.security.CustomAuthenticationSuccessHandler;
-import org.attendantsoffice.eventmanager.user.security.JpaUserDetailsService;
+import org.attendantsoffice.eventmanager.user.security.NoRedirectStrategy;
+import org.attendantsoffice.eventmanager.user.security.TokenAuthenticationFilter;
+import org.attendantsoffice.eventmanager.user.security.TokenAuthenticationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
 /**
  * Spring security wiring.
@@ -21,15 +32,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+    private static final RequestMatcher PUBLIC_URLS = new AntPathRequestMatcher("/authentication/**");
+    private static final RequestMatcher PROTECTED_URLS = new NegatedRequestMatcher(PUBLIC_URLS);
 
     @Autowired
-    private JpaUserDetailsService userDetailsService;
-
-    @Autowired
-    private CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
-
-    @Autowired
-    private CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
+    private TokenAuthenticationProvider provider;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -37,28 +44,65 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(this.userDetailsService).passwordEncoder(passwordEncoder());
+    protected void configure(final AuthenticationManagerBuilder auth) {
+        auth.authenticationProvider(provider);
+    }
+
+    @Override
+    public void configure(final WebSecurity web) {
+        web.ignoring().requestMatchers(PUBLIC_URLS);
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                // .antMatchers("/main.css").permitAll()
-                .antMatchers("/**").permitAll()
-                .anyRequest().authenticated()
+        http
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .formLogin()
-                .usernameParameter("email")
-                .loginProcessingUrl("/api/login")
-                .successHandler(customAuthenticationSuccessHandler)
-                .failureHandler(customAuthenticationFailureHandler)
-                .permitAll()
+                .exceptionHandling()
+                // this entry point handles when you request a protected page and you are not yet
+                // authenticated
+                .defaultAuthenticationEntryPointFor(forbiddenEntryPoint(), PROTECTED_URLS)
                 .and()
-                .httpBasic()
+                .authenticationProvider(provider)
+                .addFilterBefore(restAuthenticationFilter(), AnonymousAuthenticationFilter.class)
+                .authorizeRequests()
+                .anyRequest()
+                .authenticated()
                 .and()
                 .csrf().disable()
-                .logout()
-                .logoutSuccessUrl("/");
+                .formLogin().disable()
+                .httpBasic().disable()
+                .logout().disable();
+    }
+
+    @Bean
+    TokenAuthenticationFilter restAuthenticationFilter() throws Exception {
+        final TokenAuthenticationFilter filter = new TokenAuthenticationFilter(PROTECTED_URLS);
+        filter.setAuthenticationManager(authenticationManager());
+        filter.setAuthenticationSuccessHandler(successHandler());
+        return filter;
+    }
+
+    @Bean
+    SimpleUrlAuthenticationSuccessHandler successHandler() {
+        final SimpleUrlAuthenticationSuccessHandler successHandler = new SimpleUrlAuthenticationSuccessHandler();
+        successHandler.setRedirectStrategy(new NoRedirectStrategy());
+        return successHandler;
+    }
+
+    /**
+     * Disable Spring boot automatic filter registration.
+     */
+    @Bean
+    FilterRegistrationBean<?> disableAutoRegistration(final TokenAuthenticationFilter filter) {
+        final FilterRegistrationBean<?> registration = new FilterRegistrationBean<TokenAuthenticationFilter>(filter);
+        registration.setEnabled(false);
+        return registration;
+    }
+
+    @Bean
+    AuthenticationEntryPoint forbiddenEntryPoint() {
+        return new HttpStatusEntryPoint(HttpStatus.FORBIDDEN);
     }
 }

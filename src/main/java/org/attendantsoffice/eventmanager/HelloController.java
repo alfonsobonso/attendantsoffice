@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class HelloController {
 
-    @GetMapping("/api/hello")
+    @GetMapping("/hello")
     public String hello() {
         return "Hello, the time at the server is now " + new Date() + "\n";
     }
 
-    @GetMapping("/api/test")
+    @GetMapping("/test")
     public String hello(@RequestParam int value) {
         return "Hello, the time at the server is now " + new Date() + "\n";
     }

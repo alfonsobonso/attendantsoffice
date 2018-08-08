@@ -13,12 +13,12 @@ public class SecurityContext {
     /**
      * @return extract the currently authenticated user, empty if no authentication
      */
-    public static Optional<CustomUserDetails> extractAuthenticatedUser() {
+    public static Optional<EventManagerUser> extractAuthenticatedUser() {
         if (SecurityContextHolder.getContext() == null || SecurityContextHolder.getContext()
                 .getAuthentication() == null) {
             return Optional.empty();
         }
-        CustomUserDetails user = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
+        EventManagerUser user = (EventManagerUser) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal();
         return Optional.ofNullable(user);
     }
@@ -27,7 +27,7 @@ public class SecurityContext {
      * @return extract the currently authenticated user id, empty if no authentication
      */
     public static Optional<Integer> extractAuthenticatedUserId() {
-        return extractAuthenticatedUser().map(CustomUserDetails::getUserId);
+        return extractAuthenticatedUser().map(EventManagerUser::getUserId);
     };
 
     /**
