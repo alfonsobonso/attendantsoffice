@@ -1,8 +1,4 @@
 import React from 'react';
-import {
-    BrowserRouter as Router,
-    Redirect
-} from "react-router-dom";
 
 class Home extends React.Component {
     render() {

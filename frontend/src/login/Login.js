@@ -1,45 +1,12 @@
 //Render Prop
 import React from 'react';
 import { Formik } from 'formik';
-import Home  from '../home/Home.js';
+import AuthenticationService from '../authentication/AuthenticationService.js'
 
-const AuthenticationApi = {
-    authenticate(email, password, loginSuccess) {
-        var params = {
-                email: email,
-                password: password
-        }
-
-        const searchParams = Object.keys(params).map((key) => {
-            return encodeURIComponent(key) + '=' + encodeURIComponent(params[key]);
-        }).join('&');
-
-        fetch('/api/login', {
-            credentials: 'same-origin',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
-                'Accept': 'application/json',
-            },
-            method: 'post',
-            body: searchParams
-        })
-        .then(response => Promise.all([response, response.json()]))
-        .then(([response, json]) => {
-            if(response.ok) {
-                loginSuccess(json);
-            } else {
-                loginSuccess(json);
-                //throw new Error(json);
-            }
-        })
-        .catch(console.error);
-    }
-};
-
-const LoginForm = ({loginSuccess}) => (
+const LoginForm = ({authService, loginSuccess}) => (
     <div>
-    <h1>My Form</h1>
-    <p>This can be anywhere in your application</p>
+    <h1>Login</h1>
+    <p>Yadda yadda</p>
     <Formik
         initialValues = {{ email: '', password: '', }}
         validate = {
@@ -59,7 +26,7 @@ const LoginForm = ({loginSuccess}) => (
         }
         onSubmit = {
             (values, { setSubmitting, setErrors /* setValues and other goodies */ }) => {
-                AuthenticationApi.authenticate(values.email, values.password, loginSuccess)
+                authService.login(values.email, values.password, loginSuccess)
                 setSubmitting(false);
             }
         }
@@ -82,23 +49,27 @@ const LoginForm = ({loginSuccess}) => (
 
 
 class Login extends React.Component {
+    constructor() {
+        super();
+        this.AuthService = new AuthenticationService();
+    }
+
     state = {};
 
+    componentWillMount(){
+        if(this.AuthService.isLoggedIn()) {
+            this.props.history.replace('/');
+        }
+    }
+
     loginSuccess = (json) => {
-        this.setState({ authenticated: true });
+        this.props.history.replace('/');
     }
 
     render() {
-        if(this.state.authenticated) {
-            return (
-                <div>
-                    <p>Not home</p>
-                </div>
-            );
-        }
         return (
             <div>
-                <LoginForm loginSuccess={ this.loginSuccess } />
+                <LoginForm authService={ this.AuthService } loginSuccess={ this.loginSuccess } />
             </div>
         );
     }
