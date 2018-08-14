@@ -1,4 +1,6 @@
 import React from 'react';
+import 'typeface-roboto'
+
 import AuthenticationService from '../authentication/AuthenticationService.js'
 
 class Home extends React.Component {
