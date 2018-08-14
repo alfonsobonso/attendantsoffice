@@ -1,5 +1,7 @@
 package org.attendantsoffice.eventmanager.user;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,6 +15,10 @@ public class UserApplicationService {
     public UserEntity findUser(Integer userId) {
         return userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("No User#" + userId
                 + " found"));
+    }
+
+    public Optional<UserEntity> findByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
     public void updatePassword(Integer userId, String encodedPassword) {

@@ -1,5 +1,6 @@
 package org.attendantsoffice.eventmanager.authentication;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 
 /**
@@ -7,6 +8,7 @@ import javax.validation.constraints.NotEmpty;
  */
 public class LoginInput {
     @NotEmpty
+    @Email
     private String email;
 
     @NotEmpty

@@ -11,11 +11,11 @@ public interface UserAuthenticationService {
      * @param email
      * @param password
      * @return the user authentication token when login succeeds
-     * @throws UserNameNotFoundException when the user name does not match any user
+     * @throws UserNotFoundException when the user name does not match any user
      * @throws PasswordNotSetAuthenticationException when the user is matched but they have not set a password
      * @throws WrongPasswordException when the user is matched but the password was wrong
      */
-    String login(String email, String password) throws UserNameNotFoundException, PasswordNotSetAuthenticationException,
+    String login(String email, String password) throws UserNotFoundException, PasswordNotSetAuthenticationException,
             WrongPasswordException;
 
     /**

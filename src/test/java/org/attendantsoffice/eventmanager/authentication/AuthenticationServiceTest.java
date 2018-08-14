@@ -1,13 +1,16 @@
 package org.attendantsoffice.eventmanager.authentication;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
 
 import org.attendantsoffice.eventmanager.user.UserApplicationService;
+import org.attendantsoffice.eventmanager.user.UserEntity;
 import org.attendantsoffice.eventmanager.user.security.UserAuthenticationService;
+import org.attendantsoffice.eventmanager.user.security.UserNotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,6 +52,22 @@ public class AuthenticationServiceTest {
         String token = authenticationService.login("myemail", "mypassword");
         assertEquals("mytoken", token);
 
+    }
+
+    @Test(expected = UserNotFoundException.class)
+    public void testSendAuthenticationTokenMailUserNotFound() {
+        when(userApplicationService.findByEmail("myemail")).thenReturn(Optional.empty());
+        authenticationService.sendAuthenticationTokenMail("myemail");
+    }
+
+    @Test
+    public void testSendAuthenticationTokenMailUserFound() {
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUserId(100);
+        when(userApplicationService.findByEmail("myemail")).thenReturn(Optional.of(userEntity));
+        authenticationService.sendAuthenticationTokenMail("myemail");
+
+        verify(authenticationTokenApplicationService, times(1)).sendAuthenticationTokenMail(100, "myemail");
     }
 
     @Test

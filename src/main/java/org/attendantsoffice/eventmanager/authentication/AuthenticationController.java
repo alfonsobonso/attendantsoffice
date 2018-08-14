@@ -3,7 +3,7 @@ package org.attendantsoffice.eventmanager.authentication;
 import java.util.Optional;
 
 import org.attendantsoffice.eventmanager.user.security.PasswordNotSetAuthenticationException;
-import org.attendantsoffice.eventmanager.user.security.UserNameNotFoundException;
+import org.attendantsoffice.eventmanager.user.security.UserNotFoundException;
 import org.attendantsoffice.eventmanager.user.security.WrongPasswordException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,13 +35,21 @@ public class AuthenticationController {
      * @return authentication token, to be passed in subsequent requests as the Authorization: Bearer header
      */
     @PostMapping("/authentication/login")
-    public LoginOutput login(@RequestBody LoginInput loginInput) throws UserNameNotFoundException,
+    public LoginOutput login(@RequestBody LoginInput loginInput) throws UserNotFoundException,
             PasswordNotSetAuthenticationException, WrongPasswordException {
         String token = authenticationService.login(loginInput.getEmail(), loginInput.getPassword());
 
         return new LoginOutput(token);
     }
 
+    /**
+     * Request an access token be sent to the submitted email.
+     */
+    @PostMapping("/authentication/access-token")
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
+    public void requestAccessToken(@RequestBody RequestAccessTokenInput input) throws UserNotFoundException {
+        authenticationService.sendAuthenticationTokenMail(input.getEmail().trim());
+    }
 
     /**
      * Determine whether the given access token is valid. This would be uses as a check before using this to
@@ -70,7 +78,7 @@ public class AuthenticationController {
 
     /**
      * Submit a new password using access token credentials
-     * As a result of this the token is marked as usedm the user password is updated, and the user is marked as not
+     * As a result of this the token is marked as used the user password is updated, and the user is marked as not
      * authenticated. We expect the client to redirect the user to the login screen.
      */
     @PostMapping(value = "/authentication/access-token/{token}/update-password")

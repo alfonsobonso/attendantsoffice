@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { Formik } from 'formik';
-
-// styles
 import PropTypes from 'prop-types';
+
+// material ui components
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -94,7 +94,7 @@ class Login extends Component {
                                 (values, { setSubmitting, setErrors }) => {
                                     const submitFailure = (json) => {
                                         let errors = {};
-                                        if(json.code === 'UserNameNotFound') {
+                                        if(json.code === 'UserNotFound') {
                                             errors.email = 'Unrecognised email address';
                                         } else if(json.code === 'WrongPassword') {
                                             errors.password = 'Wrong password';
@@ -120,7 +120,7 @@ class Login extends Component {
                                             <InputLabel htmlFor="password">Password</InputLabel>
                                             <Input name="password" type="password" id="password" onChange={handleChange} onBlur={handleBlur} 
                                                 value={values.password} autoComplete="current-password" />
-                                                {touched.password && errors.password && <FormHelperText id="email-text" error>{errors.password}</FormHelperText>}
+                                                {touched.password && errors.password && <FormHelperText id="password-text" error>{errors.password}</FormHelperText>}
                                         </FormControl>
 
                                         <Button type="submit" fullWidth variant="raised" color="primary" className={this.classes.submit} 

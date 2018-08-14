@@ -5,9 +5,10 @@ import java.util.Optional;
 import javax.transaction.Transactional;
 
 import org.attendantsoffice.eventmanager.user.UserApplicationService;
+import org.attendantsoffice.eventmanager.user.UserEntity;
 import org.attendantsoffice.eventmanager.user.security.PasswordNotSetAuthenticationException;
 import org.attendantsoffice.eventmanager.user.security.UserAuthenticationService;
-import org.attendantsoffice.eventmanager.user.security.UserNameNotFoundException;
+import org.attendantsoffice.eventmanager.user.security.UserNotFoundException;
 import org.attendantsoffice.eventmanager.user.security.WrongPasswordException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -35,17 +36,43 @@ public class AuthenticationService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public String login(String email, String password) throws UserNameNotFoundException,
+    /**
+     * Request to login using the specified credentials
+     */
+    public String login(String email, String password) throws UserNotFoundException,
             PasswordNotSetAuthenticationException,
             WrongPasswordException {
         return userAuthenticationService.login(email, password);
     }
 
+    /**
+     * Request to send an email containing an access token (url) in an email. This is used when the user has no password
+     * set, or has forgotten their password.
+     */
+    public void sendAuthenticationTokenMail(String email) throws UserNotFoundException {
+        Optional<UserEntity> user = userApplicationService.findByEmail(email);
+        if (!user.isPresent()) {
+            throw new UserNotFoundException(email);
+        }
+
+        authenticationTokenApplicationService.sendAuthenticationTokenMail(user.get().getUserId(), email);
+    }
+
+    /**
+     * Look up a user by an access token. This is used as part of the flow of setting/resetting a password, having been
+     * email the access code.
+     * @see {@code #sendAuthenticationTokenMail(String)}
+     */
     public Optional<Integer> fetchAuthenticationTokenUserId(String token) throws AuthenticationTokenExpiredException,
             AuthenticationTokenUsedException {
         return authenticationTokenApplicationService.fetchAuthenticationTokenUserId(token);
     }
 
+    /**
+     * Set the user password, using the access token as the authentication.
+     * @see {@code #sendAuthenticationTokenMail(String)}
+     * @see {@code #fetchAuthenticationTokenUserId(String)}
+     */
     @Transactional
     public void submitAccessTokenPassword(@PathVariable String token, String password) {
         Integer userId = authenticationTokenApplicationService.fetchAuthenticationTokenUserId(token)

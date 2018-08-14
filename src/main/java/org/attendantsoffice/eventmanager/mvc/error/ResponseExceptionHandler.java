@@ -1,7 +1,7 @@
 package org.attendantsoffice.eventmanager.mvc.error;
 
 import org.attendantsoffice.eventmanager.user.security.PasswordNotSetAuthenticationException;
-import org.attendantsoffice.eventmanager.user.security.UserNameNotFoundException;
+import org.attendantsoffice.eventmanager.user.security.UserNotFoundException;
 import org.attendantsoffice.eventmanager.user.security.WrongPasswordException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -25,9 +25,9 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
         return buildResponseEntity(new ErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY, "Password not set", ex));
     }
 
-    @ExceptionHandler(UserNameNotFoundException.class)
-    protected ResponseEntity<Object> handleUserNameNotFoundException(UserNameNotFoundException ex) {
-        return buildResponseEntity(new ErrorResponse(HttpStatus.UNAUTHORIZED, "User name not found", ex));
+    @ExceptionHandler(UserNotFoundException.class)
+    protected ResponseEntity<Object> handleUserNotFoundException(UserNotFoundException ex) {
+        return buildResponseEntity(new ErrorResponse(HttpStatus.UNAUTHORIZED, "User not found", ex));
     }
 
     @ExceptionHandler(WrongPasswordException.class)

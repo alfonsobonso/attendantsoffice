@@ -33,7 +33,7 @@ public class InMemoryUUIDUserAuthenticationService implements UserAuthentication
 
         // optional if/else waiting for java 9
         if (!optionalUser.isPresent()) {
-            throw new UserNameNotFoundException(email);
+            throw new UserNotFoundException(email);
         }
 
         EventManagerUser user = optionalUser.get();
