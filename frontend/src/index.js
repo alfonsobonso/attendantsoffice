@@ -10,6 +10,7 @@ import {
 import registerServiceWorker from './registerServiceWorker';
 
 import Login  from './login/Login.js';
+import TokenAccess  from './login/TokenAccess.js';
 
 // the render here is only used to differentiate the app, 
 // which uses a higher-order component (HOC) for authentication, and the pages around authentication
@@ -18,6 +19,7 @@ ReactDOM.render(
     <Router>
         <Switch>           
             <Route exact path="/login" component={Login} />
+            <Route exact path="/token-access/:token" component={TokenAccess} />
             <Route path="/" component={App} />
         </Switch>
     </Router>

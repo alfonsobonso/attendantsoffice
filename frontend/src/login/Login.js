@@ -1,18 +1,15 @@
-//Render Prop
-import React from 'react';
+import React, { Component } from 'react';
 import { Formik } from 'formik';
 import AuthenticationService from '../authentication/AuthenticationService.js'
 
-const LoginForm = ({authService, loginSuccess}) => (
+// When the user already has a password set they go to the basic email + password form to authenticate
+const LoginForm = ({AuthService, loginSuccess, loginFailure}) => (
     <div>
     <h1>Login</h1>
-    <p>Yadda yadda</p>
     <Formik
         initialValues = {{ email: '', password: '', }}
         validate = {
             values => {
-                // same as above, but feel free to move this into a class method
-                // now.
                 let errors = {};
                 if (!values.email) {
                     errors.email = 'Required';
@@ -25,8 +22,19 @@ const LoginForm = ({authService, loginSuccess}) => (
             }
         }
         onSubmit = {
-            (values, { setSubmitting, setErrors /* setValues and other goodies */ }) => {
-                authService.login(values.email, values.password, loginSuccess)
+            (values, { setSubmitting, setErrors }) => {
+                const submitFailure = (json) => {
+                    let errors = {};
+                    if(json.code === 'UserNameNotFound') {
+                        errors.email = 'Unrecognised email address';
+                    } else if(json.code === 'WrongPassword') {
+                        errors.password = 'Wrong password';
+                    }
+                    setErrors(errors);
+                    loginFailure(json);
+                }
+
+                AuthService.login(values.email, values.password, loginSuccess, submitFailure)
                 setSubmitting(false);
             }
         }
@@ -48,7 +56,7 @@ const LoginForm = ({authService, loginSuccess}) => (
 );
 
 
-class Login extends React.Component {
+class Login extends Component {
     constructor() {
         super();
         this.AuthService = new AuthenticationService();
@@ -66,10 +74,14 @@ class Login extends React.Component {
         this.props.history.replace('/');
     }
 
+    loginFailure = (json) => {
+        // do nothing just now
+    }
+
     render() {
         return (
             <div>
-                <LoginForm authService={ this.AuthService } loginSuccess={ this.loginSuccess } />
+                <LoginForm AuthService={ this.AuthService } loginSuccess={ this.loginSuccess } loginFailure ={ this.loginFailure } />
             </div>
         );
     }

@@ -1,12 +1,12 @@
 class AuthenticationService {
     constructor() {
-        this.authenticatedFetch = this.authenticatedFetch.bind(this) // React binding stuff
+        this.fetch = this.fetch.bind(this) // React binding stuff
         this.login = this.login.bind(this)
         this.getProfile = this.getProfile.bind(this)
     }
 
-    login(email, password, loginSuccess) {
-        this.authenticatedFetch('/api/authentication/login', {
+    login(email, password, loginSuccess, loginError) {
+        this.fetch('/api/authentication/login', {
             method: 'post',
             body: JSON.stringify({
                 email,
@@ -16,10 +16,10 @@ class AuthenticationService {
         .then(response => Promise.all([response, response.json()]))
         .then(([response, json]) => {
             if(response.ok) {
-                this.saveToken(response.token);
+                this.saveToken(json.token);
                 loginSuccess(json);
             } else {
-                loginSuccess(json);
+                loginError(json);
             }
         })
         .catch(console.error);
@@ -49,17 +49,15 @@ class AuthenticationService {
         return "TBD";
     }
 
-	authenticatedFetch(url, options) {
+	fetch(url, options) {
         // performs api calls sending the required authentication headers
         const headers = {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         }
 
-        // Setting Authorization header
-        // Authorization: Bearer xxxxxxx.xxxxxxxx.xxxxxx
         if (this.isLoggedIn()) {
-            headers['Authorization'] = 'Bearer ' + this.getToken()
+            headers['Authorization'] = 'Bearer ' + this.fetchToken()
         }
 
         return fetch(url, {
@@ -67,8 +65,6 @@ class AuthenticationService {
             credentials: 'same-origin',
             ...options
         })
-        //.then(this._checkStatus)
-        //.then(response => response.json())
     }   
 };
 

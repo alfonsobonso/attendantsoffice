@@ -42,10 +42,9 @@ public class InMemoryUUIDUserAuthenticationService implements UserAuthentication
             throw new PasswordNotSetAuthenticationException(user.getUserId(), email);
         }
 
-        // String encodedPassword = passwordEncoder.encode(password);
-        // if (!encodedPassword.equals(user.getPassword())) {
-        // throw new WrongPasswordException(user.getUserId(), email);
-        // }
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new WrongPasswordException(user.getUserId(), email);
+        }
 
         // belt'n'braces - ensure we don't end up having them logged in twice.
         Set<String> existingTokens = authenticatedUsers.entrySet().stream()
@@ -68,9 +67,9 @@ public class InMemoryUUIDUserAuthenticationService implements UserAuthentication
     }
 
     @Override
-    public void logout(EventManagerUser user) {
+    public void logout(Integer userId) {
         Set<String> existingTokens = authenticatedUsers.entrySet().stream()
-                .filter(e -> e.getValue().equals(user))
+                .filter(e -> e.getValue().getUserId().equals(userId))
                 .map(e -> e.getKey())
                 .collect(Collectors.toSet());
         existingTokens.forEach(authenticatedUsers::remove);

@@ -23,7 +23,7 @@ public class UserController {
     }
 
     @GetMapping(path = "/api/users/{userId}")
-    public UserEntity findUser(@PathVariable Long userId) {
+    public UserEntity findUser(@PathVariable Integer userId) {
         return userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("No User#" + userId
                 + " found"));
     }

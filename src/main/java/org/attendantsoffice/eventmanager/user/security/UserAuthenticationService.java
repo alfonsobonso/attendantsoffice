@@ -24,9 +24,7 @@ public interface UserAuthenticationService {
     Optional<EventManagerUser> findByToken(String token);
 
     /**
-     * Logs out the given input {@code user}.
-     *
-     * @param user the user to logout
+     * Logs out the given user, remove any current authentication tokens
      */
-    void logout(EventManagerUser user);
+    void logout(Integer userId);
 }

@@ -15,19 +15,14 @@ public class ErrorResponse {
     private final String debugMessage;
 
     public ErrorResponse(HttpStatus status, Throwable ex) {
-        this.status = status;
-        this.timestamp = Instant.now();
-        this.requestUUID = String.valueOf(MDC.get(RequestIdFilter.REQUEST_ID_MDC_KEY));
-        this.code = ex.getClass().getSimpleName();
-        this.message = "Unexpected error";
-        this.debugMessage = ex.getLocalizedMessage();
+        this(status, "Unexpected error", ex);
     }
 
     public ErrorResponse(HttpStatus status, String message, Throwable ex) {
         this.status = status;
         this.timestamp = Instant.now();
         this.requestUUID = String.valueOf(MDC.get(RequestIdFilter.REQUEST_ID_MDC_KEY));
-        this.code = ex.getClass().getSimpleName();
+        this.code = ex.getClass().getSimpleName().replaceAll("Exception$", "");
         this.message = message;
         this.debugMessage = ex.getLocalizedMessage();
     }

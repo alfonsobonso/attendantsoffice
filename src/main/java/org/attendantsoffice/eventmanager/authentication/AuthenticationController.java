@@ -2,42 +2,30 @@ package org.attendantsoffice.eventmanager.authentication;
 
 import java.util.Optional;
 
-import org.attendantsoffice.eventmanager.user.security.EventManagerUser;
 import org.attendantsoffice.eventmanager.user.security.PasswordNotSetAuthenticationException;
-import org.attendantsoffice.eventmanager.user.security.SecurityContext;
-import org.attendantsoffice.eventmanager.user.security.UserAuthenticationService;
 import org.attendantsoffice.eventmanager.user.security.UserNameNotFoundException;
 import org.attendantsoffice.eventmanager.user.security.WrongPasswordException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Create some specific end points that deal with the authentication flow.
- * These are marked as public urls, accessible without authentication
+ * These are marked as public urls, accessible without authentication.
  */
 @RestController
 public class AuthenticationController {
-    private final AuthenticationTokenApplicationService authenticationTokenApplicationService;
-    private final UserAuthenticationService userAuthenticationService;
+    private static final Logger LOG = LoggerFactory.getLogger(AuthenticationController.class);
+    private final AuthenticationService authenticationService;
 
-    public AuthenticationController(AuthenticationTokenApplicationService authenticationTokenApplicationService,
-            UserAuthenticationService userAuthenticationService) {
-        this.authenticationTokenApplicationService = authenticationTokenApplicationService;
-        this.userAuthenticationService = userAuthenticationService;
-    }
-
-    /**
-     * Fetch the authenticated user information. This is a request of the status, so we don't return errors if not
-     * authenticated.
-     */
-    @GetMapping(value = "/authentication")
-    public AuthenticationInformation fetchAuthenticationInformation() {
-        Optional<EventManagerUser> userDetails = SecurityContext.extractAuthenticatedUser();
-        AuthenticationInformation information = userDetails.map(ud -> AuthenticationInformation.authenticated(ud
-                .getUsername())).orElse(AuthenticationInformation.notAuthenticated());
-        return information;
+    public AuthenticationController(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
     }
 
     /**
@@ -49,32 +37,46 @@ public class AuthenticationController {
     @PostMapping("/authentication/login")
     public LoginOutput login(@RequestBody LoginInput loginInput) throws UserNameNotFoundException,
             PasswordNotSetAuthenticationException, WrongPasswordException {
-        String token = userAuthenticationService.login(loginInput.getEmail(), loginInput.getPassword());
+        String token = authenticationService.login(loginInput.getEmail(), loginInput.getPassword());
 
         return new LoginOutput(token);
     }
 
-    // /**
-    // * @return page returned when the user tries to log in but doesn't currently have a password set.
-    // */
-    // @GetMapping(value = "/authentication/not-authenticated")
-    // public String notAuthenticated() {
-    // return "authentication/not-authenticated";
-    // }
-    //
-    // /**
-    // * @return page returned when the user has clicked on the token link in the email, allowing them to set their
-    // * credentials
-    // */
-    // @GetMapping(value = "/authentication/{token}")
-    // public String accessAuthenticationCredentialsForm(@PathVariable String token) {
-    //
-    // Optional<Integer> userId = authenticationTokenApplicationService.fetchAuthenticationTokenUserId(token);
-    //
-    // // if the token was not found at all, someone is putting random values in there
-    // // we could 404, but we'll be helpful and redirect them to the home page. If they aren't authenticated they will
-    // // return to the login page
-    //
-    // return "authentication/set-credentials";
-    // }
+
+    /**
+     * Determine whether the given access token is valid. This would be uses as a check before using this to
+     * set a password on a previously unauthenticated user, or one who has forgotten their password.
+     */
+    @GetMapping(value = "/authentication/access-token/{token}/status")
+    public AccessTokenStatusOutput fetchAccessTokenStatus(@PathVariable String token) {
+        AccessTokenStatusOutput output;
+        try {
+            Optional<Integer> userId = authenticationService.fetchAuthenticationTokenUserId(token);
+            if (!userId.isPresent()) {
+                LOG.warn("Authentication access token [{}] has unrecognised", token);
+                output = new AccessTokenStatusOutput(AccessTokenStatusOutput.Status.UNRECOGNISED);
+            } else {
+                output = new AccessTokenStatusOutput(AccessTokenStatusOutput.Status.VALID);
+            }
+        } catch(AuthenticationTokenExpiredException e) {
+            LOG.warn("User#{} authentication access token [{}] has expired", e.getUserId(), token);
+            output = new AccessTokenStatusOutput(AccessTokenStatusOutput.Status.EXPIRED);
+        } catch (AuthenticationTokenUsedException e) {
+            LOG.warn("User#{} authentication access token [{}] has already been used", e.getUserId(), token);
+            output = new AccessTokenStatusOutput(AccessTokenStatusOutput.Status.ALREADY_USED);
+        }
+        return output;
+    }
+
+    /**
+     * Submit a new password using access token credentials
+     * As a result of this the token is marked as usedm the user password is updated, and the user is marked as not
+     * authenticated. We expect the client to redirect the user to the login screen.
+     */
+    @PostMapping(value = "/authentication/access-token/{token}/update-password")
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
+    public void submitAccessTokenPassword(@PathVariable String token, @RequestBody AccessTokenPasswordInput input) {
+        authenticationService.submitAccessTokenPassword(token, input.getPassword());
+    }
+
 }

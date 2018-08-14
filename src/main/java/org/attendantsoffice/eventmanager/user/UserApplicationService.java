@@ -10,8 +10,14 @@ public class UserApplicationService {
         this.userRepository = userRepository;
     }
 
-    public UserEntity findUser(Long userId) {
+    public UserEntity findUser(Integer userId) {
         return userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("No User#" + userId
                 + " found"));
     }
+
+    public void updatePassword(Integer userId, String encodedPassword) {
+        UserEntity user = findUser(userId);
+        user.setPassword(encodedPassword);
+    }
+
 }
