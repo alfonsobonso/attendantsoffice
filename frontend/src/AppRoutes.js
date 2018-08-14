@@ -7,7 +7,7 @@ import {
 import Home  from './home/Home.js';
 import Users  from './users/Users.js';
 
-// the routes here do not include the ones whoch do not require authentication
+// the routes here do not include the ones which do not require authentication
 // such as the login page
 class AppRoutes extends React.Component {
 	render() {
