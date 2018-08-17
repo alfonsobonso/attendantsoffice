@@ -22,7 +22,9 @@ import withStyles from '@material-ui/core/styles/withStyles';
 import * as Yup from 'yup';
 
 // components
-import AuthenticationService from '../authentication/AuthenticationService.js'
+import AuthenticationService from '../authentication/AuthenticationService'
+import ErrorBoundary from '../error/ErrorBoundary'
+import ErrorNotifier, { displayErrorMessage } from '../error/ErrorNotifier';
 
 const styles = theme => ({
     layout: {
@@ -80,10 +82,11 @@ class Login extends Component {
     };
 
 
-    render() {
+    render() {        
         return(
-            <React.Fragment>
+            <ErrorBoundary>
                 <CssBaseline />
+                <ErrorNotifier />
                 <main className={this.classes.layout}>
                     <Paper className={this.classes.paper}>
                         <Avatar className={this.classes.avatar}>
@@ -106,6 +109,8 @@ class Login extends Component {
                                             errors.email = 'unrecognised email address';
                                         } else if(json.code === 'WrongPassword') {
                                             errors.password = 'wrong password';
+                                        } else {
+                                            displayErrorMessage({ message: 'Unexpected error:' + json.code });
                                         }
                                         setErrors(errors);
                                     }
@@ -155,7 +160,7 @@ class Login extends Component {
                         />
                     </Paper>
                 </main>
-            </React.Fragment>
+            </ErrorBoundary>
         );
     }
 }

@@ -13,16 +13,21 @@ class AuthenticationService {
                 password
             })
         })
-        .then(response => Promise.all([response, response.json()]))
-        .then(([response, json]) => {
+        .then((response) => {
             if(response.ok) {
-                this.saveToken(json.token);
-                loginSuccess(json);
+                response.json().then((json) => {
+                    this.saveToken(json.token);
+                    loginSuccess(json);
+                })
+            } else if (response.status < 500) {
+                response.json().then((json) => {
+                    loginError(json);
+                })
             } else {
-                loginError(json);
+                // something has gone wrong
+                loginError({ "code": "Failed to submit request"});
             }
-        })
-        .catch(console.error);
+        });
     }
 
 	isLoggedIn() {

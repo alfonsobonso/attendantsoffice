@@ -9,6 +9,7 @@ import {
 } from "react-router-dom";
 import registerServiceWorker from './registerServiceWorker';
 
+import ErrorBoundary from './error/ErrorBoundary.js'
 import Login  from './login/Login.js';
 import TokenAccess  from './login/TokenAccess.js';
 
@@ -16,14 +17,17 @@ import TokenAccess  from './login/TokenAccess.js';
 // which uses a higher-order component (HOC) for authentication, and the pages around authentication
 // the app component then does the remaining routing.
 ReactDOM.render(
-    <Router>
-        <Switch>           
-            <Route exact path="/login" component={Login} />
-            <Route exact path="/token-access/:token" component={TokenAccess} />
-            <Route path="/" component={App} />
-        </Switch>
-    </Router>
+    <ErrorBoundary>
+        <Router>
+            <Switch>           
+                <Route exact path="/login" component={Login} />
+                <Route exact path="/token-access/:token" component={TokenAccess} />
+                <Route path="/" component={App} />
+            </Switch>
+        </Router>
+    </ErrorBoundary>
     , document.getElementById('root')
+
 );
 
 registerServiceWorker();
