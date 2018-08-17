@@ -8,12 +8,18 @@ import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
+import IconButton from '@material-ui/core/IconButton';
 import Input from '@material-ui/core/Input';
+import InputAdornment from '@material-ui/core/InputAdornment';
 import InputLabel from '@material-ui/core/InputLabel';
 import LockIcon from '@material-ui/icons/LockOutlined';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
+import Visibility from '@material-ui/icons/Visibility';
+import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import withStyles from '@material-ui/core/styles/withStyles';
+
+import * as Yup from 'yup';
 
 // components
 import AuthenticationService from '../authentication/AuthenticationService.js'
@@ -69,6 +75,11 @@ class Login extends Component {
         this.props.history.replace('/');
     } 
 
+    handleClickShowPassword = () => {
+        this.setState(state => ({ showPassword: !state.showPassword }));
+    };
+
+
     render() {
         return(
             <React.Fragment>
@@ -81,23 +92,20 @@ class Login extends Component {
                         <Typography variant="headline">Sign in</Typography>
                         <Formik
                             initialValues = {{ email: '', password: '', }}
-                            validate = {
-                                values => {
-                                    let errors = {};
-                                    if (values.email && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
-                                        errors.email = 'Invalid email address';
-                                    }
-                                    return errors;
-                                }
+                            validationSchema = {
+                                 Yup.object().shape({
+                                    email: Yup.string().required().email(),
+                                    password: Yup.string().required().min(8)
+                                })
                             }
                             onSubmit = {
                                 (values, { setSubmitting, setErrors }) => {
                                     const submitFailure = (json) => {
                                         let errors = {};
                                         if(json.code === 'UserNotFound') {
-                                            errors.email = 'Unrecognised email address';
+                                            errors.email = 'unrecognised email address';
                                         } else if(json.code === 'WrongPassword') {
-                                            errors.password = 'Wrong password';
+                                            errors.password = 'wrong password';
                                         }
                                         setErrors(errors);
                                     }
@@ -118,8 +126,22 @@ class Login extends Component {
 
                                         <FormControl margin="normal" required fullWidth>
                                             <InputLabel htmlFor="password">Password</InputLabel>
-                                            <Input name="password" type="password" id="password" onChange={handleChange} onBlur={handleBlur} 
-                                                value={values.password} autoComplete="current-password" />
+                                            <Input name="password" id="password" 
+                                                type={this.state.showPassword ? 'text' : 'password'}
+                                                onChange={handleChange} onBlur={handleBlur} 
+                                                value={values.password} autoComplete="current-password" 
+                                                endAdornment={
+                                                  <InputAdornment position="end">
+                                                    <IconButton
+                                                      aria-label="Toggle password visibility"
+                                                      onClick={this.handleClickShowPassword}
+                                                      onMouseDown={this.handleMouseDownPassword}
+                                                    >
+                                                      {this.state.showPassword ? <VisibilityOff /> : <Visibility />}
+                                                    </IconButton>
+                                                  </InputAdornment>
+                                                }
+                                                />
                                                 {touched.password && errors.password && <FormHelperText id="password-text" error>{errors.password}</FormHelperText>}
                                         </FormControl>
 

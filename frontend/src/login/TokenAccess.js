@@ -15,6 +15,8 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
 
+import * as Yup from 'yup';
+
 // components
 import AuthenticationService from '../authentication/AuthenticationService.js'
 
@@ -174,6 +176,16 @@ class TokenAccess extends Component {
                         <Typography variant="headline">Set your password</Typography>
                         <Formik
 					        initialValues = {{ password: '', passwordRepeat: '', }}
+					        validationSchema = {
+                                 Yup.object().shape({
+                                    password: Yup.string()
+                                    	.required()
+                                    	.min(8),
+                                    passwordRepeat: Yup.string()
+                                    	.required()
+                                    	.oneOf([Yup.ref('password')], 'Passwords do not match')
+                                })
+                            }
 					        validate = {
 					            values => {
 					                let errors = {};
