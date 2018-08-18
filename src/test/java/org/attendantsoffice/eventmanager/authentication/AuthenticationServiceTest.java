@@ -5,10 +5,14 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.Collections;
 import java.util.Optional;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.attendantsoffice.eventmanager.user.UserApplicationService;
 import org.attendantsoffice.eventmanager.user.UserEntity;
+import org.attendantsoffice.eventmanager.user.security.EventManagerUser;
 import org.attendantsoffice.eventmanager.user.security.UserAuthenticationService;
 import org.attendantsoffice.eventmanager.user.security.UserNotFoundException;
 import org.junit.Before;
@@ -48,9 +52,11 @@ public class AuthenticationServiceTest {
 
     @Test
     public void testLogin() {
-        when(userAuthenticationService.login("myemail", "mypassword")).thenReturn("mytoken");
-        String token = authenticationService.login("myemail", "mypassword");
-        assertEquals("mytoken", token);
+        EventManagerUser user = new EventManagerUser(100, "first", "last", "first.last@example.com", "blah", Collections.emptyList());
+        Pair<String, EventManagerUser> authServiceResult = ImmutablePair.of("mytoken", user);
+        when(userAuthenticationService.login("myemail", "mypassword")).thenReturn(authServiceResult);
+        Pair<String, EventManagerUser> loginResult = authenticationService.login("myemail", "mypassword");
+        assertEquals("mytoken", loginResult.getLeft());
 
     }
 

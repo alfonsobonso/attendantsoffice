@@ -10,17 +10,28 @@ import org.springframework.security.core.userdetails.User;
  */
 public class EventManagerUser extends User {
     private static final long serialVersionUID = 1L;
+    private final String firstName;
+    private final String lastName;
     private final Integer userId;
 
-    public EventManagerUser(Integer userId, String username, String password,
+    public EventManagerUser(Integer userId, String firstName, String lastName, String email, String password,
             Collection<? extends GrantedAuthority> authorities) {
-        super(username, password, authorities);
+        super(email, password, authorities);
         this.userId = userId;
+        this.firstName = firstName;
+        this.lastName = lastName;
     }
 
     public Integer getUserId() {
         return userId;
     }
 
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
 
 }

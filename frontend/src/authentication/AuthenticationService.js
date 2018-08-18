@@ -17,6 +17,7 @@ class AuthenticationService {
             if(response.ok) {
                 response.json().then((json) => {
                     this.saveToken(json.token);
+                    this.saveUser(json.userId, json.firstName, json.lastName)
                     loginSuccess(json);
                 })
             } else if (response.status < 500) {
@@ -45,13 +46,22 @@ class AuthenticationService {
         return localStorage.getItem('authToken')
     }
 
+    saveUser(userId, firstName, lastName) {
+        localStorage.setItem('userId', userId);
+        localStorage.setItem('firstName', firstName);
+        localStorage.setItem('lastName', lastName);
+    }
+
     logout() {
         // Clear user token and profile data from localStorage
         localStorage.removeItem('authToken');
+        localStorage.removeItem('userId');
+        localStorage.removeItem('firstName');
+        localStorage.removeItem('lastName');
     }
 
     getProfile() {
-        return "TBD";
+        return localStorage.getItem('firstName') + " " + localStorage.getItem('lastName');
     }
 
 	fetch(url, options) {

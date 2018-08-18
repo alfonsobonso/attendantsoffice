@@ -32,10 +32,8 @@ public class EventManagerUserDetailsService {
             GrantedAuthority grantedAuthority = new SimpleGrantedAuthority("ROLE_" + entity.getRole().name());
 
             // note: we populate the CustomUserDetails, which allows us to access the UserId in the SecurityContext.
-            EventManagerUser mapped = new EventManagerUser(entity.getUserId(),
-                    email,
-                    entity.getPassword(),
-                    Collections.singleton(grantedAuthority));
+            EventManagerUser mapped = new EventManagerUser(entity.getUserId(), entity.getFirstName(),
+                    entity.getLastName(), email, entity.getPassword(), Collections.singleton(grantedAuthority));
             return mapped;
         });
 

@@ -37,7 +37,7 @@ class Home extends React.Component {
 			window.location.reload();
     	}
         return (
-			<div>This is the home page {this.state.message}</div>
+			<div>Hi {this.AuthService.getProfile()}:  This is the home page {this.state.message}</div>
         );
     }
 }

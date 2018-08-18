@@ -2,6 +2,8 @@ package org.attendantsoffice.eventmanager.authentication;
 
 import java.util.Optional;
 
+import org.apache.commons.lang3.tuple.Pair;
+import org.attendantsoffice.eventmanager.user.security.EventManagerUser;
 import org.attendantsoffice.eventmanager.user.security.PasswordNotSetAuthenticationException;
 import org.attendantsoffice.eventmanager.user.security.UserNotFoundException;
 import org.attendantsoffice.eventmanager.user.security.WrongPasswordException;
@@ -32,14 +34,16 @@ public class AuthenticationController {
      * Attempt to log in.
      * @param email email address
      * @param password password
-     * @return authentication token, to be passed in subsequent requests as the Authorization: Bearer header
+     * @return authentication token, to be passed in subsequent requests as the Authorization: Bearer header, along with
+     * basic user information for display
      */
     @PostMapping("/authentication/login")
     public LoginOutput login(@RequestBody LoginInput loginInput) throws UserNotFoundException,
             PasswordNotSetAuthenticationException, WrongPasswordException {
-        String token = authenticationService.login(loginInput.getEmail(), loginInput.getPassword());
-
-        return new LoginOutput(token);
+        Pair<String, EventManagerUser> userToken = authenticationService.login(loginInput.getEmail(), loginInput
+                .getPassword());
+        EventManagerUser user = userToken.getRight();
+        return new LoginOutput(user.getUserId(), user.getFirstName(), user.getLastName(), userToken.getLeft());
     }
 
     /**

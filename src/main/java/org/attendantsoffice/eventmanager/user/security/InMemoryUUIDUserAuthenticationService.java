@@ -7,6 +7,8 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +30,7 @@ public class InMemoryUUIDUserAuthenticationService implements UserAuthentication
     }
 
     @Override
-    public String login(String email, String password) {
+    public Pair<String, EventManagerUser> login(String email, String password) {
         Optional<EventManagerUser> optionalUser = eventManagerUserDetailsService.findUserByEmail(email);
 
         // optional if/else waiting for java 9
@@ -58,7 +60,7 @@ public class InMemoryUUIDUserAuthenticationService implements UserAuthentication
 
         authenticatedUsers.put(token, user);
 
-        return token;
+        return ImmutablePair.of(token, user);
     }
 
     @Override

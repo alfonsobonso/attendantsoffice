@@ -4,8 +4,10 @@ import java.util.Optional;
 
 import javax.transaction.Transactional;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.attendantsoffice.eventmanager.user.UserApplicationService;
 import org.attendantsoffice.eventmanager.user.UserEntity;
+import org.attendantsoffice.eventmanager.user.security.EventManagerUser;
 import org.attendantsoffice.eventmanager.user.security.PasswordNotSetAuthenticationException;
 import org.attendantsoffice.eventmanager.user.security.UserAuthenticationService;
 import org.attendantsoffice.eventmanager.user.security.UserNotFoundException;
@@ -39,7 +41,7 @@ public class AuthenticationService {
     /**
      * Request to login using the specified credentials
      */
-    public String login(String email, String password) throws UserNotFoundException,
+    public Pair<String, EventManagerUser> login(String email, String password) throws UserNotFoundException,
             PasswordNotSetAuthenticationException,
             WrongPasswordException {
         return userAuthenticationService.login(email, password);
