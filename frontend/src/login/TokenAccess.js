@@ -23,38 +23,41 @@ import AuthenticationService from '../authentication/AuthenticationService.js'
 
 class TokenAccessService {
 
-	requestAccessToken(email, requestSuccess, requestFailure) {
-		fetch('/api/authentication/access-token', {
+    requestAccessToken(email, requestSuccess, requestFailure) {
+        fetch('/api/authentication/access-token', {
             method: 'post',
             headers: {
-		    	'Accept': 'application/json',
-		    	'Content-Type': 'application/json'
-		  	},
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
             body: JSON.stringify({
                 email
             }),
             credentials: 'same-origin'
         })
-        .then(response => {
-        	if(response.ok) {
-        		requestSuccess();
-        	} else {
-        		response.json().then(json => {
-        			requestFailure(json);	
-        		})
-        	}
+        .then((response) => {
+            if(response.ok) {
+                requestSuccess();
+            } else if (response.status < 500) {
+                response.json().then(json => {
+                    requestFailure(json);   
+                })
+            } else {
+                // something has gone wrong
+                requestFailure({ "code": "Failed to submit request"});
+            }
         })
         .catch(console.error);
-	}
+    }
 
-	fetchTokenStatus(token, statusResult) {
-		fetch('/api/authentication/access-token/' + token + '/status', {            
+    fetchTokenStatus(token, statusResult) {
+        fetch('/api/authentication/access-token/' + token + '/status', {
             method: 'get',
             headers: {
-		    	'Accept': 'application/json',
-		    	'Content-Type': 'application/json'
-		  	},
-		  	credentials: 'same-origin'
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            credentials: 'same-origin'
         })
         .then(response => Promise.all([response, response.json()]))
         .then(([response, json]) => {
@@ -63,15 +66,15 @@ class TokenAccessService {
             }
         })
         .catch(console.error);
-	}
+    }
 
-	updatePassword(token, password, updateSuccess) {
-		fetch('/api/authentication/access-token/' + token + '/update-password', {
+    updatePassword(token, password, updateSuccess) {
+        fetch('/api/authentication/access-token/' + token + '/update-password', {
             method: 'post',
             headers: {
-		    	'Accept': 'application/json',
-		    	'Content-Type': 'application/json'
-		  	},
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
             body: JSON.stringify({
                 password
             }),
@@ -79,15 +82,15 @@ class TokenAccessService {
         })
         .then(response => {
             if(response.ok) {
-        		updateSuccess();
-        	} else {
-        		response.json().then(json => {
-        			alert(JSON.stringify(json));	
-        		})
-        	}
+                updateSuccess();
+            } else {
+                response.json().then(json => {
+                    alert(JSON.stringify(json));
+                })
+            }
         })
         .catch(console.error);
-	}
+    }
 }
 
 const styles = theme => ({
@@ -121,7 +124,7 @@ const styles = theme => ({
 });
 
 class TokenAccess extends Component {
-	constructor(props) {
+    constructor(props) {
         super();
         this.updateFailure = this.updateFailure.bind(this);
         this.updateSuccess = this.updateSuccess.bind(this);
@@ -131,42 +134,42 @@ class TokenAccess extends Component {
         this.classes = props.classes
     }
 
-	componentDidMount() {
-		var token = this.state.token;
-		this.AccessService.fetchTokenStatus(token, (status) => {
-        	this.setState({tokenStatus: status});	
-		});
-	}
+    componentDidMount() {
+        var token = this.state.token;
+        this.AccessService.fetchTokenStatus(token, (status) => {
+            this.setState({tokenStatus: status});   
+        });
+    }
 
-	componentWillMount() {
+    componentWillMount() {
         if(this.AuthService.isLoggedIn()) {
             this.props.history.replace('/');
         } else {
-        	this.setState({token : this.props.match.params.token});	
+            this.setState({token : this.props.match.params.token}); 
         }
     }
 
     updateSuccess() {
-    	// TODO: include data so we can indicate the password was updated 
-    	this.props.history.replace('/login');
+        // TODO: include data so we can indicate the password was updated 
+        this.props.history.replace('/login');
     }
 
     updateFailure() {
-    	// suspect the failure was caused by the token not being valid. If we reload the page
-    	// it should display to the user the reason
-    	this.AccessService.fetchTokenStatus(this.state.token, (status) => {
-        	this.setState({tokenStatus: status});	
-		});
+        // suspect the failure was caused by the token not being valid. If we reload the page
+        // it should display to the user the reason
+        this.AccessService.fetchTokenStatus(this.state.token, (status) => {
+            this.setState({tokenStatus: status});   
+        });
     }
 
     requestAccessSuccess() {
-    	this.setState({requestAccessStatus: 'SUCCESS'});	
+        this.setState({requestAccessStatus: 'SUCCESS'});    
     }
 
     // if this page has a valid token in the url, we given them the form to set/reset their password
     renderValidToken() {
-    	return (
-    		<React.Fragment>
+        return (
+            <React.Fragment>
                 <CssBaseline />
                 <main className={this.classes.layout}>
                     <Paper className={this.classes.paper}>
@@ -175,40 +178,40 @@ class TokenAccess extends Component {
                         </Avatar>
                         <Typography variant="headline">Set your password</Typography>
                         <Formik
-					        initialValues = {{ password: '', passwordRepeat: '', }}
-					        validationSchema = {
+                            initialValues = {{ password: '', passwordRepeat: '', }}
+                            validationSchema = {
                                  Yup.object().shape({
                                     password: Yup.string()
-                                    	.required()
-                                    	.min(8),
+                                        .required()
+                                        .min(8),
                                     passwordRepeat: Yup.string()
-                                    	.required()
-                                    	.oneOf([Yup.ref('password')], 'Passwords do not match')
+                                        .required()
+                                        .oneOf([Yup.ref('password')], 'Passwords do not match')
                                 })
                             }
-					        validate = {
-					            values => {
-					                let errors = {};
-					                if (values.password && values.passwordRepeat) {
-					                	if(values.password !== values.passwordRepeat) {
-					                		errors.passwordRepeat = 'Passwords must match';
-					                	} else if (values.password.length < 8) {
-					                		errors.password = 'Passwords must be at least 8 characters';
-					                	}
-					                }
-					                return errors;
-					            }
-					        }
-					        onSubmit = {
-					            (values, { setSubmitting, setErrors }) => {
-					                this.AccessService.updatePassword(this.state.token, values.password, this.updateSuccess);
-					                setSubmitting(false);
-					            }
-					        }
-					        render = {
-					            ({values, errors, touched, handleChange, handleBlur, handleSubmit, isSubmitting, }) => (
-					                <form onSubmit={handleSubmit}>
-					                	<FormControl margin="normal" required fullWidth>
+                            validate = {
+                                values => {
+                                    let errors = {};
+                                    if (values.password && values.passwordRepeat) {
+                                        if(values.password !== values.passwordRepeat) {
+                                            errors.passwordRepeat = 'Passwords must match';
+                                        } else if (values.password.length < 8) {
+                                            errors.password = 'Passwords must be at least 8 characters';
+                                        }
+                                    }
+                                    return errors;
+                                }
+                            }
+                            onSubmit = {
+                                (values, { setSubmitting, setErrors }) => {
+                                    this.AccessService.updatePassword(this.state.token, values.password, this.updateSuccess);
+                                    setSubmitting(false);
+                                }
+                            }
+                            render = {
+                                ({values, errors, touched, handleChange, handleBlur, handleSubmit, isSubmitting, }) => (
+                                    <form onSubmit={handleSubmit}>
+                                        <FormControl margin="normal" required fullWidth>
                                             <InputLabel htmlFor="password">Password</InputLabel>
                                             <Input name="password" type="password" id="password" onChange={handleChange} onBlur={handleBlur} 
                                                 value={values.password} />
@@ -222,32 +225,32 @@ class TokenAccess extends Component {
                                                 {touched.passwordRepeat && errors.passwordRepeat && <FormHelperText id="password-repeat-text" error>{errors.passwordRepeat}</FormHelperText>}
                                         </FormControl>
 
-										<Button type="submit" fullWidth variant="raised" color="primary" className={this.classes.submit} 
+                                        <Button type="submit" fullWidth variant="raised" color="primary" className={this.classes.submit} 
                                             disabled={isSubmitting}>
                                             Set password
                                         </Button>
-					                </form>
-					            )
-					        }
-					    />
+                                    </form>
+                                )
+                            }
+                        />
                     </Paper>
                 </main>
             </React.Fragment>
-		);
+        );
     }
 
     // if this page does not have a valid token in the url, we give them the form to request another (entering their email).
     renderInvalidToken(headline) {
-    	return (
-    		<React.Fragment>
+        return (
+            <React.Fragment>
                 <CssBaseline />
                 <main className={this.classes.layout}>
                     <Paper className={this.classes.paper}>
-                    	<Typography variant="headline">{headline}</Typography>
-                    	<Typography variant="title" align="center" color="textSecondary" paragraph>
-                    		Request a new access token be sent to your email address
-			            </Typography>
-			            <Formik
+                        <Typography variant="headline">{headline}</Typography>
+                        <Typography variant="title" align="center" color="textSecondary" paragraph>
+                            Request a new access token be sent to your email address
+                        </Typography>
+                        <Formik
                             initialValues = {{ email: '', }}
                             validate = {
                                 values => {
@@ -267,7 +270,7 @@ class TokenAccess extends Component {
                                         }
                                         setErrors(errors);
                                     }
-									this.AccessService.requestAccessToken(values.email, this.requestAccessSuccess, submitFailure)
+                                    this.AccessService.requestAccessToken(values.email, this.requestAccessSuccess, submitFailure)
                                     setSubmitting(false);
                                 }
                             }
@@ -298,34 +301,34 @@ class TokenAccess extends Component {
     // if the page previously had an invalid token, but we have sucessfully requested another
     // give them a message to check their email inbox
     renderTokenAccessRequested() {
-		return (
-    		<React.Fragment>
+        return (
+            <React.Fragment>
                 <CssBaseline />
                 <main className={this.classes.layout}>
                     <Paper className={this.classes.paper}>
-                    	<Typography variant="headline">Access code requested</Typography>
-                    	<Typography variant="title" align="center" color="textSecondary" paragraph>
-                    		Please check your email inbox for the email with access link. 
-                    		Check your spam folder if it is not there.
-			            </Typography>
-		            </Paper>
-	            </main>
+                        <Typography variant="headline">Access code requested</Typography>
+                        <Typography variant="title" align="center" color="textSecondary" paragraph>
+                            Please check your email inbox for the email with access link. 
+                            Check your spam folder if it is not there.
+                        </Typography>
+                    </Paper>
+                </main>
             </React.Fragment>
         );
     }
 
     render() {
-    	if(this.state.requestAccessStatus === 'SUCCESS') {
-    		return this.renderTokenAccessRequested();
-    	} else if(this.state.tokenStatus === 'VALID') {
-			return this.renderValidToken();
-		} else if(this.state.tokenStatus === 'UNRECOGNISED') {
-			return this.renderInvalidToken('Unrecognised access code.')
+        if(this.state.requestAccessStatus === 'SUCCESS') {
+            return this.renderTokenAccessRequested();
+        } else if(this.state.tokenStatus === 'VALID') {
+            return this.renderValidToken();
+        } else if(this.state.tokenStatus === 'UNRECOGNISED') {
+            return this.renderInvalidToken('Unrecognised access code.')
         } else if(this.state.tokenStatus === 'EXPIRED') {
-        	return this.renderInvalidToken('Access code expired.');
-		} else {
-			return this.renderInvalidToken('Access code already used.');
-		}
+            return this.renderInvalidToken('Access code expired.');
+        } else {
+            return this.renderInvalidToken('Access code already used.');
+        }
     }
 }
 

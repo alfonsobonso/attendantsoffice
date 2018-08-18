@@ -1,20 +1,14 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
-import './App.css';
+
+import HeaderAppBar from './common/HeaderAppBar';
 
 import AuthenticationService from './authentication/AuthenticationService';
 import withAuthenticationService from './authentication/withAuthenticationService';
 
 import AppRoutes from './AppRoutes'
 
-
 const AuthService = new AuthenticationService();
-
-class Header extends Component {
-    render() {
-        return(null);
-    }
-}
 
 class App extends Component {
    
@@ -26,15 +20,10 @@ class App extends Component {
     render() {
         return(
             <div className="App">
-                <header className="App-header">
-                    <img src={logo} className="App-logo" alt="logo"/>
-                    <h2>Welcome {this.props.user}</h2>
+                <header>
+                    <HeaderAppBar history={this.props.history} />
                 </header>
-                <Header />
-                <p className="App-intro">
-                    <button type="button" className="form-submit" onClick={this.handleLogout.bind(this)}>Logout</button>
-                </p>
-                <AppRoutes /> 
+                <AppRoutes />                
             </div>
         );
     }
