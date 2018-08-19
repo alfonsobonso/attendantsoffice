@@ -17,12 +17,12 @@ public class UserController {
         this.userRepository = userRepository;
     }
 
-    @GetMapping(path = "/api/users")
+    @GetMapping(path = "/users")
     public List<UserEntity> findUsers() {
         return StreamSupport.stream(userRepository.findAll().spliterator(), false).collect(Collectors.toList());
     }
 
-    @GetMapping(path = "/api/users/{userId}")
+    @GetMapping(path = "/users/{userId}")
     public UserEntity findUser(@PathVariable Integer userId) {
         return userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("No User#" + userId
                 + " found"));

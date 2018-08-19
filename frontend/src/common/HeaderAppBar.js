@@ -11,16 +11,16 @@ import MenuIcon from '@material-ui/icons/Menu';
 import AuthenticationService from '../authentication/AuthenticationService.js'
 
 const styles = {
-  root: {
-    flexGrow: 1,
-  },
-  flex: {
-    flexGrow: 1,
-  },
-  menuButton: {
-    marginLeft: -12,
-    marginRight: 20,
-  },
+    root: {
+        flexGrow: 1,
+    },
+    flex: {
+        flexGrow: 1,
+    },
+    menuButton: {
+        marginLeft: -12,
+        marginRight: 20,
+    },
 };
 
 class HeaderAppBar extends Component {
