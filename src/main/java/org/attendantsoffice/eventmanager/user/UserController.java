@@ -2,8 +2,6 @@
 package org.attendantsoffice.eventmanager.user;
 
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,20 +9,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class UserController {
-    private final UserRepository userRepository;
+    private final UserApplicationService userApplicationService;
 
-    public UserController(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UserController(UserApplicationService userApplicationService) {
+        this.userApplicationService = userApplicationService;
     }
 
     @GetMapping(path = "/users")
-    public List<UserEntity> findUsers() {
-        return StreamSupport.stream(userRepository.findAll().spliterator(), false).collect(Collectors.toList());
+    public List<UserOutput> findUsers() {
+        return userApplicationService.findUsers();
     }
 
     @GetMapping(path = "/users/{userId}")
-    public UserEntity findUser(@PathVariable Integer userId) {
-        return userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("No User#" + userId
-                + " found"));
+    public UserOutput findUser(@PathVariable Integer userId) {
+        return userApplicationService.findUser(userId);
     }
 }

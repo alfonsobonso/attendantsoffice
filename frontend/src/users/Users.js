@@ -47,7 +47,7 @@ class Users extends Component {
                 	this.setState({"rows": transformed});
             	});
             } else if (response.status === 401) {
-            	this.setState({redirecting: true})
+            	alert("oli to do");
             }
         })
         .then(message => {
@@ -57,8 +57,14 @@ class Users extends Component {
 
     transformUserRows(rows) {
     	return rows.map(row => {
-    		return { "id": row.userId, "firstName" : row.firstName, "lastName": row.lastName };
-    	});
+    		return { "id": row.userId, 
+    				  "firstName" : row.firstName, 
+    				  "lastName": row.lastName,
+    				  "homePhone": row.homePhone,
+    				  "mobilePhone": row.mobilePhone,
+    				  "congregation": row.congregation.name
+    				};
+    		});
     }
 
     render() {
@@ -70,6 +76,9 @@ class Users extends Component {
 	            			<TableCell>ID</TableCell>
 				            <TableCell numeric>First name</TableCell>
 				            <TableCell numeric>Last name</TableCell>
+				            <TableCell numeric>Home phone</TableCell>
+				            <TableCell numeric>Mobile phone</TableCell>
+				            <TableCell numeric>Congregation</TableCell>
 	          			</TableRow>
 	    			</TableHead>
 	        		<TableBody>
@@ -81,6 +90,9 @@ class Users extends Component {
 		                			</TableCell>
 		                			<TableCell numeric>{row.firstName}</TableCell>
 					                <TableCell numeric>{row.lastName}</TableCell>
+					                <TableCell numeric>{row.homePhone}</TableCell>
+					                <TableCell numeric>{row.mobilePhone}</TableCell>
+					                <TableCell numeric>{row.congregation}</TableCell>
 		              			</TableRow>
 		            		);
 			          	})}
