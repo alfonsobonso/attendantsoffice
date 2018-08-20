@@ -86,6 +86,16 @@ public class UserApplicationServiceTest {
         assertEquals("encoded", userEntityCaptor.getValue().getPassword());
     }
 
+    public void testFindByEmail() {
+        String email = "email@email.com";
+        UserEntity entity = user(1);
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(entity));
+        when(userMapper.map(entity)).thenReturn(UserOutputTestDataBuilder.createUser(1));
+        Optional<UserOutput> output = service.findByEmail(email);
+
+        assertEquals(1, output.get().getUserId().intValue());
+    }
+
     private UserEntity user(int userId) {
         UserEntity entity = new UserEntity();
         entity.setUserId(userId);

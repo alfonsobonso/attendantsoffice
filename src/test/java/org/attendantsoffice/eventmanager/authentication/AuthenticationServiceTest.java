@@ -11,7 +11,7 @@ import java.util.Optional;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.attendantsoffice.eventmanager.user.UserApplicationService;
-import org.attendantsoffice.eventmanager.user.UserEntity;
+import org.attendantsoffice.eventmanager.user.UserOutputTestDataBuilder;
 import org.attendantsoffice.eventmanager.user.security.EventManagerUser;
 import org.attendantsoffice.eventmanager.user.security.UserAuthenticationService;
 import org.attendantsoffice.eventmanager.user.security.UserNotFoundException;
@@ -68,9 +68,8 @@ public class AuthenticationServiceTest {
 
     @Test
     public void testSendAuthenticationTokenMailUserFound() {
-        UserEntity userEntity = new UserEntity();
-        userEntity.setUserId(100);
-        when(userApplicationService.findByEmail("myemail")).thenReturn(Optional.of(userEntity));
+        when(userApplicationService.findByEmail("myemail")).thenReturn(
+                Optional.of(UserOutputTestDataBuilder.createUser(100)));
         authenticationService.sendAuthenticationTokenMail("myemail");
 
         verify(authenticationTokenApplicationService, times(1)).sendAuthenticationTokenMail(100, "myemail");

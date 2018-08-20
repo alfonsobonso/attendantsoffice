@@ -6,7 +6,7 @@ import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.attendantsoffice.eventmanager.user.UserApplicationService;
-import org.attendantsoffice.eventmanager.user.UserEntity;
+import org.attendantsoffice.eventmanager.user.UserOutput;
 import org.attendantsoffice.eventmanager.user.security.EventManagerUser;
 import org.attendantsoffice.eventmanager.user.security.PasswordNotSetAuthenticationException;
 import org.attendantsoffice.eventmanager.user.security.UserAuthenticationService;
@@ -52,7 +52,7 @@ public class AuthenticationService {
      * set, or has forgotten their password.
      */
     public void sendAuthenticationTokenMail(String email) throws UserNotFoundException {
-        Optional<UserEntity> user = userApplicationService.findByEmail(email);
+        Optional<UserOutput> user = userApplicationService.findByEmail(email);
         if (!user.isPresent()) {
             throw new UserNotFoundException(email);
         }

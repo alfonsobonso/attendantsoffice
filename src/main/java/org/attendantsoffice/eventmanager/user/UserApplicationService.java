@@ -28,8 +28,9 @@ public class UserApplicationService {
         return output;
     }
 
-    public Optional<UserEntity> findByEmail(String email) {
-        return userRepository.findByEmail(email);
+    public Optional<UserOutput> findByEmail(String email) {
+        Optional<UserOutput> output = userRepository.findByEmail(email).map(userMapper::map);
+        return output;
     }
 
     public List<UserOutput> findUsers() {
