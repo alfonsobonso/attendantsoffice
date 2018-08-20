@@ -91,6 +91,7 @@ public class AuthenticationServiceTest {
         authenticationService.submitAccessTokenPassword("mytoken", "mypassword");
     }
 
+    @Test
     public void testSubmitAccessTokenPassword() {
         when(authenticationTokenApplicationService.fetchAuthenticationTokenUserId("mytoken"))
                 .thenReturn(Optional.of(123));

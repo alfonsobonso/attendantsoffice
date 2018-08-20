@@ -2,6 +2,7 @@ package org.attendantsoffice.eventmanager.authentication;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -110,4 +111,29 @@ public class AuthenticationTokenApplicationServiceTest {
         Optional<Integer> userId = applicationService.fetchAuthenticationTokenUserId(token);
         assertEquals(Optional.of(100), userId);
     }
+
+    @Test(expected = IllegalStateException.class)
+    public void testMarkAuthenticationTokenUsedNotFound() {
+        String token = "mytoken";
+
+        when(authenticationTokenRepository.findByToken(token)).thenReturn(Optional.empty());
+
+        applicationService.markAuthenticationTokenUsed(token);
+    }
+
+    @Test
+    public void testMarkAuthenticationTokenUsed() {
+        String token = "mytoken";
+
+        AuthenticationTokenEntity entity = new AuthenticationTokenEntity();
+
+        when(authenticationTokenRepository.findByToken(token)).thenReturn(Optional.of(entity));
+
+        applicationService.markAuthenticationTokenUsed(token);
+
+        verify(authenticationTokenRepository).save(authenticationTokenEntityCaptor.capture());
+
+        assertTrue(authenticationTokenEntityCaptor.getValue().isUsed());
+    }
+
 }
