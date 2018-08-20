@@ -1,18 +1,15 @@
 package org.attendantsoffice.eventmanager.authentication;
 
+import org.immutables.value.Value;
+import org.immutables.value.Value.Parameter;
+
 /**
  * Response indicating the status a given access token
  */
-public class AccessTokenStatusOutput {
-    private final Status status;
-
-    public AccessTokenStatusOutput(Status status) {
-        this.status = status;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
+@Value.Immutable
+public interface AccessTokenStatusOutput {
+    @Parameter
+    Status getStatus();
 
     public enum Status {
         VALID,

@@ -43,7 +43,13 @@ public class AuthenticationController {
         Pair<String, EventManagerUser> userToken = authenticationService.login(loginInput.getEmail(), loginInput
                 .getPassword());
         EventManagerUser user = userToken.getRight();
-        return new LoginOutput(user.getUserId(), user.getFirstName(), user.getLastName(), userToken.getLeft());
+        LoginOutput output = ImmutableLoginOutput.builder()
+                .token(userToken.getLeft())
+                .userId(user.getUserId())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .build();
+        return output;
     }
 
     /**
@@ -66,16 +72,16 @@ public class AuthenticationController {
             Optional<Integer> userId = authenticationService.fetchAuthenticationTokenUserId(token);
             if (!userId.isPresent()) {
                 LOG.warn("Authentication access token [{}] has unrecognised", token);
-                output = new AccessTokenStatusOutput(AccessTokenStatusOutput.Status.UNRECOGNISED);
+                output = ImmutableAccessTokenStatusOutput.of(AccessTokenStatusOutput.Status.UNRECOGNISED);
             } else {
-                output = new AccessTokenStatusOutput(AccessTokenStatusOutput.Status.VALID);
+                output = ImmutableAccessTokenStatusOutput.of(AccessTokenStatusOutput.Status.VALID);
             }
         } catch(AuthenticationTokenExpiredException e) {
             LOG.warn("User#{} authentication access token [{}] has expired", e.getUserId(), token);
-            output = new AccessTokenStatusOutput(AccessTokenStatusOutput.Status.EXPIRED);
+            output = ImmutableAccessTokenStatusOutput.of(AccessTokenStatusOutput.Status.EXPIRED);
         } catch (AuthenticationTokenUsedException e) {
             LOG.warn("User#{} authentication access token [{}] has already been used", e.getUserId(), token);
-            output = new AccessTokenStatusOutput(AccessTokenStatusOutput.Status.ALREADY_USED);
+            output = ImmutableAccessTokenStatusOutput.of(AccessTokenStatusOutput.Status.ALREADY_USED);
         }
         return output;
     }
