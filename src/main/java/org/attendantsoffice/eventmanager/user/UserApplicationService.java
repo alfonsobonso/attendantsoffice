@@ -5,6 +5,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,8 +35,30 @@ public class UserApplicationService {
         return output;
     }
 
-    public List<UserOutput> findUsers() {
-        List<UserEntity> entityList = StreamSupport.stream(userRepository.findAll().spliterator(), false)
+    public List<UserOutput> findUsers(Optional<String> sortBy, Optional<Direction> sortDirection) {
+        Iterable<UserEntity> iterable;
+        if (sortBy.isPresent() && sortDirection.isPresent()) {
+            String translatedSortBy;
+            switch (sortBy.get()) {
+                case "id":
+                    translatedSortBy = "userId";
+                    break;
+                case "firstName":
+                case "lastName":
+                case "homePhone":
+                case "mobilePhone":
+                case "email":
+                    translatedSortBy = sortBy.get();
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unsupported sort field [" + sortBy.get() + "]");
+            }
+            iterable = userRepository.findAll(Sort.by(sortDirection.get(), translatedSortBy));
+        } else {
+            iterable = userRepository.findAll();
+        }
+
+        List<UserEntity> entityList = StreamSupport.stream(iterable.spliterator(), false)
                 .collect(Collectors.toList());
         List<UserOutput> outputList = entityList.stream().map(userMapper::map).collect(Collectors.toList());
         return outputList;

@@ -1,11 +1,13 @@
 package org.attendantsoffice.eventmanager.authentication;
 
+import org.attendantsoffice.eventmanager.DefaultStyle;
 import org.immutables.value.Value;
 import org.immutables.value.Value.Parameter;
 
 /**
  * Response indicating the status a given access token
  */
+@DefaultStyle
 @Value.Immutable
 public interface AccessTokenStatusOutput {
     @Parameter

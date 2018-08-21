@@ -15,6 +15,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 
 import com.google.common.collect.Lists;
 
@@ -57,16 +59,48 @@ public class UserApplicationServiceTest {
     }
 
     @Test
-    public void testFindUsers() {
+    public void testFindUsersNoSort() {
         UserEntity entity1 = user(1);
         UserEntity entity2 = user(1);
         when(userRepository.findAll()).thenReturn(Lists.newArrayList(entity1, entity2));
         when(userMapper.map(entity1)).thenReturn(UserOutputTestDataBuilder.createUser(1));
         when(userMapper.map(entity2)).thenReturn(UserOutputTestDataBuilder.createUser(1));
 
-        List<UserOutput> users = service.findUsers();
+        List<UserOutput> users = service.findUsers(Optional.empty(), Optional.empty());
         assertEquals(2, users.size());
         assertEquals(1, users.get(0).getUserId().intValue());
+    }
+
+    @Test
+    public void testFindUsersIdSort() {
+        UserEntity entity1 = user(1);
+        UserEntity entity2 = user(1);
+        when(userRepository.findAll(Sort.by(Direction.ASC, "userId"))).thenReturn(Lists.newArrayList(entity1, entity2));
+        when(userMapper.map(entity1)).thenReturn(UserOutputTestDataBuilder.createUser(1));
+        when(userMapper.map(entity2)).thenReturn(UserOutputTestDataBuilder.createUser(1));
+
+        List<UserOutput> users = service.findUsers(Optional.of("id"), Optional.of(Direction.ASC));
+        assertEquals(2, users.size());
+        assertEquals(1, users.get(0).getUserId().intValue());
+    }
+
+    @Test
+    public void testFindUsersFirstNameSort() {
+        UserEntity entity1 = user(1);
+        UserEntity entity2 = user(1);
+        when(userRepository.findAll(Sort.by(Direction.DESC, "firstName"))).thenReturn(Lists.newArrayList(entity1,
+                entity2));
+        when(userMapper.map(entity1)).thenReturn(UserOutputTestDataBuilder.createUser(1));
+        when(userMapper.map(entity2)).thenReturn(UserOutputTestDataBuilder.createUser(1));
+
+        List<UserOutput> users = service.findUsers(Optional.of("firstName"), Optional.of(Direction.DESC));
+        assertEquals(2, users.size());
+        assertEquals(1, users.get(0).getUserId().intValue());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testFindUsersUnexpectedSort() {
+        service.findUsers(Optional.of("unknown"), Optional.of(Direction.ASC));
     }
 
     @Test(expected = IllegalArgumentException.class)

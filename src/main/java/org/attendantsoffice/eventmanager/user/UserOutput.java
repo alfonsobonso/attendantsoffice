@@ -2,11 +2,13 @@ package org.attendantsoffice.eventmanager.user;
 
 import java.util.Optional;
 
+import org.attendantsoffice.eventmanager.DefaultStyle;
 import org.immutables.value.Value;
 
 /**
  * User information, formatted for the API.
  */
+@DefaultStyle
 @Value.Immutable
 public interface UserOutput {
     Integer getUserId();

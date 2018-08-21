@@ -5,10 +5,11 @@ import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 
 import { withStyles } from '@material-ui/core/styles';
+
+import EnhancedTableHead from '../common/EnhancedTableHead.js'
 
 import AuthenticationService from '../authentication/AuthenticationService.js'
 
@@ -29,29 +30,48 @@ class Users extends Component {
         super();
         this.AuthService = new AuthenticationService();
         this.classes = props.classes
-        this.state = {"rows": []};
+        this.state = {"rows": [], "selected": [], "sortDirection": "asc", "sortBy": "id"};
     }
 
     state = {};
 
     componentDidMount() {
-    	this.fetchData();
+    	this.fetchData(this.state.sortDirection, this.state.sortBy);
     }
 
-    fetchData = () => {
-        this.AuthService.fetch('/api/users', {})
+    handleRequestSort = (event, property) => {
+	    const sortBy = property;
+	    let sortDirection = 'desc';
+
+	    if (this.state.sortBy === property && this.state.sortDirection === 'desc') {
+	    	sortDirection = 'asc';
+	    }
+
+	    this.fetchData(sortDirection, sortBy);
+	};
+
+    fetchData = (sortDirection, sortBy) => {
+
+    	let params = {
+		  "sortDirection": sortDirection.toUpperCase(),
+		  "sortBy": sortBy
+		}
+    	let esc = encodeURIComponent
+		let query = Object.keys(params)
+             .map(k => esc(k) + '=' + esc(params[k]))
+             .join('&')
+    	
+        this.AuthService.fetch('/api/users?' + query, {})
         .then(response => {
             if(response.ok) {
                 return response.json().then((json) => {
                 	var transformed = this.transformUserRows(json);
-                	this.setState({"rows": transformed});
+                	this.setState({"rows": transformed, "sortDirection": sortDirection, "sortBy": sortBy});
+                	this.setState();
             	});
             } else if (response.status === 401) {
             	alert("oli to do");
             }
-        })
-        .then(message => {
-            this.setState({message: message});
         });
     };
 
@@ -67,32 +87,44 @@ class Users extends Component {
     		});
     }
 
+    columns = [
+	  	{ id: 'id', numeric: true, disablePadding: false, label: 'ID' },
+	  	{ id: 'firstName', numeric: false, disablePadding: false, label: 'First Name' },
+	  	{ id: 'lastName', numeric: false, disablePadding: false, label: 'Last Name' },
+	  	{ id: 'homePhone', numeric: false, disablePadding: false, label: 'Home' },
+	  	{ id: 'mobilePhone', numeric: false, disablePadding: false, label: 'Mobile' },
+	  	{ id: 'congregation', numeric: false, disablePadding: false, label: 'Congregation' },
+	];
+
     render() {
+    	//const { data, sortDirection, sortBy, selected, rowsPerPage, page } = this.state;
+    	const { sortDirection, sortBy, selected, rows } = this.state;
+
     	return (
     		<Paper className={this.classes.root}>
       			<Table className={this.classes.table}>
-	        		<TableHead>
-	          			<TableRow>
-	            			<TableCell>ID</TableCell>
-				            <TableCell numeric>First name</TableCell>
-				            <TableCell numeric>Last name</TableCell>
-				            <TableCell numeric>Home phone</TableCell>
-				            <TableCell numeric>Mobile phone</TableCell>
-				            <TableCell numeric>Congregation</TableCell>
-	          			</TableRow>
-	    			</TableHead>
+        			<EnhancedTableHead
+        				supportSelect={false}
+		              	numSelected={selected.length}
+		              	sortDirection={sortDirection}
+		              	sortBy={sortBy}
+		              	onSelectAllClick={this.handleSelectAllClick}
+		              	onRequestSort={this.handleRequestSort}
+		              	rowCount={rows.length}
+		              	columns={this.columns}
+		            />	          			
 	        		<TableBody>
 		          		{this.state.rows.map(row => {
 		            		return (
 		              			<TableRow key={row.id}>
-		                			<TableCell component="th" scope="row">
+		                			<TableCell numeric component="th" scope="row">
 		                  				{row.id}
 		                			</TableCell>
-		                			<TableCell numeric>{row.firstName}</TableCell>
-					                <TableCell numeric>{row.lastName}</TableCell>
-					                <TableCell numeric>{row.homePhone}</TableCell>
-					                <TableCell numeric>{row.mobilePhone}</TableCell>
-					                <TableCell numeric>{row.congregation}</TableCell>
+		                			<TableCell>{row.firstName}</TableCell>
+					                <TableCell>{row.lastName}</TableCell>
+					                <TableCell>{row.homePhone}</TableCell>
+					                <TableCell>{row.mobilePhone}</TableCell>
+					                <TableCell>{row.congregation}</TableCell>
 		              			</TableRow>
 		            		);
 			          	})}
