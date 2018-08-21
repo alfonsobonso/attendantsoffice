@@ -40,10 +40,6 @@ public class InMemoryUUIDUserAuthenticationService implements UserAuthentication
 
         EventManagerUser user = optionalUser.get();
 
-        if (user.getPassword() == null) {
-            throw new PasswordNotSetAuthenticationException(user.getUserId(), email);
-        }
-
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new WrongPasswordException(user.getUserId(), email);
         }
