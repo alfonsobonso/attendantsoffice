@@ -50,6 +50,9 @@ public class UserApplicationService {
                 case "email":
                     translatedSortBy = sortBy.get();
                     break;
+                case "congregation":
+                    translatedSortBy = "congregation.name";
+                    break;
                 default:
                     throw new IllegalArgumentException("Unsupported sort field [" + sortBy.get() + "]");
             }

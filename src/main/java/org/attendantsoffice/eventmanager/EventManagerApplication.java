@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.data.web.SortHandlerMethodArgumentResolver;
@@ -14,6 +15,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @SpringBootApplication
 @EnableWebMvc // required to intercept 404s (throws NoHandlerFoundException)
+@EnableCaching // default in-memory ConcurrentHashMap impl
 public class EventManagerApplication implements WebMvcConfigurer {
 
     public static void main(String[] args) {

@@ -8,13 +8,18 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
+import org.attendantsoffice.eventmanager.congregation.CongregationEntity;
 
 /**
  * A user is a person we have the details on, regardless of any assignment.
@@ -49,7 +54,9 @@ public class UserEntity {
     @Enumerated(EnumType.STRING)
     private UserStatus userStatus;
 
-    private Integer congregationId;
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "congregation_id")
+    private CongregationEntity congregation;
 
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -136,12 +143,12 @@ public class UserEntity {
         this.userStatus = userStatus;
     }
 
-    public Integer getCongregationId() {
-        return congregationId;
+    public CongregationEntity getCongregation() {
+        return congregation;
     }
 
-    public void setCongregationId(Integer congregationId) {
-        this.congregationId = congregationId;
+    public void setCongregation(CongregationEntity congregation) {
+        this.congregation = congregation;
     }
 
     public UserRole getRole() {
