@@ -24,7 +24,7 @@
     <commons-lang3.version>3.7</commons-lang3.version>
     <guava.version>26.0-jre</guava.version>
     <h2database.version>1.4.197</h2database.version>
-    <immutables.version>2.6.3</immutables.version>
+    <immutables.version>2.7.1</immutables.version>
     <java.version>1.8</java.version>
     <javax.mail.version>1.6.1</javax.mail.version>
   </properties>
