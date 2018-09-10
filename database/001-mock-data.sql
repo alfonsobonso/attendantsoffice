@@ -3,3 +3,6 @@ values ('Alfonzo', 'Bonzo', 'alfonzo.bonzo@example.com', 'DISABLED', 1, 'BAPTISE
 
 insert into congregation(name, created_by_user_id)
 values ('Grimsby', 0), ('Hull', 0), ('Slough, North', 0);
+
+insert into event(name, location, start_date, end_date, event_status, created_by_user_id, updated_by_user_id)
+values('Test event', 'Glasgow Hydro', '2018-06-01', '2018-06-03', 'ANNOUNCED', 0, 0);

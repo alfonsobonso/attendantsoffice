@@ -38,3 +38,16 @@ CREATE TABLE congregation (
     created_by_user_id INT NOT NULL,
     created_date_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE event (
+    event_id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    location VARCHAR(100),
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    event_status VARCHAR(12) NOT NULL,
+    created_by_user_id INT,
+    created_date_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_by_user_id INT,
+    updated_date_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);

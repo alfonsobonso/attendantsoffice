@@ -5,6 +5,7 @@ import {
     Switch
 } from "react-router-dom";
 import Home  from './home/Home.js';
+import Events  from './events/Events.js';
 import Users  from './users/Users.js';
 
 // the routes here do not include the ones which do not require authentication
@@ -16,6 +17,7 @@ class AppRoutes extends React.Component {
 		        <Switch>
 		            <Route exact path="/" component={Home} />
 		            <Route exact path="/users" component={Users} />
+		            <Route exact path="/events" component={Events} />
 		        </Switch>
 		    </Router>
 	    );
