@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
+import Paper from '@material-ui/core/Paper';
+
 import { SortingState, IntegratedSorting, DataTypeProvider } from '@devexpress/dx-react-grid';
 import { Grid, Table, TableHeaderRow } from '@devexpress/dx-react-grid-material-ui';
 
@@ -74,26 +76,28 @@ class Events extends Component {
 
 	render() {
 		return (
-			<Grid
-			    rows={this.state.rows}
-			    columns={[
-			      	{ name: 'id', title: 'ID' },
-			      	{ name: 'name', title: 'Name' },
-			      	{ name: 'location', title: 'Location' },
-			      	{ name: 'startDate', title: 'Start Date' },
-			      	{ name: 'endDate', title: 'End Date' },
-			      	{ name: 'status', title: 'Status' },
-			    ]}>
-			    <DateTypeProvider
-            		for={['startDate', 'endDate']}
-          		/>
-			    <SortingState
-            		defaultSorting={[{ columnName: 'startDate', direction: 'desc' }]}
-          		/>
-          		<IntegratedSorting />
-			    <Table />
-			    <TableHeaderRow showSortingControls />
-		  	</Grid>
+			<Paper className={this.classes.root}>
+				<Grid
+				    rows={this.state.rows}
+				    columns={[
+				      	{ name: 'id', title: 'ID' },
+				      	{ name: 'name', title: 'Name' },
+				      	{ name: 'location', title: 'Location' },
+				      	{ name: 'startDate', title: 'Start Date' },
+				      	{ name: 'endDate', title: 'End Date' },
+				      	{ name: 'status', title: 'Status' },
+				    ]}>
+				    <DateTypeProvider
+	            		for={['startDate', 'endDate']}
+	          		/>
+				    <SortingState
+	            		defaultSorting={[{ columnName: 'startDate', direction: 'desc' }]}
+	          		/>
+	          		<IntegratedSorting />
+				    <Table />
+				    <TableHeaderRow showSortingControls />
+			  	</Grid>
+		  	</Paper>
 		);
 	}
 }

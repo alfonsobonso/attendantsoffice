@@ -2,14 +2,11 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import Paper from '@material-ui/core/Paper';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
+
+import { SortingState } from '@devexpress/dx-react-grid';
+import { Grid, Table, TableHeaderRow } from '@devexpress/dx-react-grid-material-ui';
 
 import { withStyles } from '@material-ui/core/styles';
-
-import EnhancedTableHead from '../common/EnhancedTableHead.js'
 
 import AuthenticationService from '../authentication/AuthenticationService.js'
 
@@ -30,31 +27,28 @@ class Users extends Component {
         super();
         this.AuthService = new AuthenticationService();
         this.classes = props.classes
-        this.state = {"rows": [], "selected": [], "sortDirection": "asc", "sortBy": "id"};
+        this.state = {
+        	rows: [], 
+        	sorting: [{ columnName: 'id', direction: 'asc' }]
+        };
     }
 
     state = {};
 
     componentDidMount() {
-    	this.fetchData(this.state.sortDirection, this.state.sortBy);
-    }
+    	this.fetchData(this.state.sorting);
+    }   
 
-    handleRequestSort = (event, property) => {
-	    const sortBy = property;
-	    let sortDirection = 'desc';
-
-	    if (this.state.sortBy === property && this.state.sortDirection === 'desc') {
-	    	sortDirection = 'asc';
-	    }
-
-	    this.fetchData(sortDirection, sortBy);
+    changeSorting = (sorting) => {
+		this.fetchData(sorting);
 	};
 
-    fetchData = (sortDirection, sortBy) => {
-
+    fetchData = (sorting) => {
+    	// we only support single column sorting
+    	let singleSort = sorting[0];
     	let params = {
-		  "sortDirection": sortDirection.toUpperCase(),
-		  "sortBy": sortBy
+		  "sortDirection": singleSort.direction.toUpperCase(),
+		  "sortBy": singleSort.columnName
 		}
     	let esc = encodeURIComponent
 		let query = Object.keys(params)
@@ -66,8 +60,7 @@ class Users extends Component {
             if(response.ok) {
                 return response.json().then((json) => {
                 	var transformed = this.transformUserRows(json);
-                	this.setState({"rows": transformed, "sortDirection": sortDirection, "sortBy": sortBy});
-                	this.setState();
+                	this.setState({rows: transformed, sorting: sorting});
             	});
             } else if (response.status === 401) {
             	alert("oli to do");
@@ -87,52 +80,31 @@ class Users extends Component {
     		});
     }
 
-    columns = [
-	  	{ id: 'id', numeric: true, disablePadding: false, label: 'ID' },
-	  	{ id: 'firstName', numeric: false, disablePadding: false, label: 'First Name' },
-	  	{ id: 'lastName', numeric: false, disablePadding: false, label: 'Last Name' },
-	  	{ id: 'homePhone', numeric: false, disablePadding: false, label: 'Home' },
-	  	{ id: 'mobilePhone', numeric: false, disablePadding: false, label: 'Mobile' },
-	  	{ id: 'congregation', numeric: false, disablePadding: false, label: 'Congregation' },
+	columns = [
+	  	{ name: 'id', title: 'ID' },
+	  	{ name: 'firstName', title: 'First Name' },
+	  	{ name: 'lastName', title: 'Last Name' },
+	  	{ name: 'homePhone', title: 'Home' },
+	  	{ name: 'mobilePhone', title: 'Mobile' },
+	  	{ name: 'congregation', title: 'Congregation' },
 	];
 
-    render() {
-    	//const { data, sortDirection, sortBy, selected, rowsPerPage, page } = this.state;
-    	const { sortDirection, sortBy, selected, rows } = this.state;
+	render() {
+		const { sorting, rows } = this.state;
 
-    	return (
+		return (
     		<Paper className={this.classes.root}>
-      			<Table className={this.classes.table}>
-        			<EnhancedTableHead
-        				supportSelect={false}
-		              	numSelected={selected.length}
-		              	sortDirection={sortDirection}
-		              	sortBy={sortBy}
-		              	onSelectAllClick={this.handleSelectAllClick}
-		              	onRequestSort={this.handleRequestSort}
-		              	rowCount={rows.length}
-		              	columns={this.columns}
-		            />	          			
-	        		<TableBody>
-		          		{this.state.rows.map(row => {
-		            		return (
-		              			<TableRow key={row.id}>
-		                			<TableCell numeric component="th" scope="row">
-		                  				{row.id}
-		                			</TableCell>
-		                			<TableCell>{row.firstName}</TableCell>
-					                <TableCell>{row.lastName}</TableCell>
-					                <TableCell>{row.homePhone}</TableCell>
-					                <TableCell>{row.mobilePhone}</TableCell>
-					                <TableCell>{row.congregation}</TableCell>
-		              			</TableRow>
-		            		);
-			          	})}
-	        		</TableBody>
-      			</Table>
+      			<Grid className={this.classes.table}
+      				rows={rows}
+      				columns={this.columns}
+      				>
+      				<SortingState sorting={sorting} onSortingChange={this.changeSorting} />     				
+      				<Table />
+					<TableHeaderRow showSortingControls />     				
+      			</Grid>
     		</Paper>
   		);
-    }
+	}
 }
 
 Users.propTypes = {
