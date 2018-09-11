@@ -3,8 +3,9 @@ import PropTypes from 'prop-types';
 
 import Paper from '@material-ui/core/Paper';
 
+import { PagingState, CustomPaging } from '@devexpress/dx-react-grid';
 import { SortingState } from '@devexpress/dx-react-grid';
-import { Grid, Table, TableHeaderRow } from '@devexpress/dx-react-grid-material-ui';
+import { Grid, Table, TableHeaderRow, PagingPanel } from '@devexpress/dx-react-grid-material-ui';
 
 import { withStyles } from '@material-ui/core/styles';
 
@@ -29,26 +30,43 @@ class Users extends Component {
         this.classes = props.classes
         this.state = {
         	rows: [], 
-        	sorting: [{ columnName: 'id', direction: 'asc' }]
+        	sorting: [{ columnName: 'id', direction: 'asc' }],
+        	totalCount: 0,
+        	totalPages: 0,
+      		pageSize: 25,
+      		currentPage: 0,
+      		pageSizes: [25, 50, 100]
         };
     }
 
     state = {};
 
     componentDidMount() {
-    	this.fetchData(this.state.sorting);
+    	this.fetchData(this.state.sorting, this.state.currentPage, this.state.pageSize);
     }   
 
     changeSorting = (sorting) => {
-		this.fetchData(sorting);
+    	// re-sorting goes back to the first page
+		this.fetchData(sorting, 0, this.state.pageSize);
 	};
 
-    fetchData = (sorting) => {
+	changeCurrentPage = (page) => {
+		this.fetchData(this.state.sorting, page, this.state.pageSize);	
+	}
+
+	pageSizeChange = (pageSize) => {
+		// changin page size goes back to the first page
+		this.fetchData(this.state.sorting, 0, pageSize);		
+	}
+
+    fetchData = (sorting, currentPage, pageSize) => {
     	// we only support single column sorting
     	let singleSort = sorting[0];
     	let params = {
 		  "sortDirection": singleSort.direction.toUpperCase(),
-		  "sortBy": singleSort.columnName
+		  "sortBy": singleSort.columnName,
+		  "page": currentPage,
+		  "pageSize": pageSize
 		}
     	let esc = encodeURIComponent
 		let query = Object.keys(params)
@@ -59,8 +77,15 @@ class Users extends Component {
         .then(response => {
             if(response.ok) {
                 return response.json().then((json) => {
-                	var transformed = this.transformUserRows(json);
-                	this.setState({rows: transformed, sorting: sorting});
+                	var transformed = this.transformUserRows(json.items);
+                	this.setState({
+                		rows: transformed,
+                		totalCount: json.totalCount,
+                		totalPages: json.totalPages,
+                		sorting: sorting, 
+                		pageSize: pageSize,
+                		currentPage: currentPage
+                	});
             	});
             } else if (response.status === 401) {
             	alert("oli to do");
@@ -90,7 +115,7 @@ class Users extends Component {
 	];
 
 	render() {
-		const { sorting, rows } = this.state;
+		const { sorting, rows, totalCount, totalPages, pageSize, currentPage, pageSizes } = this.state;
 
 		return (
     		<Paper className={this.classes.root}>
@@ -98,9 +123,17 @@ class Users extends Component {
       				rows={rows}
       				columns={this.columns}
       				>
+      				<PagingState
+			            currentPage={currentPage}
+			            onCurrentPageChange={this.changeCurrentPage}
+			            pageSize={pageSize}
+			            onPageSizeChange={this.pageSizeChange}
+			          />
+			        <CustomPaging totalCount={totalCount} />
       				<SortingState sorting={sorting} onSortingChange={this.changeSorting} />     				
       				<Table />
-					<TableHeaderRow showSortingControls />     				
+					<TableHeaderRow showSortingControls />  
+					<PagingPanel pageSizes={pageSizes} totalPages={totalPages} currentPage={currentPage} />   				
       			</Grid>
     		</Paper>
   		);

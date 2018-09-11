@@ -1,24 +1,42 @@
 package org.attendantsoffice.eventmanager.user;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
+import static java.util.Optional.ofNullable;
 
-import org.springframework.data.domain.Sort;
+import java.util.Map;
+import java.util.Optional;
+
+import org.attendantsoffice.eventmanager.common.paging.PageOutput;
+import org.attendantsoffice.eventmanager.common.paging.SortTranslator;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.collect.ImmutableMap;
+
 @Service
 @Transactional
 public class UserApplicationService {
+    private static final int DEFAULT_PAGE_SIZE = 25;
+    private final SortTranslator sortTranslator;
     private final UserMapper userMapper;
     private final UserRepository userRepository;
 
     public UserApplicationService(UserMapper userMapper, UserRepository userRepository) {
         this.userMapper = userMapper;
         this.userRepository = userRepository;
+
+        Map<String, String> translatedSortColumns = ImmutableMap.<String, String>builder().put("id", "userId")
+                .put("firstName", "firstName")
+                .put("lastName", "lastName")
+                .put("homePhone", "homePhone")
+                .put("mobilePhone", "mobilePhone")
+                .put("email", "email")
+                .put("congregation", "congregation.name")
+                .build();
+        sortTranslator = new SortTranslator(translatedSortColumns);
     }
 
     @Transactional(readOnly = true)
@@ -35,36 +53,17 @@ public class UserApplicationService {
         return output;
     }
 
-    public List<UserOutput> findUsers(Optional<String> sortBy, Optional<Direction> sortDirection) {
-        Iterable<UserEntity> iterable;
-        if (sortBy.isPresent() && sortDirection.isPresent()) {
-            String translatedSortBy;
-            switch (sortBy.get()) {
-                case "id":
-                    translatedSortBy = "userId";
-                    break;
-                case "firstName":
-                case "lastName":
-                case "homePhone":
-                case "mobilePhone":
-                case "email":
-                    translatedSortBy = sortBy.get();
-                    break;
-                case "congregation":
-                    translatedSortBy = "congregation.name";
-                    break;
-                default:
-                    throw new IllegalArgumentException("Unsupported sort field [" + sortBy.get() + "]");
-            }
-            iterable = userRepository.findAll(Sort.by(sortDirection.get(), translatedSortBy));
-        } else {
-            iterable = userRepository.findAll();
-        }
+    public PageOutput<UserOutput> findUsers(UsersSearchCriteria searchCriteria) {
+        String sortColumn = sortTranslator.extractColumnName(ofNullable(searchCriteria.getSortBy()).orElse("id"));
 
-        List<UserEntity> entityList = StreamSupport.stream(iterable.spliterator(), false)
-                .collect(Collectors.toList());
-        List<UserOutput> outputList = entityList.stream().map(userMapper::map).collect(Collectors.toList());
-        return outputList;
+        Pageable pageable = PageRequest.of(ofNullable(searchCriteria.getPage()).orElse(0),
+                ofNullable(searchCriteria.getPageSize()).orElse(DEFAULT_PAGE_SIZE),
+                ofNullable(searchCriteria.getSortDirection()).orElse(Direction.ASC),
+                sortColumn);
+        Page<UserEntity> page = userRepository.findAll(pageable);
+        PageOutput<UserOutput> output = PageOutput.of(page.map(userMapper::map), sortTranslator);
+
+        return output;
     }
 
     public void updatePassword(Integer userId, String encodedPassword) {
