@@ -27,6 +27,8 @@
     <immutables.version>2.7.1</immutables.version>
     <java.version>1.8</java.version>
     <javax.mail.version>1.6.1</javax.mail.version>
+    <maven.apt.version>1.1.3</maven.apt.version>
+    <querydsl.version>4.2.1</querydsl.version>
   </properties>
 
   <dependencies>
@@ -85,6 +87,17 @@
     </dependency>
 
     <dependency>
+      <groupId>com.querydsl</groupId>
+      <artifactId>querydsl-apt</artifactId>
+      <version>${querydsl.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.querydsl</groupId>
+      <artifactId>querydsl-jpa</artifactId>
+      <version>${querydsl.version}</version>
+    </dependency>
+
+    <dependency>
       <groupId>com.fasterxml.jackson.datatype</groupId>
       <artifactId>jackson-datatype-jsr310</artifactId>
     </dependency>
@@ -107,7 +120,6 @@
       <scope>test</scope>
     </dependency>
 
-
   </dependencies>
 
   <build>
@@ -115,6 +127,38 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+
+      <plugin>
+        <groupId>com.mysema.maven</groupId>
+        <artifactId>apt-maven-plugin</artifactId>
+        <version>${maven.apt.version}</version>
+        <executions>
+          <execution>
+            <id>querydsl-generation</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>process</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>target/generated-sources/annotations</outputDirectory>
+              <processor>com.querydsl.apt.jpa.JPAAnnotationProcessor</processor>
+            </configuration>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
+            <groupId>com.querydsl</groupId>
+            <artifactId>querydsl-apt</artifactId>
+            <version>${querydsl.version}</version>
+            <exclusions>
+              <exclusion>
+                <groupId>com.google.code.findbugs</groupId>
+                <artifactId>annotations</artifactId>
+              </exclusion>
+            </exclusions>
+          </dependency>
+        </dependencies>
       </plugin>
 
       <plugin>

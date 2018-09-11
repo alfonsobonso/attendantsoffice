@@ -20,14 +20,14 @@ import org.springframework.data.domain.Sort.Order;
 /**
  * Translate the underlying sort result back into the output name, if required.
  */
-public class SortTranslator {
+public class ColumnTranslator {
     private Map<String, String> translatedNames;
     private Map<String, String> inverseTranslatedNames;
 
     /**
      * @param translatedNames the mapping of search field name to column name
      */
-    public SortTranslator(Map<String, String> translatedNames) {
+    public ColumnTranslator(Map<String, String> translatedNames) {
         this.translatedNames =  translatedNames;
         this.inverseTranslatedNames = translatedNames.entrySet()
                 .stream()

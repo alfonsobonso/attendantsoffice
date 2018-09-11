@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 
 import Paper from '@material-ui/core/Paper';
 
-import { PagingState, CustomPaging } from '@devexpress/dx-react-grid';
+import { PagingState, CustomPaging, FilteringState } from '@devexpress/dx-react-grid';
 import { SortingState } from '@devexpress/dx-react-grid';
-import { Grid, Table, TableHeaderRow, PagingPanel } from '@devexpress/dx-react-grid-material-ui';
+import { Grid, Table, TableHeaderRow, PagingPanel, TableFilterRow } from '@devexpress/dx-react-grid-material-ui';
 
 import { withStyles } from '@material-ui/core/styles';
 
@@ -30,6 +30,7 @@ class Users extends Component {
         this.classes = props.classes
         this.state = {
         	rows: [], 
+        	filters: [],
         	sorting: [{ columnName: 'id', direction: 'asc' }],
         	totalCount: 0,
         	totalPages: 0,
@@ -42,24 +43,29 @@ class Users extends Component {
     state = {};
 
     componentDidMount() {
-    	this.fetchData(this.state.sorting, this.state.currentPage, this.state.pageSize);
+    	this.fetchData(this.state.filters, this.state.sorting, this.state.currentPage, this.state.pageSize);
     }   
 
     changeSorting = (sorting) => {
     	// re-sorting goes back to the first page
-		this.fetchData(sorting, 0, this.state.pageSize);
+		this.fetchData(this.state.filters, sorting, 0, this.state.pageSize);
 	};
 
 	changeCurrentPage = (page) => {
-		this.fetchData(this.state.sorting, page, this.state.pageSize);	
+		this.fetchData(this.state.filters, this.state.sorting, page, this.state.pageSize);
 	}
 
 	pageSizeChange = (pageSize) => {
-		// changin page size goes back to the first page
-		this.fetchData(this.state.sorting, 0, pageSize);		
+		// changing page size goes back to the first page
+		this.fetchData(this.state.filters, this.state.sorting, 0, pageSize);
 	}
 
-    fetchData = (sorting, currentPage, pageSize) => {
+	changeFilters = (filters) => {
+		// filtering results goes back to the first page
+		this.fetchData(filters, this.state.sorting, 0, this.state.pageSize);
+	}
+
+    fetchData = (filters, sorting, currentPage, pageSize) => {
     	// we only support single column sorting
     	let singleSort = sorting[0];
     	let params = {
@@ -68,6 +74,13 @@ class Users extends Component {
 		  "page": currentPage,
 		  "pageSize": pageSize
 		}
+		// currently we only support a containst style filter, so no need to look at the operation value.
+		for (var i = 0; i < filters.length; i++) {
+			let columnName = filters[i].columnName;
+			let value = filters[i].value;
+			params[columnName] = value;
+		}
+
     	let esc = encodeURIComponent
 		let query = Object.keys(params)
              .map(k => esc(k) + '=' + esc(params[k]))
@@ -123,6 +136,7 @@ class Users extends Component {
       				rows={rows}
       				columns={this.columns}
       				>
+      				<FilteringState onFiltersChange={this.changeFilters} />
       				<PagingState
 			            currentPage={currentPage}
 			            onCurrentPageChange={this.changeCurrentPage}
@@ -132,7 +146,8 @@ class Users extends Component {
 			        <CustomPaging totalCount={totalCount} />
       				<SortingState sorting={sorting} onSortingChange={this.changeSorting} />     				
       				<Table />
-					<TableHeaderRow showSortingControls />  
+					<TableHeaderRow showSortingControls />
+					<TableFilterRow />
 					<PagingPanel pageSizes={pageSizes} totalPages={totalPages} currentPage={currentPage} />   				
       			</Grid>
     		</Paper>

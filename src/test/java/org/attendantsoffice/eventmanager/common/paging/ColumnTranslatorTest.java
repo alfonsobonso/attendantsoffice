@@ -24,9 +24,9 @@ import com.google.common.collect.ImmutableMap;
 /**
  * Test the {@code SortTranslator} class.
  */
-public class SortTranslatorTest {
+public class ColumnTranslatorTest {
 
-    private SortTranslator translator;
+    private ColumnTranslator translator;
 
     @Before
     public void setUp() {
@@ -34,7 +34,7 @@ public class SortTranslatorTest {
                 .put("same", "same")
                 .put("different", "is.different")
                 .build();
-        translator = new SortTranslator(translatedNames);
+        translator = new ColumnTranslator(translatedNames);
     }
 
     @Test

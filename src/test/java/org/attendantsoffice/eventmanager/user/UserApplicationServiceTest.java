@@ -1,6 +1,8 @@
 package org.attendantsoffice.eventmanager.user;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -67,12 +69,12 @@ public class UserApplicationServiceTest {
 
         Pageable pageable = PageRequest.of(0, 25, Direction.ASC, "userId");
 
-        when(userRepository.findAll(pageable))
+        UsersSearchCriteria criteria = new UsersSearchCriteria();
+
+        when(userRepository.findAll(eq(criteria), any()))
                 .thenReturn(new PageImpl<>(Lists.newArrayList(entity1, entity2), pageable, 2));
         when(userMapper.map(entity1)).thenReturn(UserOutputTestDataBuilder.createUser(1));
         when(userMapper.map(entity2)).thenReturn(UserOutputTestDataBuilder.createUser(1));
-
-        UsersSearchCriteria criteria = new UsersSearchCriteria();
 
         PageOutput<UserOutput> page = service.findUsers(criteria);
         assertEquals(1, page.getTotalPages());
@@ -89,14 +91,14 @@ public class UserApplicationServiceTest {
 
         Pageable pageable = PageRequest.of(0, 25, Direction.ASC, "userId");
 
-        when(userRepository.findAll(pageable))
-                .thenReturn(new PageImpl<>(Lists.newArrayList(entity1, entity2), pageable, 2));
-        when(userMapper.map(entity1)).thenReturn(UserOutputTestDataBuilder.createUser(1));
-        when(userMapper.map(entity2)).thenReturn(UserOutputTestDataBuilder.createUser(1));
-
         UsersSearchCriteria criteria = new UsersSearchCriteria();
         criteria.setSortBy("id");
         criteria.setSortDirection(Direction.ASC);
+
+        when(userRepository.findAll(eq(criteria), any()))
+                .thenReturn(new PageImpl<>(Lists.newArrayList(entity1, entity2), pageable, 2));
+        when(userMapper.map(entity1)).thenReturn(UserOutputTestDataBuilder.createUser(1));
+        when(userMapper.map(entity2)).thenReturn(UserOutputTestDataBuilder.createUser(1));
 
         PageOutput<UserOutput> page = service.findUsers(criteria);
         assertEquals(2, page.getItems().size());
@@ -110,27 +112,18 @@ public class UserApplicationServiceTest {
 
         Pageable pageable = PageRequest.of(0, 25, Direction.DESC, "firstName");
 
-        when(userRepository.findAll(pageable))
-                .thenReturn(new PageImpl<>(Lists.newArrayList(entity1, entity2), pageable, 2));
-        when(userMapper.map(entity1)).thenReturn(UserOutputTestDataBuilder.createUser(1));
-        when(userMapper.map(entity2)).thenReturn(UserOutputTestDataBuilder.createUser(1));
-
         UsersSearchCriteria criteria = new UsersSearchCriteria();
         criteria.setSortBy("firstName");
         criteria.setSortDirection(Direction.DESC);
 
+        when(userRepository.findAll(eq(criteria), any()))
+                .thenReturn(new PageImpl<>(Lists.newArrayList(entity1, entity2), pageable, 2));
+        when(userMapper.map(entity1)).thenReturn(UserOutputTestDataBuilder.createUser(1));
+        when(userMapper.map(entity2)).thenReturn(UserOutputTestDataBuilder.createUser(1));
+
         PageOutput<UserOutput> page = service.findUsers(criteria);
         assertEquals(2, page.getItems().size());
         assertEquals(1, page.getItems().get(0).getUserId().intValue());
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testFindUsersUnexpectedSort() {
-        UsersSearchCriteria criteria = new UsersSearchCriteria();
-        criteria.setSortBy("unknown");
-        criteria.setSortDirection(Direction.ASC);
-
-        service.findUsers(criteria);
     }
 
     @Test(expected = IllegalArgumentException.class)

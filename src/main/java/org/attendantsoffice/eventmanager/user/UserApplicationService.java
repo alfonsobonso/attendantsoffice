@@ -1,16 +1,11 @@
 package org.attendantsoffice.eventmanager.user;
 
-import static java.util.Optional.ofNullable;
-
 import java.util.Map;
 import java.util.Optional;
 
+import org.attendantsoffice.eventmanager.common.paging.ColumnTranslator;
 import org.attendantsoffice.eventmanager.common.paging.PageOutput;
-import org.attendantsoffice.eventmanager.common.paging.SortTranslator;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,8 +14,7 @@ import com.google.common.collect.ImmutableMap;
 @Service
 @Transactional
 public class UserApplicationService {
-    private static final int DEFAULT_PAGE_SIZE = 25;
-    private final SortTranslator sortTranslator;
+    private final ColumnTranslator columnTranslator;
     private final UserMapper userMapper;
     private final UserRepository userRepository;
 
@@ -36,7 +30,7 @@ public class UserApplicationService {
                 .put("email", "email")
                 .put("congregation", "congregation.name")
                 .build();
-        sortTranslator = new SortTranslator(translatedSortColumns);
+        columnTranslator = new ColumnTranslator(translatedSortColumns);
     }
 
     @Transactional(readOnly = true)
@@ -54,14 +48,8 @@ public class UserApplicationService {
     }
 
     public PageOutput<UserOutput> findUsers(UsersSearchCriteria searchCriteria) {
-        String sortColumn = sortTranslator.extractColumnName(ofNullable(searchCriteria.getSortBy()).orElse("id"));
-
-        Pageable pageable = PageRequest.of(ofNullable(searchCriteria.getPage()).orElse(0),
-                ofNullable(searchCriteria.getPageSize()).orElse(DEFAULT_PAGE_SIZE),
-                ofNullable(searchCriteria.getSortDirection()).orElse(Direction.ASC),
-                sortColumn);
-        Page<UserEntity> page = userRepository.findAll(pageable);
-        PageOutput<UserOutput> output = PageOutput.of(page.map(userMapper::map), sortTranslator);
+        Page<UserEntity> page = userRepository.findAll(searchCriteria, columnTranslator);
+        PageOutput<UserOutput> output = PageOutput.of(page.map(userMapper::map), columnTranslator);
 
         return output;
     }

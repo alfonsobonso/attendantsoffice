@@ -54,6 +54,11 @@ public class UserEntity {
     @Enumerated(EnumType.STRING)
     private UserStatus userStatus;
 
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private UserPosition position;
+
+    @NotNull
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "congregation_id")
     private CongregationEntity congregation;
@@ -149,6 +154,14 @@ public class UserEntity {
 
     public void setCongregation(CongregationEntity congregation) {
         this.congregation = congregation;
+    }
+
+    public UserPosition getPosition() {
+        return position;
+    }
+
+    public void setPosition(UserPosition position) {
+        this.position = position;
     }
 
     public UserRole getRole() {

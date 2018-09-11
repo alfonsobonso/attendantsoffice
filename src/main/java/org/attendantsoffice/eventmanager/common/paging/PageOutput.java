@@ -56,7 +56,7 @@ public interface PageOutput<T> {
     int getTotalPages();
 
 
-    static <T> PageOutput<T> of(Page<T> page, SortTranslator sortTranslator) {
+    static <T> PageOutput<T> of(Page<T> page, ColumnTranslator sortTranslator) {
         SortOutput sort = sortTranslator.translateSort(page.getSort());
 
         @SuppressWarnings("unchecked")
