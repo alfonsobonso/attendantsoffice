@@ -15,13 +15,13 @@ public class UserController {
         this.userApplicationService = userApplicationService;
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping(path = "/users")
     public PageOutput<UserOutput> findUsers(UsersSearchCriteria searchCriteria) {
         return userApplicationService.findUsers(searchCriteria);
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping(path = "/users/{userId}")
     public UserOutput findUser(@PathVariable Integer userId) {
         return userApplicationService.findUser(userId);
