@@ -48,6 +48,8 @@ public class AuthenticationController {
                 .userId(user.getUserId())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
+                // we only support a single role
+                .role(user.getAuthorities().iterator().next().getAuthority())
                 .build();
         return output;
     }

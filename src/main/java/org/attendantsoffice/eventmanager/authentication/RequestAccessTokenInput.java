@@ -3,20 +3,19 @@ package org.attendantsoffice.eventmanager.authentication;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 
+import org.attendantsoffice.eventmanager.DefaultStyle;
+import org.immutables.value.Value;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 /**
  * Request made when asking for a new access token.
  */
-public class RequestAccessTokenInput {
+@DefaultStyle
+@Value.Immutable
+@JsonDeserialize(as = ImmutableRequestAccessTokenInput.class)
+public interface RequestAccessTokenInput {
     @NotEmpty
     @Email
-    private String email;
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
+    public String getEmail();
 }

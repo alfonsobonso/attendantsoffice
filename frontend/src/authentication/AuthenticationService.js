@@ -17,7 +17,7 @@ class AuthenticationService {
             if(response.ok) {
                 response.json().then((json) => {
                     this.saveToken(json.token);
-                    this.saveUser(json.userId, json.firstName, json.lastName)
+                    this.saveUser(json.userId, json.firstName, json.lastName, json.role)
                     loginSuccess(json);
                 })
             } else if (response.status < 500) {
@@ -46,10 +46,11 @@ class AuthenticationService {
         return localStorage.getItem('authToken')
     }
 
-    saveUser(userId, firstName, lastName) {
+    saveUser(userId, firstName, lastName, role) {
         localStorage.setItem('userId', userId);
         localStorage.setItem('firstName', firstName);
         localStorage.setItem('lastName', lastName);
+        localStorage.setItem('role', role);
     }
 
     logout() {
@@ -58,11 +59,30 @@ class AuthenticationService {
         localStorage.removeItem('userId');
         localStorage.removeItem('firstName');
         localStorage.removeItem('lastName');
+        localStorage.removeItem('role');
     }
 
     getProfile() {
         return localStorage.getItem('firstName') + " " + localStorage.getItem('lastName');
     }
+
+    // basic role checking. Currently we only support 2 - USER, ADMIN. ADMIN roles are unrestricted
+    isValidRole(requiredRole) {
+        let currentRole = localStorage.getItem('role');
+        if(!currentRole) {
+            // not logged in
+            return false;   
+        }
+        if(currentRole === 'ADMIN') {
+            return true;
+        }
+        return currentRole === requiredRole;
+    }
+
+    isAdmin() {
+        return this.isValidRole("ADMIN");
+    }
+
 
 	fetch(url, options) {
         // performs api calls sending the required authentication headers

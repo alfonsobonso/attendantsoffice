@@ -134,16 +134,25 @@ class HeaderAppBar extends Component {
 
     render() {
         const { classes, theme } = this.props;
-        const menuList = (
-            <div className={this.classes.list}>
-                <List>
-                    <MenuListItem title="Home" link="/" icon={<HomeIcon/>} enabled={!this.state.menuOpen} />
-                </List>
+        var admin = this.AuthService.isAdmin();
+
+        const adminMenu = admin?
+        (
+            <React.Fragment>
                 <Divider />
                 <List>
                     <MenuListItem title="Users" link="/users" icon={<PeopleIcon/>} enabled={!this.state.menuOpen} />
                     <MenuListItem title="Events" link="/events" icon={<EventIcon/>} enabled={!this.state.menuOpen} />
                 </List>
+            </React.Fragment>
+        ):null;
+
+        const menuList = (
+            <div className={this.classes.list}>
+                <List>
+                    <MenuListItem title="Home" link="/" icon={<HomeIcon/>} enabled={!this.state.menuOpen} />
+                </List>
+               {adminMenu}
             </div>
         );
 

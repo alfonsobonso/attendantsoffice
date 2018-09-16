@@ -29,7 +29,7 @@ public class EventManagerUserDetailsService {
                 throw new PasswordNotSetAuthenticationException(entity.getUserId(), entity.getEmail());
             }
 
-            GrantedAuthority grantedAuthority = new SimpleGrantedAuthority("ROLE_" + entity.getRole().name());
+            GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(entity.getRole().name());
 
             // note: we populate the CustomUserDetails, which allows us to access the UserId in the SecurityContext.
             EventManagerUser mapped = new EventManagerUser(entity.getUserId(), entity.getFirstName(),

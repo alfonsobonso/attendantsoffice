@@ -44,7 +44,7 @@ public class AuthenticationService {
     public Pair<String, EventManagerUser> login(String email, String password) throws UserNotFoundException,
             PasswordNotSetAuthenticationException,
             WrongPasswordException {
-        return userAuthenticationService.login(email, password);
+        return userAuthenticationService.login(email.trim(), password);
     }
 
     /**
@@ -52,7 +52,7 @@ public class AuthenticationService {
      * set, or has forgotten their password.
      */
     public void sendAuthenticationTokenMail(String email) throws UserNotFoundException {
-        Optional<UserOutput> user = userApplicationService.findByEmail(email);
+        Optional<UserOutput> user = userApplicationService.findByEmail(email.trim());
         if (!user.isPresent()) {
             throw new UserNotFoundException(email);
         }

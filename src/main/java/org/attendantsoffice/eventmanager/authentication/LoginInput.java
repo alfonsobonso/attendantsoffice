@@ -3,33 +3,24 @@ package org.attendantsoffice.eventmanager.authentication;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 
+import org.attendantsoffice.eventmanager.DefaultStyle;
+import org.immutables.value.Value;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 /**
  * Login credentials request.
  */
-public class LoginInput {
+@DefaultStyle
+@Value.Immutable
+@JsonDeserialize(as = ImmutableLoginInput.class)
+public interface LoginInput {
     @NotEmpty
     @Email
-    private String email;
+    String getEmail();
 
     @NotEmpty
-    private String password;
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
+    String getPassword();
 
 }
 

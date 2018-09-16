@@ -12,21 +12,27 @@ public interface LoginOutput {
     /**
      * @return authentication token. This should be passed as the auth bearer in subsequent requests.
      */
-    public String getToken();
+    String getToken();
 
     /**
      * @return unique user identifier
      */
-    public int getUserId();
+    int getUserId();
 
     /**
      * @return user first name
      */
-    public String getFirstName();
+    String getFirstName();
 
     /**
      * @return user last name
      */
-    public String getLastName();
+    String getLastName();
+
+    /**
+     * Granted system role - currently USER or ADMIN.
+     * @see {@code org.attendantsoffice.eventmanager.user.UserRole}
+     */
+    String getRole();
 
 }
