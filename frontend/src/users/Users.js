@@ -15,7 +15,7 @@ import ReauthenticateModal from '../login/ReauthenticateModal.js'
 import AuthenticationService from '../authentication/AuthenticationService.js'
 
 const styles = theme => ({
-	root: {
+  root: {
     	width: '100%',
     	overflowX: 'auto',
   	},
@@ -72,10 +72,10 @@ class Users extends Component {
     	// we only support single column sorting
     	let singleSort = sorting[0];
     	let params = {
-		  "sortDirection": singleSort.direction.toUpperCase(),
-		  "sortBy": singleSort.columnName,
-		  "page": currentPage,
-		  "pageSize": pageSize
+            "sortDirection": singleSort.direction.toUpperCase(),
+		    "sortBy": singleSort.columnName,
+            "page": currentPage,
+            "pageSize": pageSize
 		}
 		// currently we only support a contains style filter, so no need to look at the operation value.
 		for (var i = 0; i < filters.length; i++) {
@@ -86,8 +86,8 @@ class Users extends Component {
 
     	let esc = encodeURIComponent
 		let query = Object.keys(params)
-             .map(k => esc(k) + '=' + esc(params[k]))
-             .join('&')
+            .map(k => esc(k) + '=' + esc(params[k]))
+            .join('&')
     	
         this.AuthService.fetch('/api/users?' + query, {})
         .then(response => {
@@ -113,13 +113,14 @@ class Users extends Component {
 
     transformUserRows(rows) {
     	return rows.map(row => {
-    		return { "id": row.userId, 
-    				  "firstName" : row.firstName, 
-    				  "lastName": row.lastName,
-    				  "homePhone": row.homePhone,
-    				  "mobilePhone": row.mobilePhone,
-    				  "congregation": row.congregation.name
-    				};
+    		return { 
+                "id": row.userId, 
+                "firstName" : row.firstName, 
+                "lastName": row.lastName,
+                "homePhone": row.homePhone,
+                "mobilePhone": row.mobilePhone,
+                "congregation": row.congregation.name
+    			};
     		});
     }
 
@@ -148,7 +149,7 @@ class Users extends Component {
 			            onCurrentPageChange={this.changeCurrentPage}
 			            pageSize={pageSize}
 			            onPageSizeChange={this.pageSizeChange}
-			          />
+                    />
 			        <CustomPaging totalCount={totalCount} />
       				<SortingState sorting={sorting} onSortingChange={this.changeSorting} />     				
       				<Table />
