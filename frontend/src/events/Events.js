@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
+// material ui components
 import Paper from '@material-ui/core/Paper';
 
 import { SortingState, IntegratedSorting, DataTypeProvider } from '@devexpress/dx-react-grid';
@@ -8,6 +9,8 @@ import { Grid, Table, TableHeaderRow } from '@devexpress/dx-react-grid-material-
 
 import { withStyles } from '@material-ui/core/styles';
 
+// components
+import ReauthenticateModal from '../login/ReauthenticateModal.js'
 import AuthenticationService from '../authentication/AuthenticationService.js'
 
 const styles = theme => ({
@@ -37,6 +40,7 @@ class Events extends Component {
         this.AuthService = new AuthenticationService();
         this.classes = props.classes
         this.state = {"rows": []};
+        this.componentDidMount = this.componentDidMount.bind(this);     // called in onReauthenticated 
     }
 
     state = {};
@@ -54,7 +58,9 @@ class Events extends Component {
                 	this.setState({"rows": transformed });
             	});
             } else if (response.status === 401) {
-            	alert("oli to do");
+            	this.setState({reauthenticate: true})
+            } else {
+                alert("Request failed with error code: " + response.status);
             }
         });
     };
@@ -76,6 +82,7 @@ class Events extends Component {
 	render() {
 		return (
 			<Paper className={this.classes.root}>
+                {this.state.reauthenticate && <ReauthenticateModal onReauthenticated={this.componentDidMount} />}
 				<Grid
 				    rows={this.state.rows}
 				    columns={[

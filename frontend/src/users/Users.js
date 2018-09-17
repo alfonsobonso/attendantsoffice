@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
+// material ui components
 import Paper from '@material-ui/core/Paper';
 
 import { PagingState, CustomPaging, FilteringState } from '@devexpress/dx-react-grid';
@@ -9,6 +10,8 @@ import { Grid, Table, TableHeaderRow, PagingPanel, TableFilterRow } from '@devex
 
 import { withStyles } from '@material-ui/core/styles';
 
+// components
+import ReauthenticateModal from '../login/ReauthenticateModal.js'
 import AuthenticationService from '../authentication/AuthenticationService.js'
 
 const styles = theme => ({
@@ -37,6 +40,7 @@ class Users extends Component {
       		currentPage: 0,
       		pageSizes: [25, 50, 100]
         };
+        this.componentDidMount = this.componentDidMount.bind(this);     // called in onReauthenticated 
     }
 
     state = {};
@@ -73,7 +77,7 @@ class Users extends Component {
 		  "page": currentPage,
 		  "pageSize": pageSize
 		}
-		// currently we only support a containst style filter, so no need to look at the operation value.
+		// currently we only support a contains style filter, so no need to look at the operation value.
 		for (var i = 0; i < filters.length; i++) {
 			let columnName = filters[i].columnName;
 			let value = filters[i].value;
@@ -100,7 +104,9 @@ class Users extends Component {
                 	});
             	});
             } else if (response.status === 401) {
-            	alert("oli to do");
+                this.setState({reauthenticate: true})
+            } else {
+                alert("Request failed with error code: " + response.status);
             }
         });
     };
@@ -131,6 +137,7 @@ class Users extends Component {
 
 		return (
     		<Paper className={this.classes.root}>
+            {this.state.reauthenticate && <ReauthenticateModal onReauthenticated={this.componentDidMount} />}
       			<Grid className={this.classes.table}
       				rows={rows}
       				columns={this.columns}

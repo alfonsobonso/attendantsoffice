@@ -1,12 +1,14 @@
 import React from 'react';
 import 'typeface-roboto'
 
+import ReauthenticateModal from '../login/ReauthenticateModal.js'
 import AuthenticationService from '../authentication/AuthenticationService.js'
 
 class Home extends React.Component {
 	constructor() {
         super();
         this.AuthService = new AuthenticationService();
+        this.componentDidMount = this.componentDidMount.bind(this);     // called in onReauthenticated 
     }
 
 	state = {};
@@ -21,9 +23,10 @@ class Home extends React.Component {
             if(response.ok) {
                 return response.text();
             } else if (response.status === 401) {
-            	this.setState({redirecting: true})
+            	this.setState({reauthenticate: true})
+            } else {
+                alert("Request failed with error code: " + response.status);
             }
-            return `Request rejected with status ${response.status}`;
         })
         .then(message => {
             this.setState({message: message});
@@ -31,13 +34,11 @@ class Home extends React.Component {
     };
 
     render() {
-    	if(this.state.redirecting) {
-    		this.AuthService.logout();
-			this.props.history.replace('/login');
-			window.location.reload();
-    	}
         return (
-			<div>Hi {this.AuthService.getProfile()}:  This is the home page {this.state.message}</div>
+            <React.Fragment>
+                {this.state.reauthenticate && <ReauthenticateModal onReauthenticated={this.componentDidMount} />}
+			    <div>Hi {this.AuthService.getProfile()}:  This is the home page {this.state.message}</div>
+            </React.Fragment>
         );
     }
 }

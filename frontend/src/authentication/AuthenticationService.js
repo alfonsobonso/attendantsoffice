@@ -17,7 +17,7 @@ class AuthenticationService {
             if(response.ok) {
                 response.json().then((json) => {
                     this.saveToken(json.token);
-                    this.saveUser(json.userId, json.firstName, json.lastName, json.role)
+                    this.saveUser(json.userId, json.email, json.firstName, json.lastName, json.role)
                     loginSuccess(json);
                 })
             } else if (response.status < 500) {
@@ -29,6 +29,25 @@ class AuthenticationService {
                 loginError({ "code": "Failed to submit request"});
             }
         });
+    }
+
+    // Called when the user thinks they are logged in but the authentication has failed at the back end - possibly expired or a restart
+    // We do this rather than redirect them to the login page to try to preserve any changes they have (and because forcing a page
+    // redirect breaks the data flow)
+    // In this case we expect to already have the email address. In some edge cases, such as when the local storage has been partially 
+    // deleted or some email address has been changed under the feet of the authenticated user, this might go wrong.
+    // to minimise that, we delete any token when calling this - meaning that a page refresh will redirect them back to the login page
+    reauthenticate(password, loginSuccess, loginError) {
+        // fetch the current email
+        let email = localStorage.getItem('email')
+
+        // delete the token. On a succesful auth, this will be rewritten
+        // on a failed auth, the user will have the chance to try again
+        // if they refresh the page after a failed auth it will take them to the login screen, with all the
+        // forgotten password options, etc.
+        localStorage.removeItem('authToken');
+
+        this.login(email, password, loginSuccess, loginError);
     }
 
 	isLoggedIn() {
@@ -46,8 +65,9 @@ class AuthenticationService {
         return localStorage.getItem('authToken')
     }
 
-    saveUser(userId, firstName, lastName, role) {
+    saveUser(userId, email, firstName, lastName, role) {
         localStorage.setItem('userId', userId);
+        localStorage.setItem('email', email);
         localStorage.setItem('firstName', firstName);
         localStorage.setItem('lastName', lastName);
         localStorage.setItem('role', role);
@@ -57,6 +77,7 @@ class AuthenticationService {
         // Clear user token and profile data from localStorage
         localStorage.removeItem('authToken');
         localStorage.removeItem('userId');
+        localStorage.removeItem('email');
         localStorage.removeItem('firstName');
         localStorage.removeItem('lastName');
         localStorage.removeItem('role');
@@ -66,21 +87,21 @@ class AuthenticationService {
         return localStorage.getItem('firstName') + " " + localStorage.getItem('lastName');
     }
 
-    // basic role checking. Currently we only support 2 - USER, ADMIN. ADMIN roles are unrestricted
+    // basic role checking. Currently we only support 2 - ROLE_USER, ROLE_ADMIN. ROLE_ADMIN roles are unrestricted
     isValidRole(requiredRole) {
         let currentRole = localStorage.getItem('role');
         if(!currentRole) {
             // not logged in
             return false;   
         }
-        if(currentRole === 'ADMIN') {
+        if(currentRole === 'ROLE_ADMIN') {
             return true;
         }
         return currentRole === requiredRole;
     }
 
     isAdmin() {
-        return this.isValidRole("ADMIN");
+        return this.isValidRole("ROLE_ADMIN");
     }
 
 
