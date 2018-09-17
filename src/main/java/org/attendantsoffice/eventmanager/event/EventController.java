@@ -14,7 +14,7 @@ public class EventController {
         this.eventApplicationService = eventApplicationService;
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(path = "/events")
     public List<EventOutput> findEvents() {
         return eventApplicationService.findEvents();
