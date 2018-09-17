@@ -46,6 +46,7 @@ public class AuthenticationController {
         LoginOutput output = ImmutableLoginOutput.builder()
                 .token(userToken.getLeft())
                 .userId(user.getUserId())
+                .email(user.getUsername()) // email is authentication username
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 // we only support a single role

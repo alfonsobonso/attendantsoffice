@@ -20,6 +20,11 @@ public interface LoginOutput {
     int getUserId();
 
     /**
+     * @return email address of the user
+     */
+    String getEmail();
+
+    /**
      * @return user first name
      */
     String getFirstName();
@@ -30,7 +35,7 @@ public interface LoginOutput {
     String getLastName();
 
     /**
-     * Granted system role - currently USER or ADMIN.
+     * Granted system role - currently ROLE_USER or ROLE_ADMIN.
      * @see {@code org.attendantsoffice.eventmanager.user.UserRole}
      */
     String getRole();
