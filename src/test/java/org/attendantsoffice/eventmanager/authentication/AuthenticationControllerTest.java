@@ -58,6 +58,7 @@ public class AuthenticationControllerTest {
         when(authenticationService.login("test@example.com", "test pass")).thenReturn(result);
 
         LoginOutput output = controller.login(input);
+        assertEquals("test@example.com", output.getEmail());
         assertEquals("first", output.getFirstName());
         assertEquals("last", output.getLastName());
         assertEquals("ADMIN", output.getRole());

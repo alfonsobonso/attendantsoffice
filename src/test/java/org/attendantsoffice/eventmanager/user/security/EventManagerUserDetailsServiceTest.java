@@ -72,7 +72,7 @@ public class EventManagerUserDetailsServiceTest {
         EventManagerUser user = result.get();
         assertEquals(1, user.getUserId().intValue());
         assertEquals("pass", user.getPassword());
-        assertEquals("[ADMIN]", user.getAuthorities().toString());
+        assertEquals("[ROLE_ADMIN]", user.getAuthorities().toString());
         assertEquals("first", user.getFirstName());
         assertEquals("last", user.getLastName());
 
