@@ -5,7 +5,6 @@ import PropTypes from 'prop-types';
 // material ui components
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
-import CssBaseline from '@material-ui/core/CssBaseline';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Input from '@material-ui/core/Input';
@@ -170,7 +169,6 @@ class TokenAccess extends Component {
     renderValidToken() {
         return (
             <React.Fragment>
-                <CssBaseline />
                 <main className={this.classes.layout}>
                     <Paper className={this.classes.paper}>
                         <Avatar className={this.classes.avatar}>
@@ -243,7 +241,6 @@ class TokenAccess extends Component {
     renderInvalidToken(headline) {
         return (
             <React.Fragment>
-                <CssBaseline />
                 <main className={this.classes.layout}>
                     <Paper className={this.classes.paper}>
                         <Typography variant="headline">{headline}</Typography>
@@ -303,7 +300,6 @@ class TokenAccess extends Component {
     renderTokenAccessRequested() {
         return (
             <React.Fragment>
-                <CssBaseline />
                 <main className={this.classes.layout}>
                     <Paper className={this.classes.paper}>
                         <Typography variant="headline">Access code requested</Typography>

@@ -8,6 +8,7 @@ import {
     Switch
 } from "react-router-dom";
 import registerServiceWorker from './registerServiceWorker';
+import CssBaseline from '@material-ui/core/CssBaseline';
 
 import ErrorBoundary from './error/ErrorBoundary.js'
 import Login  from './login/Login.js';
@@ -18,6 +19,7 @@ import TokenAccess  from './login/TokenAccess.js';
 // the app component then does the remaining routing.
 ReactDOM.render(
     <ErrorBoundary>
+        <CssBaseline />
         <Router>
             <Switch>           
                 <Route exact path="/login" component={Login} />

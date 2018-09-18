@@ -21,6 +21,11 @@ public class UserController {
         return userApplicationService.findUsers(searchCriteria);
     }
 
+    /**
+     * Find the primary information about a specified user.
+     * Note: this is the admin end point. Users accessing their own information will use the 'me' endpoint, with no
+     * userId specified in the path.
+     */
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(path = "/users/{userId}")
     public UserOutput findUser(@PathVariable Integer userId) {

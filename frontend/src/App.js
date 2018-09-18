@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import { withStyles } from '@material-ui/core/styles';
 
 import {
     BrowserRouter as Router,
@@ -9,12 +8,15 @@ import {
     Switch
 } from "react-router-dom";
 
+import { withStyles } from '@material-ui/core/styles';
+
 import HeaderAppBar from './common/HeaderAppBar';
 import withAuthenticationService from './authentication/withAuthenticationService';
 
 import Home  from './home/Home.js';
 import Events  from './events/Events.js';
 import Users  from './users/Users.js';
+import User  from './users/User.js';
 
 const styles = theme => ({
     root: {
@@ -59,6 +61,7 @@ class App extends Component {
                             <Switch>
                                 <Route exact path="/" component={Home} />
                                 <Route exact path="/users" component={Users} />
+                                <Route exact path="/users/:userId" component={User} />
                                 <Route exact path="/events" component={Events} />
                             </Switch>
                         </main>

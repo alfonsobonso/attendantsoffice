@@ -5,7 +5,6 @@ import PropTypes from 'prop-types';
 // material ui components
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
-import CssBaseline from '@material-ui/core/CssBaseline';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import IconButton from '@material-ui/core/IconButton';
@@ -85,7 +84,6 @@ class Login extends Component {
     render() {        
         return(
             <ErrorBoundary>
-                <CssBaseline />
                 <ErrorNotifier />
                 <main className={this.classes.layout}>
                     <Paper className={this.classes.paper}>
