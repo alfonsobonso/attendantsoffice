@@ -31,21 +31,24 @@ class AuthenticationService {
         });
     }
 
+    // Before displaying the re-authentication form delete the token. On a succesful auth, this will be rewritten
+    // on a failed auth, the user will have the chance to try again
+    // if they refresh the page after a failed auth it will take them to the login screen, with all the
+    // forgotten password options, etc.
+    prepareReauthenticate() {
+        localStorage.removeItem('authToken');
+    }
+
     // Called when the user thinks they are logged in but the authentication has failed at the back end - possibly expired or a restart
     // We do this rather than redirect them to the login page to try to preserve any changes they have (and because forcing a page
     // redirect breaks the data flow)
     // In this case we expect to already have the email address. In some edge cases, such as when the local storage has been partially 
     // deleted or some email address has been changed under the feet of the authenticated user, this might go wrong.
-    // to minimise that, we delete any token when calling this - meaning that a page refresh will redirect them back to the login page
+    // to minimise that, we should have already deleted the token using the prepareReauthenticate function, meaning that a page refresh
+    // will redirect them back to the login page
     reauthenticate(password, loginSuccess, loginError) {
         // fetch the current email
-        let email = localStorage.getItem('email')
-
-        // delete the token. On a succesful auth, this will be rewritten
-        // on a failed auth, the user will have the chance to try again
-        // if they refresh the page after a failed auth it will take them to the login screen, with all the
-        // forgotten password options, etc.
-        localStorage.removeItem('authToken');
+        let email = localStorage.getItem('email')     
 
         this.login(email, password, loginSuccess, loginError);
     }

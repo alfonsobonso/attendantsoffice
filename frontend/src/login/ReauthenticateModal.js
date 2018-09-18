@@ -32,6 +32,7 @@ class ReauthenticateModal extends React.Component {
         super();
         this.AuthService = new AuthenticationService();
         this.onReauthenticated = props.onReauthenticated;
+        this.AuthService.prepareReauthenticate();
     }
 
 	state = {
@@ -50,11 +51,7 @@ class ReauthenticateModal extends React.Component {
 
   	render() {
     	return (       
-        	<Dialog
-          		open={this.state.open}
-          		onClose={this.handleClose}
-          		aria-labelledby="form-dialog-title"
-        	>
+        	<Dialog open={this.state.open} aria-labelledby="form-dialog-title">
         		<DialogTitle id="form-dialog-title">Authentication Expired</DialogTitle>
           		<DialogContent>
             		<DialogContentText>
