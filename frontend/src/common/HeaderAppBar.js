@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import { withStyles } from '@material-ui/core/styles';
+
 import AppBar from '@material-ui/core/AppBar';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
@@ -21,6 +21,8 @@ import EventIcon from '@material-ui/icons/Event';
 import HomeIcon from '@material-ui/icons/Home';
 import PeopleIcon from '@material-ui/icons/People';
 import Tooltip from '@material-ui/core/Tooltip';
+import { withStyles } from '@material-ui/core/styles';
+
 
 import AuthenticationService from '../authentication/AuthenticationService.js'
 

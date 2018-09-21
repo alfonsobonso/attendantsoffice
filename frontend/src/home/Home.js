@@ -8,7 +8,6 @@ class Home extends React.Component {
 	constructor() {
         super();
         this.AuthService = new AuthenticationService();
-        this.componentDidMount = this.componentDidMount.bind(this);     // called in onReauthenticated 
     }
 
 	state = {};
@@ -36,7 +35,7 @@ class Home extends React.Component {
     render() {
         return (
             <React.Fragment>
-                {this.state.reauthenticate && <ReauthenticateModal onReauthenticated={this.componentDidMount} />}
+                {this.state.reauthenticate && <ReauthenticateModal onReauthenticated={this.componentDidMount.bind(this)} />}
 			    <div>Hi {this.AuthService.getProfile()}:  This is the home page {this.state.message}</div>
             </React.Fragment>
         );
