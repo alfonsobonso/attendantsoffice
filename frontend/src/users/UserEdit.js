@@ -18,7 +18,7 @@ import * as Yup from 'yup';
 // components
 import AuthenticationService from '../authentication/AuthenticationService'
 import ReauthenticateModal from '../login/ReauthenticateModal.js'
-import ErrorNotifier, { displayErrorMessage } from '../error/ErrorNotifier';
+import { displayErrorMessage } from '../error/ErrorNotifier';
 
 // modal dialog form to enable us to edit the core user information
 // it can be used in a couple of modes - when a user edits their own details, and an admin user editing someone else's.
@@ -42,7 +42,7 @@ class UserEdit extends React.Component {
     submitUserUpdate(userId, values, submitSuccess, submitFailure) {
         this.AuthService.fetch('/api/users/' + userId, { 
             method: 'post',
-            body: JSON.stringify(values)
+            body: values
         })
         .then(response => {
             if(response.ok) {

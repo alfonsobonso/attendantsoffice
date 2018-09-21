@@ -20,7 +20,7 @@ import { withStyles } from '@material-ui/core/styles';
 // components
 import ReauthenticateModal from '../login/ReauthenticateModal.js'
 import AuthenticationService from '../authentication/AuthenticationService.js'
-import ErrorNotifier, { displayErrorMessage } from '../error/ErrorNotifier';
+import ErrorNotifier from '../error/ErrorNotifier';
 
 import UserEdit from './/UserEdit.js'
 
