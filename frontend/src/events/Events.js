@@ -40,7 +40,6 @@ class Events extends Component {
         this.AuthService = new AuthenticationService();
         this.classes = props.classes
         this.state = {"rows": []};
-        this.componentDidMount = this.componentDidMount.bind(this);     // called in onReauthenticated 
     }
 
     state = {};
@@ -82,7 +81,7 @@ class Events extends Component {
 	render() {
 		return (
 			<Paper className={this.classes.root}>
-                {this.state.reauthenticate && <ReauthenticateModal onReauthenticated={this.componentDidMount} />}
+                {this.state.reauthenticate && <ReauthenticateModal onReauthenticated={this.componentDidMount.bind(this)} />}
 				<Grid
 				    rows={this.state.rows}
 				    columns={[
