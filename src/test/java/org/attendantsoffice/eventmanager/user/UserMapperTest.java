@@ -71,6 +71,9 @@ public class UserMapperTest {
         entity.setFirstName("first");
         entity.setLastName("last");
         entity.setEmail("email@email.com");
+        entity.setUserStatus(UserStatus.DISABLED);
+        entity.setPosition(UserPosition.ELDER);
+        entity.setRole(UserRole.USER);
 
         CongregationEntity congregationEntity = new CongregationEntity();
         congregationEntity.setCongregationId(100);
