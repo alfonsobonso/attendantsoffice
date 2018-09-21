@@ -9,6 +9,9 @@ public final class UserOutputTestDataBuilder {
                 .lastName("last")
                 .email("first.last@example.com")
                 .congregation(ImmutableUserCongregationOutput.builder().congregationId(100).name("cong100").build())
+                .userStatus(UserStatus.DISABLED)
+                .position(UserPosition.BAPTISEDSIS)
+                .role(UserRole.USER)
                 .build();
         return output;
     }

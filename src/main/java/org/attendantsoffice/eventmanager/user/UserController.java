@@ -5,6 +5,8 @@ import org.attendantsoffice.eventmanager.common.paging.PageOutput;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -31,4 +33,11 @@ public class UserController {
     public UserOutput findUser(@PathVariable Integer userId) {
         return userApplicationService.findUser(userId);
     }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PostMapping(path = "/users/{userId}")
+    public void updateUser(@PathVariable Integer userId, @RequestBody UpdateUserInput input) {
+        userApplicationService.updateUser(userId, input);
+    }
+
 }

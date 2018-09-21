@@ -143,6 +143,7 @@ public class UserApplicationServiceTest {
         assertEquals("encoded", userEntityCaptor.getValue().getPassword());
     }
 
+    @Test
     public void testFindByEmail() {
         String email = "email@email.com";
         UserEntity entity = user(1);
@@ -153,9 +154,51 @@ public class UserApplicationServiceTest {
         assertEquals(1, output.get().getUserId().intValue());
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testUpdateUserNotFound() {
+        when(userRepository.findById(1)).thenReturn(Optional.empty());
+        service.updateUser(1, updateUserInput());
+    }
+
+    @Test
+    public void testUpdateUserFound() {
+        when(userRepository.findById(1)).thenReturn(Optional.of(user(1)));
+        service.updateUser(1, updateUserInput());
+
+        verify(userRepository, times(1)).save(userEntityCaptor.capture());
+
+        UserEntity updated = userEntityCaptor.getValue();
+        assertEquals(1, updated.getCongregation().getCongregationId().intValue());
+        assertEquals("first", updated.getFirstName());
+        assertEquals("last", updated.getLastName());
+        assertEquals("12345678", updated.getHomePhone());
+        assertEquals("87654321", updated.getMobilePhone());
+        assertEquals("new@email.com", updated.getEmail());
+        assertEquals(UserStatus.DISABLED, updated.getUserStatus());
+        assertEquals(UserPosition.BAPTISEDSIS, updated.getPosition());
+        assertEquals(UserRole.ADMIN, updated.getRole());
+
+    }
+
     private UserEntity user(int userId) {
         UserEntity entity = new UserEntity();
         entity.setUserId(userId);
         return entity;
     }
+
+    private UpdateUserInput updateUserInput() {
+        return ImmutableUpdateUserInput.builder()
+                .firstName("first")
+                .lastName("last")
+                .homePhone("12345678")
+                .mobilePhone("87654321")
+                .email("new@email.com")
+                .congregationId(1)
+                .userStatus(UserStatus.DISABLED)
+                .position(UserPosition.BAPTISEDSIS)
+                .role(UserRole.ADMIN)
+                .build();
+
+    }
+
 }

@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.attendantsoffice.eventmanager.common.paging.ColumnTranslator;
 import org.attendantsoffice.eventmanager.common.paging.PageOutput;
+import org.attendantsoffice.eventmanager.congregation.CongregationEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,6 +59,27 @@ public class UserApplicationService {
         UserEntity entity = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("No User#" + userId + " found"));
         entity.setPassword(encodedPassword);
+        userRepository.save(entity);
+    }
+
+    public void updateUser(Integer userId, UpdateUserInput input) {
+        UserEntity entity = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("No User#" + userId + " found"));
+
+        entity.setFirstName(input.getFirstName());
+        entity.setLastName(input.getLastName());
+        entity.setHomePhone(input.getHomePhone().orElse(null));
+        entity.setMobilePhone(input.getMobilePhone().orElse(null));
+        entity.setEmail(input.getEmail());
+
+        CongregationEntity congregation = new CongregationEntity();
+        congregation.setCongregationId(input.getCongregationId());
+        entity.setCongregation(congregation);
+
+        entity.setUserStatus(input.getUserStatus());
+        entity.setPosition(input.getPosition());
+        entity.setRole(input.getRole());
+
         userRepository.save(entity);
     }
 

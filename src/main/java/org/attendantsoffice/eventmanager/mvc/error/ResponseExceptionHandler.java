@@ -46,6 +46,7 @@ public class ResponseExceptionHandler {
     // generic exceptions around the spring framework
 
     @ExceptionHandler({
+        IllegalArgumentException.class,
         HttpMessageNotReadableException.class,
         MissingServletRequestParameterException.class,
         ServletRequestBindingException.class,

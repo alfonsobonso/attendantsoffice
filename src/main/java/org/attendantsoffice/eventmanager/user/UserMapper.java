@@ -32,7 +32,11 @@ public class UserMapper {
                 .homePhone(Optional.ofNullable(entity.getHomePhone()))
                 .mobilePhone(Optional.ofNullable(entity.getMobilePhone()))
                 .congregation(congregationOutput)
+                .userStatus(entity.getUserStatus())
+                .position(entity.getPosition())
+                .role(entity.getRole())
                 .build();
+
         return output;
     }
 
