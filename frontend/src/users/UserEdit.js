@@ -13,12 +13,18 @@ import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import NativeSelect from '@material-ui/core/NativeSelect';
 
+import { withStyles } from '@material-ui/core/styles';
+
 import * as Yup from 'yup';
 
 // components
 import AuthenticationService from '../authentication/AuthenticationService'
 import ReauthenticateModal from '../login/ReauthenticateModal.js'
 import { displayErrorMessage } from '../error/ErrorNotifier';
+import MaterialReactSelect from '../common/MaterialReactSelect'
+
+const styles = theme => ({
+});
 
 // modal dialog form to enable us to edit the core user information
 // it can be used in a couple of modes - when a user edits their own details, and an admin user editing someone else's.
@@ -34,15 +40,38 @@ class UserEdit extends React.Component {
 
     state = { };
 
-  	// after login close this model and notify the parent they can re-initialise something
-  	updateSuccess = () => {
-    	this.onUpdated();
-  	};
+    componentDidMount() {
+        this.fetchCongregationList();        
+    }
 
-    submitUserUpdate(userId, values, submitSuccess, submitFailure) {
+    fetchCongregationList = () => {
+        this.AuthService.fetch('/api/congregations/list', {})
+        .then(response => {
+            if(response.ok) {
+                response.json().then((json) => {
+                    this.populateCongregationList(json);
+                })
+            } else if (response.status === 401) {
+                this.setState({reauthenticate: true})
+            } else {
+                // something has gone wrong
+                displayErrorMessage({ message: 'Failed to fetch the congregation list' });
+            }
+        });
+    }
+
+    populateCongregationList = (json) => {
+        var mapped = json.map((item, index) => {
+            return { value: item.id, label: item.name }
+        })
+
+        this.setState({'congregationList': mapped})
+    }
+
+    submitUserUpdate = (userId, values, submitSuccess, submitFailure) => {
         this.AuthService.fetch('/api/users/' + userId, { 
             method: 'post',
-            body: values
+            body: JSON.stringify(values)
         })
         .then(response => {
             if(response.ok) {
@@ -60,11 +89,22 @@ class UserEdit extends React.Component {
         });
     }
 
+    // after login close this model and notify the parent they can re-initialise something
+    updateSuccess = () => {
+        this.onUpdated();
+    };
+
+
     handleClose = () => {
         this.onClosed();
     };
 
+
+
   	render() { 
+        const { classes, theme } = this.props;
+        const { congregationList } = this.state;
+
         if(this.state.reauthenticate) {
             return (
                 <ReauthenticateModal onReauthenticated={function() { return } } />               
@@ -87,7 +127,7 @@ class UserEdit extends React.Component {
                             email: user.email,
                             mobilePhone: user.mobilePhone || '',
                             homePhone: user.homePhone || '',
-                            congregationId: user.congregation.congregationId,
+                            congregationId: { label: user.congregation.name, value: user.congregation.id},
                             userStatus: user.userStatus,
                             position: user.position,
                             role: user.role
@@ -96,28 +136,34 @@ class UserEdit extends React.Component {
                              Yup.object().shape({
                                 firstName: Yup.string().required().min(2),
                                 lastName: Yup.string().required().min(2),
-                                email: Yup.string().required().email()
+                                email: Yup.string().required().email(),
+                                congregationId: 
+                                    Yup.object().shape({
+                                        label: Yup.string().required(),
+                                        value: Yup.number().required(),
+                                    })
+                                                                
                             })
                         }
                         onSubmit = {
                             (values, { setSubmitting, setErrors }) => {
                                 const submitFailure = (json) => {
                                     let errors = {};
-                                    if(json.code === 'UserNotFound') {
-                                        errors.email = 'unrecognised email address';
-                                    } else if(json.code === 'WrongPassword') {
-                                        errors.password = 'wrong password';
-                                    } else {
-                                        displayErrorMessage({ message: 'Unexpected error:' + json.code });
-                                    }
+                                    displayErrorMessage({ message: 'Unexpected error:' + json.code });
                                     setErrors(errors);
                                 }
-                                this.submitUserUpdate(user.userId, values, this.updateSuccess, submitFailure);
+                                // convert the congregation name from the select label/value to just the value
+                                const payload = {
+                                    ...values,
+                                    congregationId: values.congregationId.value,
+                                };
+
+                                this.submitUserUpdate(user.userId, payload, this.updateSuccess, submitFailure);
                                 setSubmitting(false);
                             }
                         }
                         render = {
-                            ({values, errors, touched, handleChange, handleBlur, handleSubmit, isSubmitting, }) => (
+                            ({form, values, errors, touched, handleChange, setFieldValue, setFieldTouched, handleBlur, handleSubmit, isSubmitting, }) => (
                                 <form onSubmit={handleSubmit}>
                                     <FormControl margin="normal" required fullWidth>
                                             <InputLabel htmlFor="firstName">First name</InputLabel>
@@ -155,11 +201,19 @@ class UserEdit extends React.Component {
                                     {touched.homePhone && errors.homePhone && <FormHelperText id="homePhone-text" error>{errors.homePhone}</FormHelperText>}
 
                                     <FormControl margin="normal" fullWidth>
-                                            <InputLabel htmlFor="congregationId">Congregation</InputLabel>
-                                            <Input id="congregationId" name="congregationId" autoComplete="home" onChange={handleChange} onBlur={handleBlur} 
-                                                value={values.congregationId} />
+                                        <MaterialReactSelect 
+                                            classes={classes}
+                                            theme={theme}
+                                            id="congregationId" 
+                                            name="congregationId"
+                                            value={values.congregationId}
+                                            options={congregationList}
+                                            label="Congregation"
+                                            placeholder="Select Congregation"
+                                            onChange={setFieldValue}
+                                            onBlur={setFieldTouched} />
                                     </FormControl>
-                                    {touched.congregationId && errors.congregationId && <FormHelperText id="congregationId-text" error>{errors.congregationId}</FormHelperText>}
+                                    {touched.congregationId && errors.congregationId && <FormHelperText id="congregation-text" error>{errors.congregationId}</FormHelperText>}
 
                                     <FormControl margin="normal" fullWidth>
                                         <InputLabel htmlFor="userStatus">Status</InputLabel>
@@ -201,9 +255,10 @@ class UserEdit extends React.Component {
 }
 
 UserEdit.propTypes = {
+    classes: PropTypes.object.isRequired,
+    theme: PropTypes.object.isRequired,
     onUpdated: PropTypes.func.isRequired,
     onClosed: PropTypes.func.isRequired,
 };
 
-
-export default UserEdit;
+export default withStyles(styles, { withTheme: true })(UserEdit);

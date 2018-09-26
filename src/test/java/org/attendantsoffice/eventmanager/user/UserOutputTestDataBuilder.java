@@ -1,5 +1,7 @@
 package org.attendantsoffice.eventmanager.user;
 
+import org.attendantsoffice.eventmanager.common.list.ImmutableEntityListOutput;
+
 public final class UserOutputTestDataBuilder {
 
     public static UserOutput createUser(int userId) {
@@ -8,7 +10,7 @@ public final class UserOutputTestDataBuilder {
                 .firstName("first")
                 .lastName("last")
                 .email("first.last@example.com")
-                .congregation(ImmutableUserCongregationOutput.builder().congregationId(100).name("cong100").build())
+                .congregation(ImmutableEntityListOutput.builder().id(100).name("cong100").build())
                 .userStatus(UserStatus.DISABLED)
                 .position(UserPosition.BAPTISEDSIS)
                 .role(UserRole.USER)

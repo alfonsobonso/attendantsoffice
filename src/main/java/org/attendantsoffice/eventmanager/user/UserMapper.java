@@ -2,6 +2,7 @@ package org.attendantsoffice.eventmanager.user;
 
 import java.util.Optional;
 
+import org.attendantsoffice.eventmanager.common.list.ImmutableEntityListOutput;
 import org.attendantsoffice.eventmanager.congregation.CongregationApplicationService;
 import org.springframework.stereotype.Component;
 
@@ -19,10 +20,9 @@ public class UserMapper {
 
     public UserOutput map(UserEntity entity) {
         // the congregation is lazy-loaded. We have cached the lookup of all congs already, so save a join here.
-        UserCongregationOutput congregationOutput = ImmutableUserCongregationOutput.builder()
-                .congregationId(entity.getCongregation().getCongregationId())
-                .name(congregationApplicationService.findName(entity.getCongregation().getCongregationId()))
-                .build();
+        ImmutableEntityListOutput congregationOutput = ImmutableEntityListOutput.of(
+                entity.getCongregation().getCongregationId(),
+                congregationApplicationService.findName(entity.getCongregation().getCongregationId()));
 
         UserOutput output = ImmutableUserOutput.builder()
                 .userId(entity.getUserId())

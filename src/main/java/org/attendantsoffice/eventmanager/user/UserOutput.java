@@ -3,6 +3,7 @@ package org.attendantsoffice.eventmanager.user;
 import java.util.Optional;
 
 import org.attendantsoffice.eventmanager.DefaultStyle;
+import org.attendantsoffice.eventmanager.common.list.EntityListOutput;
 import org.immutables.value.Value;
 
 /**
@@ -23,7 +24,7 @@ public interface UserOutput {
 
     String getEmail();
 
-    UserCongregationOutput getCongregation();
+    EntityListOutput getCongregation();
 
     UserStatus getUserStatus();
 

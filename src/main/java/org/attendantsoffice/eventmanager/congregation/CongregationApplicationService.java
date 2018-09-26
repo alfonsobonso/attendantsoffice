@@ -19,6 +19,12 @@ public class CongregationApplicationService {
     }
 
     @Transactional(readOnly = true)
+    public List<CongregationEntity> findAll() {
+        List<CongregationEntity> congregations = congregationRepository.findAllCongregations();
+        return congregations;
+    }
+
+    @Transactional(readOnly = true)
     public String findName(Integer congregationId) {
         List<CongregationEntity> congregations = congregationRepository.findAllCongregations();
 

@@ -40,7 +40,7 @@ public class UserMapperTest {
         assertEquals("first", output.getFirstName());
         assertEquals("last", output.getLastName());
         assertEquals("email@email.com", output.getEmail());
-        assertEquals(100, output.getCongregation().getCongregationId().intValue());
+        assertEquals(100, output.getCongregation().getId().intValue());
         assertEquals("my cong", output.getCongregation().getName());
     }
 
@@ -57,7 +57,7 @@ public class UserMapperTest {
         assertEquals("first", output.getFirstName());
         assertEquals("last", output.getLastName());
         assertEquals("email@email.com", output.getEmail());
-        assertEquals(100, output.getCongregation().getCongregationId().intValue());
+        assertEquals(100, output.getCongregation().getId().intValue());
         assertEquals("my cong", output.getCongregation().getName());
 
         assertEquals(Optional.of("my home"), output.getHomePhone());
