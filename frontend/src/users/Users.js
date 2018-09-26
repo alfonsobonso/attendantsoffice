@@ -1,12 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import classNames from 'classnames';
 
 // material ui components
-import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
 
 import { PagingState, CustomPaging, FilteringState } from '@devexpress/dx-react-grid';
 import { SortingState } from '@devexpress/dx-react-grid';

@@ -1,10 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import classNames from 'classnames';
-
 // material ui components
-import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 
 import { withStyles } from '@material-ui/core/styles';
@@ -25,7 +22,7 @@ const styles = theme => ({
 class Headline extends Component {
 
 	render() {
-		const { classes, headline, buttonLabel, buttonOnClick } = this.props;
+		const { classes, headline } = this.props;
 
 		return (
 			<div className={classes.header}>
