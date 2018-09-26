@@ -12,11 +12,13 @@ import { withStyles } from '@material-ui/core/styles';
 // components
 import ReauthenticateModal from '../login/ReauthenticateModal.js'
 import AuthenticationService from '../authentication/AuthenticationService.js'
+import Headline from '../common/Headline.js'
 
 const styles = theme => ({
 	root: {
     	width: '100%',
        	overflowX: 'auto',
+        marginTop: '16px',
   	},
   	table: {
     	minWidth: 700,
@@ -80,29 +82,32 @@ class Events extends Component {
 
 	render() {
 		return (
-			<Paper className={this.classes.root}>
-                {this.state.reauthenticate && <ReauthenticateModal onReauthenticated={this.componentDidMount.bind(this)} />}
-				<Grid
-				    rows={this.state.rows}
-				    columns={[
-				      	{ name: 'id', title: 'ID' },
-				      	{ name: 'name', title: 'Name' },
-				      	{ name: 'location', title: 'Location' },
-				      	{ name: 'startDate', title: 'Start Date' },
-				      	{ name: 'endDate', title: 'End Date' },
-				      	{ name: 'status', title: 'Status' },
-				    ]}>
-				    <DateTypeProvider
-	            		for={['startDate', 'endDate']}
-	          		/>
-				    <SortingState
-	            		defaultSorting={[{ columnName: 'startDate', direction: 'desc' }]}
-	          		/>
-	          		<IntegratedSorting />
-				    <Table />
-				    <TableHeaderRow showSortingControls />
-			  	</Grid>
-		  	</Paper>
+            <React.Fragment>
+                <Headline headline="Events" />
+    			<Paper className={this.classes.root}>
+                    {this.state.reauthenticate && <ReauthenticateModal onReauthenticated={this.componentDidMount.bind(this)} />}
+    				<Grid
+    				    rows={this.state.rows}
+    				    columns={[
+    				      	{ name: 'id', title: 'ID' },
+    				      	{ name: 'name', title: 'Name' },
+    				      	{ name: 'location', title: 'Location' },
+    				      	{ name: 'startDate', title: 'Start Date' },
+    				      	{ name: 'endDate', title: 'End Date' },
+    				      	{ name: 'status', title: 'Status' },
+    				    ]}>
+    				    <DateTypeProvider
+    	            		for={['startDate', 'endDate']}
+    	          		/>
+    				    <SortingState
+    	            		defaultSorting={[{ columnName: 'startDate', direction: 'desc' }]}
+    	          		/>
+    	          		<IntegratedSorting />
+    				    <Table />
+    				    <TableHeaderRow showSortingControls />
+    			  	</Grid>
+    		  	</Paper>
+            </React.Fragment>
 		);
 	}
 }

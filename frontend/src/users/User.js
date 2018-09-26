@@ -13,6 +13,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Divider from '@material-ui/core/Divider';
 import Avatar from '@material-ui/core/Avatar';
 import EmailIcon from '@material-ui/icons/Email';
+import HomeIcon from '@material-ui/icons/Home';
 import PhoneIcon from '@material-ui/icons/Phone';
 
 import { withStyles } from '@material-ui/core/styles';
@@ -21,8 +22,9 @@ import { withStyles } from '@material-ui/core/styles';
 import ReauthenticateModal from '../login/ReauthenticateModal.js'
 import AuthenticationService from '../authentication/AuthenticationService.js'
 import ErrorNotifier from '../error/ErrorNotifier';
+import HeadlineWithAction from '../common/HeadlineWithAction.js'
 
-import UserEdit from './/UserEdit.js'
+import UserEdit from './UserEdit.js'
 
 const styles = theme => ({
     root: {
@@ -107,28 +109,21 @@ class User extends React.Component {
                     onClosed={this.onCloseDialog.bind(this)} 
                     onUpdated={this.onUpdated.bind(this)} />
                 }
+                <HeadlineWithAction 
+                    headline={user.firstName + " " + user.lastName}
+                    buttonLabel="Edit"
+                    buttonOnClick={this.openEditDialog.bind(this)} />
                 <Grid container spacing={24}>
-                    <Grid item xs={9}>
-                        <Typography variant="headline" color="inherit" noWrap>
-                            {user.firstName} {user.lastName}
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={3}>
-                        <Button variant="raised" 
-                                color="primary" 
-                                onClick={this.openEditDialog.bind(this)} 
-                                className={classNames(classes.editButton)}>
-                            Edit
-                        </Button>
-                    </Grid>
-                   
-                    {user.congregation && 
-                        <Grid item xs={12}>
-                            <Typography variant="subheading" gutterBottom>{user.congregation.name}</Typography>
-                        </Grid>
-                    }
                     <Grid item xs={12}>
                         <List>
+                            {user.congregation && 
+                                <ListItem disableGutters>
+                                    <Avatar>
+                                        <HomeIcon />
+                                    </Avatar>
+                                    <ListItemText primary={user.congregation.name} />
+                                </ListItem>
+                            }
                             <ListItem disableGutters>
                                 <Avatar>
                                     <EmailIcon />

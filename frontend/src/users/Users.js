@@ -1,8 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
+import classNames from 'classnames';
+
 // material ui components
+import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
 
 import { PagingState, CustomPaging, FilteringState } from '@devexpress/dx-react-grid';
 import { SortingState } from '@devexpress/dx-react-grid';
@@ -13,15 +17,27 @@ import { withStyles } from '@material-ui/core/styles';
 // components
 import ReauthenticateModal from '../login/ReauthenticateModal.js'
 import AuthenticationService from '../authentication/AuthenticationService.js'
+import HeadlineWithAction from '../common/HeadlineWithAction.js'
 
 const styles = theme => ({
-  root: {
+    root: {
     	width: '100%',
     	overflowX: 'auto',
+        marginTop: '16px',
   	},
   	table: {
     	minWidth: 700,
   	},
+    header: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        padding: '8px',
+        marginBottom: '16px',
+    },
+    headerButton: {
+        marginLeft: 'auto',
+    }
 });
 
 
@@ -49,6 +65,11 @@ class Users extends Component {
     	this.fetchData(this.state.filters, this.state.sorting, this.state.currentPage, this.state.pageSize);
     }   
 
+    openAddDialog = () => {
+        this.setState({add: true});
+    }
+
+    // listing functionality
     changeSorting = (sorting) => {
     	// re-sorting goes back to the first page
 		this.fetchData(this.state.filters, sorting, 0, this.state.pageSize);
@@ -137,27 +158,30 @@ class Users extends Component {
 		const { sorting, rows, totalCount, totalPages, pageSize, currentPage, pageSizes } = this.state;
 
 		return (
-    		<Paper className={this.classes.root}>
-            {this.state.reauthenticate && <ReauthenticateModal onReauthenticated={this.componentDidMount} />}
-      			<Grid className={this.classes.table}
-      				rows={rows}
-      				columns={this.columns}
-      				>
-      				<FilteringState onFiltersChange={this.changeFilters} />
-      				<PagingState
-			            currentPage={currentPage}
-			            onCurrentPageChange={this.changeCurrentPage}
-			            pageSize={pageSize}
-			            onPageSizeChange={this.pageSizeChange}
-                    />
-			        <CustomPaging totalCount={totalCount} />
-      				<SortingState sorting={sorting} onSortingChange={this.changeSorting} />     				
-      				<Table />
-					<TableHeaderRow showSortingControls />
-					<TableFilterRow />
-					<PagingPanel pageSizes={pageSizes} totalPages={totalPages} currentPage={currentPage} />   				
-      			</Grid>
-    		</Paper>
+            <React.Fragment>
+                <HeadlineWithAction headline="Users" buttonLabel="Add new user" buttonOnClick={this.openAddDialog.bind(this)} />
+                {this.state.reauthenticate && <ReauthenticateModal onReauthenticated={this.componentDidMount} />}
+        		<Paper className={this.classes.root}>
+          			<Grid className={this.classes.table}
+          				rows={rows}
+          				columns={this.columns}
+          				>
+          				<FilteringState onFiltersChange={this.changeFilters} />
+          				<PagingState
+    			            currentPage={currentPage}
+    			            onCurrentPageChange={this.changeCurrentPage}
+    			            pageSize={pageSize}
+    			            onPageSizeChange={this.pageSizeChange}
+                        />
+    			        <CustomPaging totalCount={totalCount} />
+          				<SortingState sorting={sorting} onSortingChange={this.changeSorting} />
+          				<Table />
+    					<TableHeaderRow showSortingControls />
+    					<TableFilterRow />
+    					<PagingPanel pageSizes={pageSizes} totalPages={totalPages} currentPage={currentPage} />
+          			</Grid>
+        		</Paper>
+            </React.Fragment>
   		);
 	}
 }
