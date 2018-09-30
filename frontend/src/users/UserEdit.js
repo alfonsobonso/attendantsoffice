@@ -21,7 +21,7 @@ import * as Yup from 'yup';
 import AuthenticationService from '../authentication/AuthenticationService'
 import ReauthenticateModal from '../login/ReauthenticateModal.js'
 import { displayErrorMessage } from '../error/ErrorNotifier';
-import MaterialReactSelect from '../common/MaterialReactSelect'
+import CongregationSelect from './CongregationSelect'
 
 const styles = theme => ({
 });
@@ -39,34 +39,6 @@ class UserEdit extends React.Component {
     }
 
     state = { };
-
-    componentDidMount() {
-        this.fetchCongregationList();        
-    }
-
-    fetchCongregationList = () => {
-        this.AuthService.fetch('/api/congregations/list', {})
-        .then(response => {
-            if(response.ok) {
-                response.json().then((json) => {
-                    this.populateCongregationList(json);
-                })
-            } else if (response.status === 401) {
-                this.setState({reauthenticate: true})
-            } else {
-                // something has gone wrong
-                displayErrorMessage({ message: 'Failed to fetch the congregation list' });
-            }
-        });
-    }
-
-    populateCongregationList = (json) => {
-        var mapped = json.map((item, index) => {
-            return { value: item.id, label: item.name }
-        })
-
-        this.setState({'congregationList': mapped})
-    }
 
     submitUserUpdate = (userId, values, submitSuccess, submitFailure) => {
         this.AuthService.fetch('/api/users/' + userId, { 
@@ -99,11 +71,8 @@ class UserEdit extends React.Component {
         this.onClosed();
     };
 
-
-
   	render() { 
         const { classes, theme } = this.props;
-        const { congregationList } = this.state;
 
         if(this.state.reauthenticate) {
             return (
@@ -149,7 +118,11 @@ class UserEdit extends React.Component {
                             (values, { setSubmitting, setErrors }) => {
                                 const submitFailure = (json) => {
                                     let errors = {};
-                                    displayErrorMessage({ message: 'Unexpected error:' + json.code });
+                                    if(json.code === 'DuplicateUserEmailAddress') {
+                                        errors.email = json.message;
+                                    } else {
+                                        displayErrorMessage({ message: 'Unexpected error:' + json.code });
+                                    }
                                     setErrors(errors);
                                 }
                                 // convert the congregation name from the select label/value to just the value
@@ -201,15 +174,12 @@ class UserEdit extends React.Component {
                                     {touched.homePhone && errors.homePhone && <FormHelperText id="homePhone-text" error>{errors.homePhone}</FormHelperText>}
 
                                     <FormControl margin="normal" fullWidth>
-                                        <MaterialReactSelect 
+                                        <CongregationSelect 
                                             classes={classes}
                                             theme={theme}
                                             id="congregationId" 
                                             name="congregationId"
                                             value={values.congregationId}
-                                            options={congregationList}
-                                            label="Congregation"
-                                            placeholder="Select Congregation"
                                             onChange={setFieldValue}
                                             onBlur={setFieldTouched} />
                                     </FormControl>
