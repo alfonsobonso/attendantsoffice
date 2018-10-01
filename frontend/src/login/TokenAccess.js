@@ -19,7 +19,11 @@ import * as Yup from 'yup';
 // components
 import AuthenticationService from '../authentication/AuthenticationService.js'
 
-
+// Support the accessing the application when the user has no password set, or 
+// has been given an access token. The token may be invalid, or have expired.
+// On entering a new password with a valid token they are redirected to the logn page to complete their login
+// - we do that rather than authenticate them immediately to prevent some getting confused, and thinking they always
+// have to access the site but using an old access token they were sent when first signing up.
 class TokenAccessService {
 
     requestAccessToken(email, requestSuccess, requestFailure) {
@@ -135,9 +139,14 @@ class TokenAccess extends Component {
 
     componentDidMount() {
         var token = this.state.token;
-        this.AccessService.fetchTokenStatus(token, (status) => {
-            this.setState({tokenStatus: status});   
-        });
+        if(token) {
+            this.AccessService.fetchTokenStatus(token, (status) => {
+                this.setState({tokenStatus: status});   
+            });
+        } else {
+            // no token is in the request
+            this.setState({tokenStatus: 'NOTPRESENT'});
+        }
     }
 
     componentWillMount() {
@@ -318,6 +327,8 @@ class TokenAccess extends Component {
             return this.renderTokenAccessRequested();
         } else if(this.state.tokenStatus === 'VALID') {
             return this.renderValidToken();
+        } else if(this.state.tokenStatus === 'NOTPRESENT') {
+            return this.renderInvalidToken('Forgotten password.')
         } else if(this.state.tokenStatus === 'UNRECOGNISED') {
             return this.renderInvalidToken('Unrecognised access code.')
         } else if(this.state.tokenStatus === 'EXPIRED') {

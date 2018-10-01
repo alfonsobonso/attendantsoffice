@@ -1,6 +1,7 @@
 package org.attendantsoffice.eventmanager.authentication;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -13,6 +14,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.attendantsoffice.eventmanager.user.UserApplicationService;
 import org.attendantsoffice.eventmanager.user.UserOutputTestDataBuilder;
 import org.attendantsoffice.eventmanager.user.security.EventManagerUser;
+import org.attendantsoffice.eventmanager.user.security.PasswordNotSetAuthenticationException;
 import org.attendantsoffice.eventmanager.user.security.UserAuthenticationService;
 import org.attendantsoffice.eventmanager.user.security.UserNotFoundException;
 import org.junit.Before;
@@ -58,6 +60,20 @@ public class AuthenticationServiceTest {
         Pair<String, EventManagerUser> loginResult = authenticationService.login("myemail", "mypassword");
         assertEquals("mytoken", loginResult.getLeft());
 
+    }
+
+    @Test
+    public void testLoginPasswordNotSetSendsAuthenticationToken() {
+        when(userAuthenticationService.login("myemail", "mypassword")).thenThrow(
+                new PasswordNotSetAuthenticationException(1, "myemail"));
+        try {
+            authenticationService.login("myemail", "mypassword");
+            fail("Expect PasswordNotSetAuthenticationException");
+        } catch (PasswordNotSetAuthenticationException e) {
+            assertEquals(1, e.getUserId().intValue());
+            assertEquals("myemail", e.getEmail());
+        }
+        verify(authenticationTokenApplicationService).sendAuthenticationTokenMail(1, "myemail");
     }
 
     @Test(expected = UserNotFoundException.class)

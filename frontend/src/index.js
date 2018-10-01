@@ -10,9 +10,9 @@ import {
 import registerServiceWorker from './registerServiceWorker';
 import CssBaseline from '@material-ui/core/CssBaseline';
 
-import ErrorBoundary from './error/ErrorBoundary.js'
-import Login  from './login/Login.js';
-import TokenAccess  from './login/TokenAccess.js';
+import ErrorBoundary from './error/ErrorBoundary'
+import Login  from './login/Login';
+import TokenAccess  from './login/TokenAccess';
 
 // the render here is only used to differentiate the app, 
 // which uses a higher-order component (HOC) for authentication, and the pages around authentication
@@ -23,6 +23,7 @@ ReactDOM.render(
         <Router>
             <Switch>           
                 <Route exact path="/login" component={Login} />
+                <Route exact path="/forgotten-password" component={TokenAccess} />
                 <Route exact path="/token-access/:token" component={TokenAccess} />
                 <Route path="/" component={App} />
             </Switch>

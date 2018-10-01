@@ -44,7 +44,14 @@ public class AuthenticationService {
     public Pair<String, EventManagerUser> login(String email, String password) throws UserNotFoundException,
             PasswordNotSetAuthenticationException,
             WrongPasswordException {
-        return userAuthenticationService.login(email.trim(), password);
+        try {
+            return userAuthenticationService.login(email.trim(), password);
+        } catch (PasswordNotSetAuthenticationException e) {
+            // if they have attempted to authenticate, but they don't actually have a password set,
+            // then send them a new access token. The UI should inform them.
+            authenticationTokenApplicationService.sendAuthenticationTokenMail(e.getUserId(), e.getEmail());
+            throw e;
+        }
     }
 
     /**
