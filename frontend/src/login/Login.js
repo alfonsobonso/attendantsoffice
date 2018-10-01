@@ -104,9 +104,11 @@ class Login extends Component {
                                     const submitFailure = (json) => {
                                         let errors = {};
                                         if(json.code === 'UserNotFound') {
-                                            errors.email = 'unrecognised email address';
+                                            errors.email = 'Unrecognised email address';
                                         } else if(json.code === 'WrongPassword') {
-                                            errors.password = 'wrong password';
+                                            errors.password = 'Wrong password';
+                                        } else if (json.code === 'PasswordNotSetAuthentication') {
+                                            errors.password = 'No password set. An email with access token has been sent';
                                         } else {
                                             displayErrorMessage({ message: 'Unexpected error:' + json.code });
                                         }
