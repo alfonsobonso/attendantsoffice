@@ -162,7 +162,11 @@ public class UserApplicationServiceTest {
 
     @Test
     public void testCreateUser() {
+        when(userMapper.map(any())).thenReturn(UserOutputTestDataBuilder.createUser(1));
+
         UserOutput output = service.createUser(createUserInput());
+
+        assertEquals(1, output.getUserId().intValue());
 
         verify(userRepository, times(1)).save(userEntityCaptor.capture());
 
