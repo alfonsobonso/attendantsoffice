@@ -27,6 +27,7 @@ function ErrorNotifierContent(props) {
   	
   	return (
     	<SnackbarContent className={classes}
+            variant="error"
       		aria-describedby="client-snackbar"
       		message={
         		<span id="client-snackbar" className={classes.message}>

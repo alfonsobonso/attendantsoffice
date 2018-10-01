@@ -15,12 +15,12 @@ import PhoneIcon from '@material-ui/icons/Phone';
 import { withStyles } from '@material-ui/core/styles';
 
 // components
-import ReauthenticateModal from '../login/ReauthenticateModal.js'
-import AuthenticationService from '../authentication/AuthenticationService.js'
+import ReauthenticateModal from '../login/ReauthenticateModal'
+import AuthenticationService from '../authentication/AuthenticationService'
 import ErrorNotifier from '../error/ErrorNotifier';
-import HeadlineWithAction from '../common/HeadlineWithAction.js'
+import HeadlineWithAction from '../common/HeadlineWithAction'
 
-import UserEdit from './UserEdit.js'
+import UserEdit from './UserEdit'
 
 const styles = theme => ({
     root: {
@@ -39,7 +39,7 @@ class User extends React.Component {
     }   
 
     state = {
-        edit: false,
+        editDialogOpen: false,
     };
 
     componentDidMount() {
@@ -65,16 +65,16 @@ class User extends React.Component {
     }
 
     openEditDialog() {
-        this.setState({edit: true});
+        this.setState({editDialogOpen: true});
     }
 
     onCloseDialog() {
-        this.setState({edit: false});   
+        this.setState({editDialogOpen: false});   
     }
 
     // close the dialog, re-fetch the data
     onUpdated() {
-        this.setState({edit: false});
+        this.setState({editDialogOpen: false});
 
         const { match: { params } } = this.props;
         this.fetchUser(params.userId);
@@ -82,7 +82,7 @@ class User extends React.Component {
 
     render() {
         const { classes } = this.props;
-        const { user, reauthenticate, edit } = this.state;
+        const { user, reauthenticate, editDialogOpen } = this.state;
 
         if(reauthenticate) {
             return (
@@ -100,7 +100,7 @@ class User extends React.Component {
             <div className={classes.root}>
                 {reauthenticate && <ReauthenticateModal onReauthenticated={this.componentDidMount.bind(this)} />}
                 <ErrorNotifier />
-                {edit && <UserEdit 
+                {editDialogOpen && <UserEdit 
                     user={user} 
                     onClosed={this.onCloseDialog.bind(this)} 
                     onUpdated={this.onUpdated.bind(this)} />

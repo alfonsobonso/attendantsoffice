@@ -21,7 +21,6 @@ import User  from './users/User.js';
 const styles = theme => ({
     root: {
         flexGrow: 1,
-        height: 440,
         zIndex: 1,
         overflow: 'hidden',
         position: 'relative',

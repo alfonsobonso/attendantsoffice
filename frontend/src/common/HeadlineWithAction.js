@@ -54,4 +54,4 @@ HeadlineWithAction.propTypes = {
 	buttonOnClick: PropTypes.func.isRequired,
 };
 
-export default withStyles(styles)(HeadlineWithAction);
+export default withStyles(styles, { withTheme: true })(HeadlineWithAction);

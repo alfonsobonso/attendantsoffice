@@ -154,6 +154,30 @@ public class UserApplicationServiceTest {
         assertEquals(1, output.get().getUserId().intValue());
     }
 
+    @Test(expected = DuplicateUserEmailAddressException.class)
+    public void testCreateUserDuplicate() {
+        when(userRepository.findByEmail("new@email.com")).thenReturn(Optional.of(user(2)));
+        service.createUser(createUserInput());
+    }
+
+    @Test
+    public void testCreateUser() {
+        UserOutput output = service.createUser(createUserInput());
+
+        verify(userRepository, times(1)).save(userEntityCaptor.capture());
+
+        UserEntity updated = userEntityCaptor.getValue();
+        assertEquals(1, updated.getCongregation().getCongregationId().intValue());
+        assertEquals("first", updated.getFirstName());
+        assertEquals("last", updated.getLastName());
+        assertEquals("12345678", updated.getHomePhone());
+        assertEquals("87654321", updated.getMobilePhone());
+        assertEquals("new@email.com", updated.getEmail());
+        assertEquals(UserStatus.ACTIVE, updated.getUserStatus());
+        assertEquals(UserPosition.BAPTISEDSIS, updated.getPosition());
+        assertEquals(UserRole.USER, updated.getRole());
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void testUpdateUserNotFound() {
         when(userRepository.findById(1)).thenReturn(Optional.empty());
@@ -180,9 +204,19 @@ public class UserApplicationServiceTest {
 
     }
 
+    @Test(expected = DuplicateUserEmailAddressException.class)
+    public void testUpdateUserUpdatedEmailDuplicate() {
+        when(userRepository.findById(1)).thenReturn(Optional.of(user(1)));
+
+        when(userRepository.findByEmail("new@email.com")).thenReturn(Optional.of(user(2)));
+
+        service.updateUser(1, updateUserInput());
+    }
+
     private UserEntity user(int userId) {
         UserEntity entity = new UserEntity();
         entity.setUserId(userId);
+        entity.setEmail("user1@example.com");
         return entity;
     }
 
@@ -199,6 +233,18 @@ public class UserApplicationServiceTest {
                 .role(UserRole.ADMIN)
                 .build();
 
+    }
+
+    private CreateUserInput createUserInput() {
+        return ImmutableCreateUserInput.builder()
+                .firstName("first")
+                .lastName("last")
+                .homePhone("12345678")
+                .mobilePhone("87654321")
+                .email("new@email.com")
+                .congregationId(1)
+                .position(UserPosition.BAPTISEDSIS)
+                .build();
     }
 
 }

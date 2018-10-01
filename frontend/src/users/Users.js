@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
+import { Link } from 'react-router-dom'
 
 // material ui components
+import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
 
 import { PagingState, CustomPaging, FilteringState } from '@devexpress/dx-react-grid';
@@ -14,7 +16,10 @@ import { withStyles } from '@material-ui/core/styles';
 // components
 import ReauthenticateModal from '../login/ReauthenticateModal.js'
 import AuthenticationService from '../authentication/AuthenticationService.js'
+import ErrorNotifier from '../error/ErrorNotifier';
 import HeadlineWithAction from '../common/HeadlineWithAction.js'
+import ActionNotifier, { displayActionMessage } from '../common/ActionNotifier.js'
+import UserAdd from './UserAdd'
 
 const styles = theme => ({
     root: {
@@ -56,14 +61,32 @@ class Users extends Component {
         this.componentDidMount = this.componentDidMount.bind(this);     // called in onReauthenticated 
     }
 
-    state = {};
+    state = {
+        editDialogOpen: false
+    };
 
     componentDidMount() {
     	this.fetchData(this.state.filters, this.state.sorting, this.state.currentPage, this.state.pageSize);
     }   
 
     openAddDialog = () => {
-        this.setState({add: true});
+        this.setState({editDialogOpen: true});
+    }
+
+    closeAddDialog = () => {
+        this.setState({editDialogOpen: false});   
+    }
+
+    onAdded = (user) => {
+        this.setState({editDialogOpen: false});
+
+        // display a notification indicating we have added a new user
+        let message = 'Added ' + user.firstName + ' ' + user.lastName;
+        let actionUri = '/users/' + user.userId;
+        displayActionMessage({message, actionUri});
+
+        // refetch the list on the current page/filters
+        this.fetchData(this.state.filters, this.state.sorting, this.state.currentPage, this.state.pageSize);
     }
 
     // listing functionality
@@ -131,10 +154,12 @@ class Users extends Component {
 
     transformUserRows(rows) {
     	return rows.map(row => {
+            let url = '/users/' + row.userId
     		return { 
-                "id": row.userId, 
+                "id": <Button color="primary" size="small" component={Link} to={url}>{row.userId}</Button>, 
                 "firstName" : row.firstName, 
                 "lastName": row.lastName,
+                "email": row.email,
                 "homePhone": row.homePhone,
                 "mobilePhone": row.mobilePhone,
                 "congregation": row.congregation.name
@@ -146,18 +171,25 @@ class Users extends Component {
 	  	{ name: 'id', title: 'ID' },
 	  	{ name: 'firstName', title: 'First Name' },
 	  	{ name: 'lastName', title: 'Last Name' },
+        { name: 'email', title: 'Email' },
 	  	{ name: 'homePhone', title: 'Home' },
 	  	{ name: 'mobilePhone', title: 'Mobile' },
 	  	{ name: 'congregation', title: 'Congregation' },
 	];
 
 	render() {
-		const { sorting, rows, totalCount, totalPages, pageSize, currentPage, pageSizes } = this.state;
+		const { sorting, rows, totalCount, totalPages, pageSize, currentPage, pageSizes, editDialogOpen } = this.state;
 
 		return (
             <React.Fragment>
                 <HeadlineWithAction headline="Users" buttonLabel="Add new user" buttonOnClick={this.openAddDialog.bind(this)} />
                 {this.state.reauthenticate && <ReauthenticateModal onReauthenticated={this.componentDidMount} />}
+                <ErrorNotifier />
+                <ActionNotifier />
+                {editDialogOpen && <UserAdd 
+                    onClosed={this.closeAddDialog.bind(this)} 
+                    onAdded={this.onAdded.bind(this)} />
+                }
         		<Paper className={this.classes.root}>
           			<Grid className={this.classes.table}
           				rows={rows}
@@ -187,4 +219,4 @@ Users.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(Users);
+export default withStyles(styles, { withTheme: true })(Users);

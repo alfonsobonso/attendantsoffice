@@ -26,27 +26,28 @@ import CongregationSelect from './CongregationSelect'
 const styles = theme => ({
 });
 
-// modal dialog form to enable us to edit the core user information
-// it can be used in a couple of modes - when a user edits their own details, and an admin user editing someone else's.
-class UserEdit extends React.Component {
+// modal dialog form to enable us to create a new user information
+// this is a cut-down version of the UserEdit
+class UserAdd extends React.Component {
 	constructor(props) {
         super();        
         this.AuthService = new AuthenticationService();
-        this.onUpdated = props.onUpdated;
+        this.onAdded = props.onAdded;
         this.onClosed = props.onClosed;
-        this.user = props.user;
     }
 
-    state = { };
+	state = { };
 
-    submitUserUpdate = (userId, values, submitSuccess, submitFailure) => {
-        this.AuthService.fetch('/api/users/' + userId, { 
+	submitUserAdd = (values, submitSuccess, submitFailure) => {
+        this.AuthService.fetch('/api/users/', { 
             method: 'post',
             body: JSON.stringify(values)
         })
         .then(response => {
             if(response.ok) {
-                submitSuccess();
+            	response.json().then((json) => {
+        			submitSuccess(json);
+            	})
             } else if (response.status === 401) {
                 this.setState({reauthenticate: true})
             } else if (response.status < 500) {
@@ -60,17 +61,16 @@ class UserEdit extends React.Component {
         });
     }
 
-    // after login close this model and notify the parent they can re-initialise something
-    updateSuccess = () => {
-        this.onUpdated();
+    // after login close this modal and notify the parent they can re-initialise something
+    updateSuccess = (user) => {
+        this.onAdded(user);
     };
-
 
     handleClose = () => {
         this.onClosed();
     };
 
-  	render() { 
+    render() { 
         const { classes, theme } = this.props;
 
         if(this.state.reauthenticate) {
@@ -79,38 +79,34 @@ class UserEdit extends React.Component {
             );
         }
 
-        let user = this.user;
     	return (       
         	<Dialog
           		open={true}
           		onClose={this.handleClose}
           		aria-labelledby="form-dialog-title"
         	>
-        		<DialogTitle id="form-dialog-title">Edit User</DialogTitle>
+        		<DialogTitle id="form-dialog-title">Add User</DialogTitle>
           		<DialogContent>
             		<Formik
                         initialValues = {{ 
-                            firstName: user.firstName,
-                            lastName: user.lastName,
-                            email: user.email,
-                            mobilePhone: user.mobilePhone || '',
-                            homePhone: user.homePhone || '',
-                            congregationId: { label: user.congregation.name, value: user.congregation.id},
-                            userStatus: user.userStatus,
-                            position: user.position,
-                            role: user.role
+                            firstName: '',
+                            lastName: '',
+                            email: '',
+                            mobilePhone: '',
+                            homePhone: '',
+                            position: 'BAPTISEDBRO',
                         }}
                         validationSchema = {
                              Yup.object().shape({
                                 firstName: Yup.string()
-                                    .required('First name is required')
-                                    .min(2, 'First name must be at least 2 characters'),
+                                	.required('First name is required')
+                                	.min(2, 'First name must be at least 2 characters'),
                                 lastName: Yup.string()
-                                    .required('Last name is required')
-                                    .min(2, 'Last name must be at least 2 characters'),
+                                	.required('Last name is required')
+                                	.min(2, 'Last name must be at least 2 characters'),
                                 email: Yup.string().required().email(),
                                 congregationId: Yup.object().required('Congregation is required'),
-                                position: Yup.string().required()
+                                position: Yup.string().required(),
                             })
                         }
                         onSubmit = {
@@ -130,7 +126,7 @@ class UserEdit extends React.Component {
                                     congregationId: values.congregationId.value,
                                 };
 
-                                this.submitUserUpdate(user.userId, payload, this.updateSuccess, submitFailure);
+                                this.submitUserAdd(payload, this.updateSuccess, submitFailure);
                                 setSubmitting(false);
                             }
                         }
@@ -185,27 +181,12 @@ class UserEdit extends React.Component {
                                     {touched.congregationId && errors.congregationId && <FormHelperText id="congregation-text" error>{errors.congregationId}</FormHelperText>}
 
                                     <FormControl margin="normal" fullWidth>
-                                        <InputLabel htmlFor="userStatus">Status</InputLabel>
-                                        <NativeSelect name="userStatus" value={values.userStatus}>
-                                            <option value="DISABLED">Disabled</option>
-                                        </NativeSelect>
-                                    </FormControl>
-
-                                    <FormControl margin="normal" fullWidth>
                                         <InputLabel htmlFor="position">Position</InputLabel>
                                         <NativeSelect name="position" value={values.position}>
                                             <option value="BAPTISEDBRO">Baptised Brother</option>
                                             <option value="BAPTISEDSIS">Baptised Sister</option>
                                             <option value="MS">Ministerial Servant</option>
                                             <option value="ELDER">Elder</option>
-                                        </NativeSelect>
-                                    </FormControl>
-
-                                    <FormControl margin="normal" fullWidth>
-                                        <InputLabel htmlFor="role">Role</InputLabel>
-                                        <NativeSelect name="role" value={values.role}>
-                                            <option value="USER">User</option>
-                                            <option value="ADMIN">Admin</option>
                                         </NativeSelect>
                                     </FormControl>
 
@@ -223,11 +204,12 @@ class UserEdit extends React.Component {
  	}
 }
 
-UserEdit.propTypes = {
+UserAdd.propTypes = {
     classes: PropTypes.object.isRequired,
     theme: PropTypes.object.isRequired,
-    onUpdated: PropTypes.func.isRequired,
+    onAdded: PropTypes.func.isRequired,
     onClosed: PropTypes.func.isRequired,
 };
 
-export default withStyles(styles, { withTheme: true })(UserEdit);
+export default withStyles(styles, { withTheme: true })(UserAdd);
+

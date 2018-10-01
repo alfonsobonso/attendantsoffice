@@ -3,6 +3,7 @@ package org.attendantsoffice.eventmanager.authentication;
 import java.util.Optional;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.attendantsoffice.eventmanager.mvc.error.ErrorResponse;
 import org.attendantsoffice.eventmanager.user.security.EventManagerUser;
 import org.attendantsoffice.eventmanager.user.security.PasswordNotSetAuthenticationException;
 import org.attendantsoffice.eventmanager.user.security.UserNotFoundException;
@@ -10,6 +11,8 @@ import org.attendantsoffice.eventmanager.user.security.WrongPasswordException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -100,4 +103,22 @@ public class AuthenticationController {
         authenticationService.submitAccessTokenPassword(token, input.getPassword());
     }
 
+    @ExceptionHandler(PasswordNotSetAuthenticationException.class)
+    protected ResponseEntity<Object> handlePasswordNotSetAuthenticationException(
+            PasswordNotSetAuthenticationException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY, "Password not set", ex);
+        return new ResponseEntity<>(errorResponse, errorResponse.getStatus());
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    protected ResponseEntity<Object> handleUserNotFoundException(UserNotFoundException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNAUTHORIZED, "User not found", ex);
+        return new ResponseEntity<>(errorResponse, errorResponse.getStatus());
+    }
+
+    @ExceptionHandler(WrongPasswordException.class)
+    protected ResponseEntity<Object> handleWrongPasswordException(WrongPasswordException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNAUTHORIZED, "Bad credentials", ex);
+        return new ResponseEntity<>(errorResponse, errorResponse.getStatus());
+    }
 }

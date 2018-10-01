@@ -55,6 +55,37 @@ public class UserApplicationService {
         return output;
     }
 
+    public UserOutput createUser(CreateUserInput input) {
+        // check for duplicate email address
+        Optional<UserEntity> matchingEmailUser = userRepository.findByEmail(input.getEmail().trim());
+        if (matchingEmailUser.isPresent()) {
+            throw new DuplicateUserEmailAddressException(matchingEmailUser.get().getUserId(),
+                    matchingEmailUser.get().getFirstName(), matchingEmailUser.get().getLastName(),
+                    matchingEmailUser.get().getEmail());
+        }
+
+        UserEntity entity = new UserEntity();
+        entity.setFirstName(input.getFirstName().trim());
+        entity.setLastName(input.getLastName().trim());
+        entity.setHomePhone(input.getHomePhone().map(String::trim).orElse(null));
+        entity.setMobilePhone(input.getMobilePhone().map(String::trim).orElse(null));
+        entity.setEmail(input.getEmail().trim());
+
+        CongregationEntity congregation = new CongregationEntity();
+        congregation.setCongregationId(input.getCongregationId());
+        entity.setCongregation(congregation);
+        entity.setPosition(input.getPosition());
+
+        entity.setUserStatus(UserStatus.ACTIVE); // active - may be requested to be approved by the cong.
+        entity.setRole(UserRole.USER); // default user. Must be further edited to grant admin access
+
+        userRepository.save(entity);
+
+        UserOutput output = userMapper.map(entity);
+        return output;
+
+    }
+
     public void updatePassword(Integer userId, String encodedPassword) {
         UserEntity entity = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("No User#" + userId + " found"));
@@ -66,11 +97,21 @@ public class UserApplicationService {
         UserEntity entity = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("No User#" + userId + " found"));
 
-        entity.setFirstName(input.getFirstName());
-        entity.setLastName(input.getLastName());
-        entity.setHomePhone(input.getHomePhone().orElse(null));
-        entity.setMobilePhone(input.getMobilePhone().orElse(null));
-        entity.setEmail(input.getEmail());
+        // if the email address has been changed, make sure this is not a duplicate
+        if (!entity.getEmail().equalsIgnoreCase(input.getEmail().trim())) {
+            Optional<UserEntity> matchingEmailUser = userRepository.findByEmail(input.getEmail().trim());
+            if (matchingEmailUser.isPresent()) {
+                throw new DuplicateUserEmailAddressException(matchingEmailUser.get().getUserId(),
+                        matchingEmailUser.get().getFirstName(), matchingEmailUser.get().getLastName(),
+                        matchingEmailUser.get().getEmail());
+            }
+        }
+
+        entity.setFirstName(input.getFirstName().trim());
+        entity.setLastName(input.getLastName().trim());
+        entity.setHomePhone(input.getHomePhone().map(String::trim).orElse(null));
+        entity.setMobilePhone(input.getMobilePhone().map(String::trim).orElse(null));
+        entity.setEmail(input.getEmail().trim());
 
         CongregationEntity congregation = new CongregationEntity();
         congregation.setCongregationId(input.getCongregationId());

@@ -1,8 +1,5 @@
 package org.attendantsoffice.eventmanager.mvc.error;
 
-import org.attendantsoffice.eventmanager.user.security.PasswordNotSetAuthenticationException;
-import org.attendantsoffice.eventmanager.user.security.UserNotFoundException;
-import org.attendantsoffice.eventmanager.user.security.WrongPasswordException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.TypeMismatchException;
@@ -25,25 +22,6 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 @RestControllerAdvice
 public class ResponseExceptionHandler {
     private static final Logger LOG = LoggerFactory.getLogger(ResponseExceptionHandler.class);
-
-    // application specific exceptions
-    @ExceptionHandler(PasswordNotSetAuthenticationException.class)
-    protected ResponseEntity<Object> handlePasswordNotSetAuthenticationException(
-            PasswordNotSetAuthenticationException ex) {
-        return handleException(HttpStatus.UNPROCESSABLE_ENTITY, "Password not set", ex, false);
-    }
-
-    @ExceptionHandler(UserNotFoundException.class)
-    protected ResponseEntity<Object> handleUserNotFoundException(UserNotFoundException ex) {
-        return handleException(HttpStatus.UNAUTHORIZED, "User not found", ex, false);
-    }
-
-    @ExceptionHandler(WrongPasswordException.class)
-    protected ResponseEntity<Object> handleWrongPasswordException(WrongPasswordException ex) {
-        return handleException(HttpStatus.UNAUTHORIZED, "Bad credentials", ex, false);
-    }
-
-    // generic exceptions around the spring framework
 
     @ExceptionHandler({
         IllegalArgumentException.class,
