@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
+import { Link } from 'react-router-dom'
+
 // material ui components
+import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
 
 import { SortingState, IntegratedSorting, DataTypeProvider } from '@devexpress/dx-react-grid';
@@ -68,8 +71,9 @@ class Events extends Component {
 
 	transformEventRows(rows) {
     	return rows.map(row => {
+            let url = '/events/' + row.eventId
     		return 	{  
-    			"id": row.eventId, 
+    			"id": <Button color="primary" size="small" component={Link} to={url}>{row.eventId}</Button>, 
     			"name" : row.name, 
     			"location": row.location,
     			"startDate": row.startDate,
@@ -116,4 +120,4 @@ Events.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(Events);
+export default withStyles(styles, { withTheme: true })(Events);

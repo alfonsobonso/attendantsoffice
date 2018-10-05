@@ -17,7 +17,6 @@ import { withStyles } from '@material-ui/core/styles';
 // components
 import ReauthenticateModal from '../login/ReauthenticateModal'
 import AuthenticationService from '../authentication/AuthenticationService'
-import ErrorNotifier from '../error/ErrorNotifier';
 import HeadlineWithAction from '../common/HeadlineWithAction'
 
 import UserEdit from './UserEdit'
@@ -99,7 +98,6 @@ class User extends React.Component {
         return (
             <div className={classes.root}>
                 {reauthenticate && <ReauthenticateModal onReauthenticated={this.componentDidMount.bind(this)} />}
-                <ErrorNotifier />
                 {editDialogOpen && <UserEdit 
                     user={user} 
                     onClosed={this.onCloseDialog.bind(this)} 

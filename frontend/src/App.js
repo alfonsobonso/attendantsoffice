@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
+import { IntlProvider } from 'react-intl';
 
 import {
     BrowserRouter as Router,
@@ -12,11 +13,14 @@ import { withStyles } from '@material-ui/core/styles';
 
 import HeaderAppBar from './common/HeaderAppBar';
 import withAuthenticationService from './authentication/withAuthenticationService';
+import ErrorNotifier from './error/ErrorNotifier';
 
-import Home  from './home/Home.js';
-import Events  from './events/Events.js';
-import Users  from './users/Users.js';
-import User  from './users/User.js';
+import Home  from './home/Home';
+import Events  from './events/Events';
+import Event  from './events/Event';
+import EventTeams  from './events/teams/EventTeams';
+import Users  from './users/Users';
+import User  from './users/User';
 
 const styles = theme => ({
     root: {
@@ -50,22 +54,27 @@ class App extends Component {
     render() {
         return(
             <div className="App">
-                <Router>
-                    <div className={this.classes.root}>
-                        <header>
-                            <HeaderAppBar history={this.props.history} />
-                        </header>
-                        <main className={this.classes.content}>
-                            <div className={this.classes.toolbar} />
-                            <Switch>
-                                <Route exact path="/" component={Home} />
-                                <Route exact path="/users" component={Users} />
-                                <Route exact path="/users/:userId" component={User} />
-                                <Route exact path="/events" component={Events} />
-                            </Switch>
-                        </main>
-                    </div>
-                </Router>
+                <IntlProvider locale={navigator.language}>
+                    <Router>
+                        <div className={this.classes.root}>
+                            <ErrorNotifier />
+                            <header>
+                                <HeaderAppBar history={this.props.history} />
+                            </header>
+                            <main className={this.classes.content}>
+                                <div className={this.classes.toolbar} />
+                                <Switch>
+                                    <Route exact path="/" component={Home} />
+                                    <Route exact path="/users" component={Users} />
+                                    <Route exact path="/users/:userId" component={User} />
+                                    <Route exact path="/events" component={Events} />
+                                    <Route exact path="/events/:eventId" component={Event} />
+                                    <Route exact path="/events/:eventId/teams" component={EventTeams} />
+                                </Switch>
+                            </main>
+                        </div>
+                    </Router>
+                </IntlProvider>
             </div>
         );
     }

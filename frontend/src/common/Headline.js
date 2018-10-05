@@ -40,4 +40,4 @@ Headline.propTypes = {
 	headline: PropTypes.string.isRequired,
 };
 
-export default withStyles(styles)(Headline);
+export default withStyles(styles, { withTheme: true })(Headline);

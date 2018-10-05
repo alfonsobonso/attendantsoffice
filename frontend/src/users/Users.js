@@ -16,7 +16,6 @@ import { withStyles } from '@material-ui/core/styles';
 // components
 import ReauthenticateModal from '../login/ReauthenticateModal.js'
 import AuthenticationService from '../authentication/AuthenticationService.js'
-import ErrorNotifier from '../error/ErrorNotifier';
 import HeadlineWithAction from '../common/HeadlineWithAction.js'
 import ActionNotifier, { displayActionMessage } from '../common/ActionNotifier.js'
 import UserAdd from './UserAdd'
@@ -184,7 +183,6 @@ class Users extends Component {
             <React.Fragment>
                 <HeadlineWithAction headline="Users" buttonLabel="Add new user" buttonOnClick={this.openAddDialog.bind(this)} />
                 {this.state.reauthenticate && <ReauthenticateModal onReauthenticated={this.componentDidMount} />}
-                <ErrorNotifier />
                 <ActionNotifier />
                 {editDialogOpen && <UserAdd 
                     onClosed={this.closeAddDialog.bind(this)} 
