@@ -28,4 +28,25 @@ public class EventApplicationService {
         return outputList;
     }
 
+    @Transactional(readOnly = true)
+    public EventOutput findEvent(Integer eventId) {
+        List<EventEntity> entityList = eventRepository.findAllEvents();
+        EventEntity entity = entityList.stream()
+                .filter(c -> c.getEventId().equals(eventId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Unknown Event#" + eventId));
+        return eventMapper.map(entity);
+    }
+
+    @Transactional(readOnly = true)
+    public String findName(Integer eventId) {
+        List<EventEntity> events = eventRepository.findAllEvents();
+
+        EventEntity entity = events.stream()
+                .filter(c -> c.getEventId().equals(eventId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Unknown Event#" + eventId));
+        return entity.getName();
+    }
+
 }

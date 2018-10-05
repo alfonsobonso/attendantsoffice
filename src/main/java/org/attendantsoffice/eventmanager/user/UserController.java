@@ -3,7 +3,6 @@ package org.attendantsoffice.eventmanager.user;
 
 import org.attendantsoffice.eventmanager.common.paging.PageOutput;
 import org.attendantsoffice.eventmanager.mvc.error.ErrorResponse;
-import org.attendantsoffice.eventmanager.user.security.WrongPasswordException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

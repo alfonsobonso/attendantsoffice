@@ -8,7 +8,7 @@ import org.immutables.value.Value;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
- * User information, formatted for the API.
+ * Event information, formatted for the API.
  */
 @DefaultStyle
 @Value.Immutable

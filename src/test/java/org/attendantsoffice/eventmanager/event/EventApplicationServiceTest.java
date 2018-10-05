@@ -37,19 +37,11 @@ public class EventApplicationServiceTest {
 
     @Test
     public void testFindEvents() {
-        EventEntity entity = new EventEntity();
-        entity.setEventId(1);
+        EventEntity entity = eventEntity(1);
 
         when(eventRepository.findAllEvents()).thenReturn(Collections.singletonList(entity));
 
-        EventOutput output = ImmutableEventOutput.builder()
-                .eventId(entity.getEventId())
-                .name("Event#" + entity.getEventId())
-                .location("location")
-                .startDate(LocalDate.now())
-                .endDate(LocalDate.now())
-                .eventStatus(EventStatus.ANNOUNCED)
-                .build();
+        EventOutput output = eventOutput(1);
 
         when(eventMapper.map(entity)).thenReturn(output);
 
@@ -59,4 +51,55 @@ public class EventApplicationServiceTest {
         verify(eventMapper, times(1)).map(any());
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testFindEventNotFound() {
+        EventEntity entity = eventEntity(1);
+
+        when(eventRepository.findAllEvents()).thenReturn(Collections.singletonList(entity));
+
+        service.findEvent(2);
+    }
+
+    @Test
+    public void testFindEvent() {
+        EventEntity entity = eventEntity(1);
+
+        when(eventRepository.findAllEvents()).thenReturn(Collections.singletonList(entity));
+
+        EventOutput output = eventOutput(1);
+        when(eventMapper.map(entity)).thenReturn(output);
+
+        EventOutput result = service.findEvent(1);
+        assertEquals(output, result);
+
+        verify(eventMapper, times(1)).map(any());
+    }
+
+    @Test
+    public void testFindName() {
+        EventEntity entity = eventEntity(1);
+
+        when(eventRepository.findAllEvents()).thenReturn(Collections.singletonList(entity));
+        String name = service.findName(1);
+        assertEquals("Event#1", name);
+    }
+
+    private EventEntity eventEntity(int id) {
+        EventEntity entity = new EventEntity();
+        entity.setEventId(id);
+        entity.setName("Event#" + id);
+        return entity;
+    }
+
+    private ImmutableEventOutput eventOutput(int id) {
+        ImmutableEventOutput output = ImmutableEventOutput.builder()
+                .eventId(id)
+                .name("Event#" + id)
+                .location("location")
+                .startDate(LocalDate.now())
+                .endDate(LocalDate.now())
+                .eventStatus(EventStatus.ANNOUNCED)
+                .build();
+        return output;
+    }
 }

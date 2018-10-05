@@ -51,3 +51,18 @@ CREATE TABLE event (
     updated_by_user_id INT,
     updated_date_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
+
+CREATE TABLE event_team (
+    event_team_id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    event_id INT UNSIGNED NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    name_with_captain VARCHAR(500) NOT NULL,
+    parent_event_team_id INT UNSIGNED,
+    created_by_user_id INT NOT NULL,
+    created_date_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_by_user_id INT,
+    updated_date_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY fk_event(event_id) REFERENCES event(event_id),
+    FOREIGN KEY fk_parent_event_team(parent_event_team_id) REFERENCES event_team(event_team_id),
+    CONSTRAINT uq_name UNIQUE(event_id, name)
+);
