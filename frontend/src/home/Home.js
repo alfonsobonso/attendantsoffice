@@ -4,6 +4,9 @@ import 'typeface-roboto'
 import ReauthenticateModal from '../login/ReauthenticateModal.js'
 import AuthenticationService from '../authentication/AuthenticationService.js'
 
+import Headline from '../common/Headline'
+import InformationCard from './InformationCard'
+
 class Home extends React.Component {
 	constructor() {
         super();
@@ -12,31 +15,15 @@ class Home extends React.Component {
 
 	state = {};
 
-	componentDidMount() {
-		this.hello();
-    }
-
-    hello = () => {
-        this.AuthService.fetch('/api/hello', {})
-        .then(response => {
-            if(response.ok) {
-                return response.text();
-            } else if (response.status === 401) {
-            	this.setState({reauthenticate: true})
-            } else {
-                alert("Request failed with error code: " + response.status);
-            }
-        })
-        .then(message => {
-            this.setState({message: message});
-        });
-    };
-
     render() {
         return (
             <React.Fragment>
+                <Headline 
+                    headline="'Be Courageous' - 2018 Regional Convention, The SSE Hydro, Glasgow July 20-22"
+                    subheading="Welcome to the Attendants Department Online Resource"
+                />
                 {this.state.reauthenticate && <ReauthenticateModal onReauthenticated={this.componentDidMount.bind(this)} />}
-			    <div>Hi {this.AuthService.getProfile()}:  This is the home page {this.state.message}</div>
+                <InformationCard />
             </React.Fragment>
         );
     }
