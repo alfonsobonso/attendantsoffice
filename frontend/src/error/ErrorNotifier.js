@@ -107,6 +107,7 @@ class ErrorNotifier extends React.Component {
       		<Snackbar
         		anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         		autoHideDuration={5000}
+            onClose={this.handleSnackbarClose}
         		open={open}
         	>
         		<ErrorNotifierWrapper 
