@@ -35,6 +35,7 @@ public class AuthenticationTokenMailSender {
     public void mailAuthenticationTokenMail(Integer userId, String email, String token) {
         if (!isValidEmail(email)) {
             LOG.info("Token [{}] not sent to [{}] (User#{}) - email address is not whitelisted", token, email, userId);
+            LOG.info("Access url: /token-access/{}", token);
             return;
         }
 
