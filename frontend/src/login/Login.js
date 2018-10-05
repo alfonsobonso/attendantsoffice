@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { Formik } from 'formik';
 import PropTypes from 'prop-types';
 
+import { Link } from 'react-router-dom'
+
 // material ui components
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
@@ -53,6 +55,10 @@ const styles = theme => ({
     submit: {
         marginTop: theme.spacing.unit * 3,
     },
+    forgottenPassword: {
+        marginLeft: 'auto',
+        marginTop: theme.spacing.unit
+    } 
 });
 
 // When the user already has a password set they go to the basic email + password form to authenticate
@@ -158,6 +164,9 @@ class Login extends Component {
                                 )
                             }
                         />
+                        <Typography variant="body1" gutterBottom align="right" color="inherit" className={this.classes.forgottenPassword}>
+                            <Button color="primary" size="small" component={Link} to={'/forgotten-password'}>forgotten my password</Button>
+                        </Typography>
                     </Paper>
                 </main>
             </ErrorBoundary>
