@@ -32,7 +32,7 @@ class HeadlineWithAction extends Component {
 
 		return (
 			<div className={classes.header}>
-                <div  className={classes.flex}>
+                <div className={classes.flex}>
                     <Typography variant="headline" color="inherit">
                         {headline}
                     </Typography>
@@ -56,8 +56,8 @@ class HeadlineWithAction extends Component {
 HeadlineWithAction.propTypes = {
 	classes: PropTypes.object.isRequired,
 	theme: PropTypes.object.isRequired,
-	headline: PropTypes.string.isRequired,
-    subheading: PropTypes.object,
+	headline: PropTypes.oneOfType([ PropTypes.string, PropTypes.object ]).isRequired,
+    subheading: PropTypes.oneOfType([ PropTypes.string, PropTypes.object ]),
 	buttonLabel: PropTypes.string.isRequired,
 	buttonOnClick: PropTypes.func.isRequired,
 };
