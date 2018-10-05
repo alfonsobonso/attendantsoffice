@@ -12,8 +12,10 @@ import {
 import { withStyles } from '@material-ui/core/styles';
 
 import HeaderAppBar from './common/HeaderAppBar';
+import ActionNotifier from './common/ActionNotifier'
 import withAuthenticationService from './authentication/withAuthenticationService';
 import ErrorNotifier from './error/ErrorNotifier';
+
 
 import Home  from './home/Home';
 import Events  from './events/Events';
@@ -58,6 +60,7 @@ class App extends Component {
                     <Router>
                         <div className={this.classes.root}>
                             <ErrorNotifier />
+                            <ActionNotifier />
                             <header>
                                 <HeaderAppBar history={this.props.history} />
                             </header>
