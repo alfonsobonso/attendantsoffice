@@ -1,43 +1,70 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+
+import classNames from 'classnames';
+
 import Snackbar from '@material-ui/core/Snackbar';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
+import IconButton from '@material-ui/core/IconButton';
+
+import CloseIcon from '@material-ui/icons/Close';
 import ErrorIcon from '@material-ui/icons/Error';
+
+
 import { withStyles } from '@material-ui/core/styles';
 
 
 let displayErrorMessageFn;
 
 const contentStyles = theme => ({
-  backgroundColor: theme.palette.error.dark,
-  icon: {
-    fontSize: 20,
-  },
-  iconVariant: {
-    opacity: 0.9,
-    marginRight: theme.spacing.unit,
-  },
-  message: {
-    display: 'flex',
-    alignItems: 'center',
-  },
+    error: {
+        backgroundColor: theme.palette.error.dark,
+    },
+    icon: {
+        fontSize: 20,
+        opacity: 0.9,
+        marginRight: theme.spacing.unit,
+    },
+    message: {
+        display: 'flex',
+        alignItems: 'center',
+    },
 });
 
 function ErrorNotifierContent(props) {
-  	const { classes, message } = props;
+  	const { classes, className, message, onClose, ...other } = props;
   	
   	return (
-    	<SnackbarContent className={classes}
-            variant="error"
-      		aria-describedby="client-snackbar"
+    	<SnackbarContent className={classNames(classes.error, className)}
+            aria-describedby="client-snackbar"
       		message={
-        		<span id="client-snackbar" className={classes.message}>
-          		<ErrorIcon className={classes.icon} />
-          		{message}
-        		</span>
-			}
+                <span id="client-snackbar" className={classes.message}>
+                    <ErrorIcon className={classes.icon} />
+                    {message}
+                </span>
+            }
+            action={[
+                <IconButton
+                    key="close"
+                    aria-label="Close"
+                    color="inherit"
+                    className={classes.close}
+                    onClick={onClose}
+                >
+                <CloseIcon className={classes.icon} />
+                </IconButton>,
+            ]}
+      {...other}
 	    />
   	);
 }
+
+ErrorNotifierContent.propTypes = {
+    classes: PropTypes.object.isRequired,
+    className: PropTypes.string,
+    message: PropTypes.node,
+    onClose: PropTypes.func,
+};
 
 const ErrorNotifierWrapper = withStyles(contentStyles)(ErrorNotifierContent);
 
@@ -73,24 +100,20 @@ class ErrorNotifier extends React.Component {
   	};
 
 	render() {
-    	const message = (
-      		<span
-        		id="snackbar-message-id"
-        		dangerouslySetInnerHTML={{ __html: this.state.message }}
-      		/>
-    	);
+        const { classes } = this.props;
+        const { message, open } = this.state;
 
     	return (
       		<Snackbar
         		anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-        		autoHideDuration={3000}
-        		onClose={this.handleSnackbarClose}
-        		open={this.state.open}
-        		SnackbarContentProps={{
-          			'aria-describedby': 'snackbar-message-id',
-        		}}
+        		autoHideDuration={5000}
+        		open={open}
         	>
-        		<ErrorNotifierWrapper message={message}	/>
+        		<ErrorNotifierWrapper 
+                    message={message} 
+                    className={classes.margin}
+                    onClose={this.handleSnackbarClose}
+                />
 	      	</Snackbar>
       	);
   	}
