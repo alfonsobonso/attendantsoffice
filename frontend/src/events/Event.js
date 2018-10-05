@@ -82,7 +82,7 @@ class Event extends React.Component {
 
 	render() {
         const { classes } = this.props;
-        const { event, reauthenticate, editDialogOpen } = this.state;
+        const { event, reauthenticate } = this.state;
 
         if(reauthenticate) {
             return (
