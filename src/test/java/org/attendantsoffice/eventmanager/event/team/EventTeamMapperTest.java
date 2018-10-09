@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 import java.time.Instant;
+import java.util.Collections;
 
 import org.attendantsoffice.eventmanager.event.EventApplicationService;
 import org.attendantsoffice.eventmanager.event.EventEntity;
@@ -49,7 +50,7 @@ public class EventTeamMapperTest {
 
         when(eventApplicationService.findName(10)).thenReturn("Event#10");
 
-        EventTeamOutput output = mapper.map(entity);
+        EventTeamOutput output = mapper.map(entity, Collections.singletonList(entity));
 
         assertEquals(1, output.getEventTeamId().intValue());
         assertEquals("EventTeam#1", output.getName());

@@ -27,7 +27,7 @@ public class EventTeamApplicationService {
         List<EventTeamOutput> outputList = entityList.stream()
                 .filter(e -> searchCriteria.getEventId() == null
                         || searchCriteria.getEventId().equals(e.getEvent().getEventId()))
-                .map(eventTeamMapper::map)
+                .map(e -> eventTeamMapper.map(e, entityList))
                 .collect(Collectors.toList());
         return outputList;
     }

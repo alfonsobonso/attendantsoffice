@@ -41,32 +41,33 @@ public class EventTeamApplicationServiceTest {
         EventTeamSearchCriteria searchCriteria = new EventTeamSearchCriteria();
         searchCriteria.setEventId(2);
 
-        EventTeamEntity team10 = eventTeamEntity(10, 2);
-        EventTeamEntity team11 = eventTeamEntity(11, 2);
-        EventTeamEntity team12 = eventTeamEntity(12, 3); // filtered out
+        EventTeamEntity team10 = eventTeamEntity(10, 2, null);
+        EventTeamEntity team11 = eventTeamEntity(11, 2, 10);
+        EventTeamEntity team12 = eventTeamEntity(12, 3, null); // filtered out
+        List<EventTeamEntity> teams = Lists.newArrayList(team10, team11, team12);
 
-        when(eventTeamRepository.findAllEventTeams()).thenReturn(Lists.newArrayList(team10, team11, team12));
-        when(eventTeamMapper.map(team10)).thenReturn(output(10, 2));
-        when(eventTeamMapper.map(team11)).thenReturn(output(11, 2));
+        when(eventTeamRepository.findAllEventTeams()).thenReturn(teams);
+        when(eventTeamMapper.map(team10, teams)).thenReturn(output(10, 2));
+        when(eventTeamMapper.map(team11, teams)).thenReturn(output(11, 2));
 
         List<EventTeamOutput> outputs = service.findEventTeams(searchCriteria);
         assertEquals(2, outputs.size());
 
         assertEquals(10, outputs.get(0).getEventTeamId().intValue());
 
-        verify(eventTeamMapper, times(2)).map(any());
+        verify(eventTeamMapper, times(2)).map(any(), any());
     }
 
     @Test
     public void findEventName() {
-        EventTeamEntity team = eventTeamEntity(10, 2);
+        EventTeamEntity team = eventTeamEntity(10, 2, null);
         when(eventTeamRepository.findAllEventTeams()).thenReturn(Lists.newArrayList(team));
         String name = service.findName(10);
 
         assertEquals("EventTeam#10", name);
     }
 
-    private EventTeamEntity eventTeamEntity(int id, int eventId) {
+    private EventTeamEntity eventTeamEntity(int id, int eventId, Integer parentEventTeamId) {
         EventTeamEntity entity = new EventTeamEntity();
         entity.setEventTeamId(id);
 
@@ -74,6 +75,7 @@ public class EventTeamApplicationServiceTest {
         event.setEventId(eventId);
         entity.setEvent(event);
         entity.setName("EventTeam#" + id);
+        entity.setParentEventTeamId(parentEventTeamId);
         return entity;
     }
 
