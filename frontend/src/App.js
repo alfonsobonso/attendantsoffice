@@ -21,6 +21,7 @@ import Home  from './home/Home';
 import Events  from './events/Events';
 import Event  from './events/Event';
 import EventTeams  from './events/teams/EventTeams';
+import EventTeam  from './events/teams/EventTeam';
 import Users  from './users/Users';
 import User  from './users/User';
 
@@ -73,6 +74,7 @@ class App extends Component {
                                     <Route exact path="/events" component={Events} />
                                     <Route exact path="/events/:eventId" component={Event} />
                                     <Route exact path="/events/:eventId/teams" component={EventTeams} />
+                                    <Route exact path="/event-teams/:eventTeamId" component={EventTeam} />
                                 </Switch>
                             </main>
                         </div>
