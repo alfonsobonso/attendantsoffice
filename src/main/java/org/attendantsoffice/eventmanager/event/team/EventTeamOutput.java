@@ -31,7 +31,8 @@ public interface EventTeamOutput {
     public String getNameWithCaptain();
 
     /**
-     * @return optional team hierarchy.
+     * @return optional team hierarchy. We use the parent {@code #getNameWithCaptain()} to make our listing views easier
+     * to navigate.
      */
     public Optional<EntityListOutput> getParentEventTeam();
 

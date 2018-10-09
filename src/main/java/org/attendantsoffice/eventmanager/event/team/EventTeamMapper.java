@@ -54,7 +54,7 @@ public class EventTeamMapper {
                 .filter(et -> et.getEventTeamId().equals(parentId))
                 .findAny()
                 .orElseThrow(() -> new IllegalStateException("EventTeam parent#" + parentId + " was not found"));
-        return ImmutableEntityListOutput.of(parentId, parent.getName());
+        return ImmutableEntityListOutput.of(parentId, parent.getNameWithCaptain());
     }
 
 }
