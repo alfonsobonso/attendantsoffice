@@ -25,6 +25,8 @@ public class EventTeamApplicationService {
     public List<EventTeamOutput> findEventTeams(EventTeamSearchCriteria searchCriteria) {
         List<EventTeamEntity> entityList = eventTeamRepository.findAllEventTeams();
         List<EventTeamOutput> outputList = entityList.stream()
+                .filter(e -> searchCriteria.getEventTeamId() == null
+                        || searchCriteria.getEventTeamId().equals(e.getEventTeamId()))
                 .filter(e -> searchCriteria.getEventId() == null
                         || searchCriteria.getEventId().equals(e.getEvent().getEventId()))
                 .map(e -> eventTeamMapper.map(e, entityList))

@@ -9,7 +9,18 @@ import javax.annotation.Nullable;
  */
 public class EventTeamSearchCriteria {
     @Nullable
+    public Integer eventTeamId;
+
+    @Nullable
     private Integer eventId;
+
+    public Integer getEventTeamId() {
+        return eventTeamId;
+    }
+
+    public void setEventTeamId(Integer eventTeamId) {
+        this.eventTeamId = eventTeamId;
+    }
 
     public Integer getEventId() {
         return eventId;

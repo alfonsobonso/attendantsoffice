@@ -1,9 +1,10 @@
 package org.attendantsoffice.eventmanager.event.team;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.attendantsoffice.eventmanager.common.list.ImmutableEntityListOutput;
@@ -35,14 +36,39 @@ public class EventTeamControllerTest {
     }
 
     @Test
+    public void testFindEventTeam() {
+        EventTeamSearchCriteria criteria = new EventTeamSearchCriteria();
+        criteria.setEventTeamId(200);
+
+        EventTeamOutput output = output(200, 100);
+
+        when(eventTeamApplicationService.findEventTeams(eventTeamSearchCriteriaCaptor.capture())).thenReturn(
+                singletonList(output));
+        EventTeamOutput result = controller.findEventTeam(200);
+
+        assertEquals(200, result.getEventTeamId().intValue());
+        assertEquals(200, eventTeamSearchCriteriaCaptor.getValue().getEventTeamId().intValue());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testFindEventTeamNotFound() {
+        EventTeamSearchCriteria criteria = new EventTeamSearchCriteria();
+        criteria.setEventTeamId(200);
+
+        when(eventTeamApplicationService.findEventTeams(eventTeamSearchCriteriaCaptor.capture())).thenReturn(
+                emptyList());
+        controller.findEventTeam(200);
+    }
+
+    @Test
     public void testFindEventTeams() {
         EventTeamSearchCriteria criteria = new EventTeamSearchCriteria();
         criteria.setEventId(100);
 
-        EventTeamOutput outputs = output(150, 100);
+        EventTeamOutput output = output(150, 100);
 
-        when(eventTeamApplicationService.findEventTeams(eventTeamSearchCriteriaCaptor.capture())).thenReturn(Collections
-                .singletonList(outputs));
+        when(eventTeamApplicationService.findEventTeams(eventTeamSearchCriteriaCaptor.capture())).thenReturn(
+                singletonList(output));
 
         List<EventTeamOutput> eventTeams = controller.findEventTeams(100);
 

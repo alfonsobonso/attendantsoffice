@@ -17,6 +17,19 @@ public class EventTeamController {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping(path = "/event-teams/{eventTeamId}")
+    public EventTeamOutput findEventTeam(@PathVariable int eventTeamId) {
+        EventTeamSearchCriteria searchCriteria = new EventTeamSearchCriteria();
+        searchCriteria.setEventTeamId(eventTeamId);
+
+        List<EventTeamOutput> eventTeams = eventTeamApplicationService.findEventTeams(searchCriteria);
+        if (eventTeams.isEmpty()) {
+            throw new IllegalArgumentException("EventTeam#" + eventTeamId + " is not found");
+        }
+        return eventTeams.get(0);
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(path = "/events/{eventId}/teams")
     public List<EventTeamOutput> findEventTeams(@PathVariable int eventId) {
         EventTeamSearchCriteria searchCriteria = new EventTeamSearchCriteria();
@@ -24,4 +37,5 @@ public class EventTeamController {
 
         return eventTeamApplicationService.findEventTeams(searchCriteria);
     }
+
 }

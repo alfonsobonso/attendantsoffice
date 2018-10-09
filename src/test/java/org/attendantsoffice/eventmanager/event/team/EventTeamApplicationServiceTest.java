@@ -37,6 +37,26 @@ public class EventTeamApplicationServiceTest {
     }
 
     @Test
+    public void findEventTeamsByTeam() {
+        EventTeamSearchCriteria searchCriteria = new EventTeamSearchCriteria();
+        searchCriteria.setEventTeamId(11);
+
+        EventTeamEntity team10 = eventTeamEntity(10, 2, null);
+        EventTeamEntity team11 = eventTeamEntity(11, 2, 10);
+        List<EventTeamEntity> teams = Lists.newArrayList(team10, team11);
+
+        when(eventTeamRepository.findAllEventTeams()).thenReturn(teams);
+        when(eventTeamMapper.map(team11, teams)).thenReturn(output(11, 2));
+
+        List<EventTeamOutput> outputs = service.findEventTeams(searchCriteria);
+        assertEquals(1, outputs.size());
+
+        assertEquals(11, outputs.get(0).getEventTeamId().intValue());
+
+        verify(eventTeamMapper, times(1)).map(any(), any());
+    }
+
+    @Test
     public void findEventTeamsByEvent() {
         EventTeamSearchCriteria searchCriteria = new EventTeamSearchCriteria();
         searchCriteria.setEventId(2);
