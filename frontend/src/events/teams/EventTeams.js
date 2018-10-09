@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 // material ui components
 import Paper from '@material-ui/core/Paper';
 
-import { SortingState, IntegratedSorting, DataTypeProvider } from '@devexpress/dx-react-grid';
+import { SortingState, IntegratedSorting } from '@devexpress/dx-react-grid';
 import { Grid, Table, TableHeaderRow } from '@devexpress/dx-react-grid-material-ui';
 
 import { withStyles } from '@material-ui/core/styles';
@@ -25,14 +25,6 @@ const styles = theme => ({
   	},
 });
 
-const DateFormatter = ({ value }) => value;
-const DateTypeProvider = props => (
-  <DataTypeProvider
-    formatterComponent={DateFormatter}
-    {...props}
-  />
-);
-
 // the number of event teamss is small, so the data is loaded in a single request, 
 // and the sorting/filtering is controlled client side. 
 // We are using the uncontrolled-mode, where the grid itself manages state.
@@ -46,16 +38,17 @@ class EventTeams extends Component {
 
     state = {};
 
-	componentDidMount() {
-    	this.fetchData();
+    componentDidMount() {
+        const { match: { params } } = this.props;
+        this.fetchTeams(params.eventId);
     }
 
-    fetchData = () => {   	
-        this.AuthService.fetch('/api/events', {})
+    fetchTeams = (eventId) => {   	
+        this.AuthService.fetch('/api/events/' + eventId + '/teams', {})
         .then(response => {
             if(response.ok) {
                 return response.json().then((json) => {
-                	var transformed = this.transformEventRows(json);
+                	var transformed = this.transformEventTeamRows(json);
                 	this.setState({"rows": transformed });
             	});
             } else if (response.status === 401) {
@@ -66,15 +59,12 @@ class EventTeams extends Component {
         });
     };
 
-	transformEventRows(rows) {
+	transformEventTeamRows(rows) {
     	return rows.map(row => {
     		return 	{  
-    			"id": row.eventId, 
+    			"id": row.eventTeamId, 
     			"name" : row.name, 
-    			"location": row.location,
-    			"startDate": row.startDate,
-    			"endDate": row.endDate,
-    			"status": row.eventStatus
+                "parent": row.parent?row.parent.name:''
 				};
     		});
     }
@@ -91,16 +81,10 @@ class EventTeams extends Component {
     				    columns={[
     				      	{ name: 'id', title: 'ID' },
     				      	{ name: 'name', title: 'Name' },
-    				      	{ name: 'location', title: 'Location' },
-    				      	{ name: 'startDate', title: 'Start Date' },
-    				      	{ name: 'endDate', title: 'End Date' },
-    				      	{ name: 'status', title: 'Status' },
+                            { name: 'parent', title: 'Parent' },
     				    ]}>
-    				    <DateTypeProvider
-    	            		for={['startDate', 'endDate']}
-    	          		/>
     				    <SortingState
-    	            		defaultSorting={[{ columnName: 'startDate', direction: 'desc' }]}
+    	            		defaultSorting={[{ columnName: 'id', direction: 'asc' }]}
     	          		/>
     	          		<IntegratedSorting />
     				    <Table />

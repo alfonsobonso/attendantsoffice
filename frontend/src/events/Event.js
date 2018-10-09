@@ -17,7 +17,10 @@ import ReauthenticateModal from '../login/ReauthenticateModal'
 import AuthenticationService from '../authentication/AuthenticationService'
 import { displayErrorMessage } from '../error/ErrorNotifier';
 import HeadlineWithAction from '../common/HeadlineWithAction'
+import Headline from '../common/Headline'
 import DateFormat from '../common/DateFormat'
+
+import EventTeamList from './teams/EventTeamList'
 
 
 const styles = theme => ({
@@ -120,6 +123,9 @@ class Event extends React.Component {
                         </List>
                     </Grid>
                 </Grid>
+
+                <Headline headline="Teams" headlineVariant="h6" />
+                <EventTeamList eventId={event.eventId} />
             </div>
         );
     }

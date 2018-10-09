@@ -22,16 +22,16 @@ const styles = theme => ({
 class Headline extends Component {
 
 	render() {
-		const { classes, headline, subheading } = this.props;
+		const { classes, headline, headlineVariant, subheading, subheadingVariant } = this.props;
 
 		return (
 			<div className={classes.header}>
                 <div className={classes.flex}>
-                    <Typography variant="headline" color="inherit">
+                    <Typography variant={headlineVariant || 'h4'} color="inherit">
                         {headline}
                     </Typography>
                     {subheading &&
-                        <Typography variant="subheading" gutterBottom>
+                        <Typography variant={subheadingVariant || 'subtitle1'} gutterBottom>
                             {subheading}
                         </Typography>
                     }
@@ -45,7 +45,9 @@ Headline.propTypes = {
 	classes: PropTypes.object.isRequired,
 	theme: PropTypes.object.isRequired,
 	headline: PropTypes.oneOfType([ PropTypes.string, PropTypes.object ]).isRequired,
+    headlineVariant: PropTypes.string,
     subheading: PropTypes.oneOfType([ PropTypes.string, PropTypes.object ]),
+    subheadingVariant: PropTypes.string,
 };
 
 export default withStyles(styles, { withTheme: true })(Headline);

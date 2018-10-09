@@ -170,7 +170,7 @@ class HeaderAppBar extends Component {
                         >
                             <MenuIcon />
                         </IconButton>
-                        <Typography variant="title" color="inherit" className={this.classes.flex}>
+                        <Typography variant="h4" color="inherit" className={this.classes.flex}>
                             Attendants Office
                         </Typography>
                         <Button color="inherit" 

@@ -28,16 +28,17 @@ const styles = theme => ({
 class HeadlineWithAction extends Component {
 
 	render() {
-		const { classes, headline, subheading, buttonLabel, buttonOnClick } = this.props;
+		const { classes, headline, headlineVariant, subheading, subheadingVariant, 
+                buttonLabel, buttonOnClick } = this.props;
 
 		return (
 			<div className={classes.header}>
                 <div className={classes.flex}>
-                    <Typography variant="headline" color="inherit">
+                    <Typography variant={headlineVariant || 'h4'} color="inherit">
                         {headline}
                     </Typography>
                     {subheading &&
-                        <Typography variant="subheading" gutterBottom>
+                        <Typography variant={subheadingVariant || 'subtitle1'} gutterBottom>
                             {subheading}
                         </Typography>
                     }
@@ -57,7 +58,9 @@ HeadlineWithAction.propTypes = {
 	classes: PropTypes.object.isRequired,
 	theme: PropTypes.object.isRequired,
 	headline: PropTypes.oneOfType([ PropTypes.string, PropTypes.object ]).isRequired,
+    headlineVariant: PropTypes.string,
     subheading: PropTypes.oneOfType([ PropTypes.string, PropTypes.object ]),
+    subheadingVariant: PropTypes.string,
 	buttonLabel: PropTypes.string.isRequired,
 	buttonOnClick: PropTypes.func.isRequired,
 };
