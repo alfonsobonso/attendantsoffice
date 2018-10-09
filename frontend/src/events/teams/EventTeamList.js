@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 // material ui components
-import { SortingState, IntegratedSorting } from '@devexpress/dx-react-grid';
-import { Grid, Table, TableHeaderRow } from '@devexpress/dx-react-grid-material-ui';
+import { SortingState, IntegratedSorting, FilteringState, IntegratedFiltering } from '@devexpress/dx-react-grid';
+import { Grid, Table, TableHeaderRow, TableFilterRow } from '@devexpress/dx-react-grid-material-ui';
 
 import { withStyles } from '@material-ui/core/styles';
 
@@ -58,8 +58,8 @@ class EventTeamList extends Component {
     	return rows.map(row => {
     		return 	{  
     			"id": row.eventTeamId, 
-    			"name" : row.name, 
-                "parent": row.parent?row.parent.name:''
+    			"name" : row.nameWithCaptain, 
+                "parent": row.parent ? row.parent.name : ''
 				};
     		});
     }
@@ -80,8 +80,11 @@ class EventTeamList extends Component {
 	            		defaultSorting={[{ columnName: 'id', direction: 'asc' }]}
 	          		/>
 	          		<IntegratedSorting />
+	          		<FilteringState defaultFilters={[]} />
+	          		<IntegratedFiltering />
 				    <Table />
 				    <TableHeaderRow showSortingControls />
+				    <TableFilterRow />
 			  	</Grid>
             </React.Fragment>
 		);
