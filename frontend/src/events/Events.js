@@ -13,9 +13,11 @@ import { Grid, Table, TableHeaderRow } from '@devexpress/dx-react-grid-material-
 import { withStyles } from '@material-ui/core/styles';
 
 // components
-import ReauthenticateModal from '../login/ReauthenticateModal.js'
-import AuthenticationService from '../authentication/AuthenticationService.js'
-import Headline from '../common/Headline.js'
+import ReauthenticateModal from '../login/ReauthenticateModal'
+import AuthenticationService from '../authentication/AuthenticationService'
+import HeadlineWithAction from '../common/HeadlineWithAction'
+import { displayActionMessage } from '../common/ActionNotifier'
+import EventAdd from './EventAdd'
 
 const styles = theme => ({
 	root: {
@@ -47,10 +49,32 @@ class Events extends Component {
         this.state = {"rows": []};
     }
 
-    state = {};
+    state = {
+        editDialogOpen: false
+    };
 
 	componentDidMount() {
     	this.fetchData();
+    }
+
+    openAddDialog = () => {
+        this.setState({editDialogOpen: true});
+    }
+
+    closeAddDialog = () => {
+        this.setState({editDialogOpen: false});   
+    }
+
+    onAdded = (event) => {
+        this.setState({editDialogOpen: false});
+
+        // display a notification indicating we have added a new user
+        let message = 'Added ' + event.name;
+        let actionUri = '/events/' + event.eventId;
+        displayActionMessage({message, actionUri});
+
+        // refetch the list on the current page/filters
+        this.fetchData();
     }
 
     fetchData = () => {   	
@@ -85,11 +109,17 @@ class Events extends Component {
 
 
 	render() {
+        const { editDialogOpen } = this.state;
+
 		return (
             <React.Fragment>
-                <Headline headline="Events" />
+                <HeadlineWithAction headline="Events" buttonLabel="Add new event" buttonOnClick={this.openAddDialog.bind(this)} />
     			<Paper className={this.classes.root}>
                     {this.state.reauthenticate && <ReauthenticateModal onReauthenticated={this.componentDidMount.bind(this)} />}
+                    {editDialogOpen && <EventAdd 
+                        onClosed={this.closeAddDialog.bind(this)} 
+                        onAdded={this.onAdded.bind(this)} />
+                    }
     				<Grid
     				    rows={this.state.rows}
     				    columns={[

@@ -25,7 +25,7 @@ const styles = theme => ({
   	},
 });
 
-// the number of event teamss is small, so the data is loaded in a single request, 
+// the number of event teams is small, so the data is loaded in a single request, 
 // and the sorting/filtering is controlled client side. 
 // We are using the uncontrolled-mode, where the grid itself manages state.
 class EventTeams extends Component {

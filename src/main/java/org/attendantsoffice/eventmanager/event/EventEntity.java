@@ -16,6 +16,8 @@ import javax.persistence.PreUpdate;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.attendantsoffice.eventmanager.user.security.SecurityContext;
+
 /**
  * The event defines the location and date, and is used to tie together users to their assignments that time around.
  */
@@ -56,11 +58,14 @@ public class EventEntity {
     private void prePersist() {
         createdDateTime = Instant.now();
         updatedDateTime = Instant.now();
+        createdByUserId = SecurityContext.extractUserId();
+        updatedByUserId = SecurityContext.extractUserId();
     }
 
     @PreUpdate
     private void preUpdate() {
         updatedDateTime = Instant.now();
+        updatedByUserId = SecurityContext.extractUserId();
     }
 
     public Integer getEventId() {

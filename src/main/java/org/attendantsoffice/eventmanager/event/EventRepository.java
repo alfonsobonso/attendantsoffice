@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
@@ -21,4 +22,11 @@ public interface EventRepository extends CrudRepository<EventEntity, Integer> {
         return entityList;
     }
 
+    /**
+     * Save the event and clear the list cache
+     */
+    @CacheEvict("events")
+    default EventEntity saveEvent(EventEntity eventEntity) {
+        return save(eventEntity);
+    }
 }

@@ -192,7 +192,7 @@ class UserAdd extends React.Component {
 
                                     <Button type="submit" fullWidth variant="raised" color="primary" 
                                         disabled={isSubmitting}>
-                                        Update
+                                        Create
                                     </Button>
                                 </form>
                             )
