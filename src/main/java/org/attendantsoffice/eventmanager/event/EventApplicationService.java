@@ -43,7 +43,7 @@ public class EventApplicationService {
 
         // make sure the dates are sensible. Give it a bit if slack for the actual checks
         long daysBetween = ChronoUnit.DAYS.between(input.getStartDate(), input.getEndDate());
-        if (daysBetween > 5 || daysBetween < 2) {
+        if (daysBetween > 4 || daysBetween < 2) {
             throw new InvalidEventDateException(input.getStartDate(), input.getEndDate(), daysBetween);
         }
 
