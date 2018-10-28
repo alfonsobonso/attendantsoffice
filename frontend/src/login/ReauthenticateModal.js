@@ -106,7 +106,7 @@ class ReauthenticateModal extends React.Component {
                                             {touched.password && errors.password && <FormHelperText id="password-text" error>{errors.password}</FormHelperText>}
                                     </FormControl>
 
-                                    <Button type="submit" fullWidth variant="raised" color="primary" 
+                                    <Button type="submit" fullWidth variant="contained" color="primary" 
                                         disabled={isSubmitting}>
                                         Sign in
                                     </Button>

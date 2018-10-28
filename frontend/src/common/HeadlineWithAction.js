@@ -43,7 +43,7 @@ class HeadlineWithAction extends Component {
                         </Typography>
                     }
                 </div>
-        		<Button variant="raised" color="primary"
+        		<Button variant="contained" color="primary"
             		onClick={buttonOnClick}
             		className={classNames(classes.headerButton)}
         		>

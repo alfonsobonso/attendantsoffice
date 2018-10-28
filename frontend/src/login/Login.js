@@ -156,7 +156,7 @@ class Login extends Component {
                                                 {touched.password && errors.password && <FormHelperText id="password-text" error>{errors.password}</FormHelperText>}
                                         </FormControl>
 
-                                        <Button type="submit" fullWidth variant="raised" color="primary" className={this.classes.submit} 
+                                        <Button type="submit" fullWidth variant="contained" color="primary" className={this.classes.submit} 
                                             disabled={isSubmitting}>
                                             Sign in
                                         </Button>

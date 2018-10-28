@@ -190,7 +190,7 @@ class UserAdd extends React.Component {
                                         </NativeSelect>
                                     </FormControl>
 
-                                    <Button type="submit" fullWidth variant="raised" color="primary" 
+                                    <Button type="submit" fullWidth variant="contained" color="primary" 
                                         disabled={isSubmitting}>
                                         Create
                                     </Button>

@@ -232,7 +232,7 @@ class TokenAccess extends Component {
                                                 {touched.passwordRepeat && errors.passwordRepeat && <FormHelperText id="password-repeat-text" error>{errors.passwordRepeat}</FormHelperText>}
                                         </FormControl>
 
-                                        <Button type="submit" fullWidth variant="raised" color="primary" className={this.classes.submit} 
+                                        <Button type="submit" fullWidth variant="contained" color="primary" className={this.classes.submit} 
                                             disabled={isSubmitting}>
                                             Set password
                                         </Button>
@@ -290,7 +290,7 @@ class TokenAccess extends Component {
                                         </FormControl>
                                         {touched.email && errors.email && <FormHelperText id="email-text" error>{errors.email}</FormHelperText>}
 
-                                        <Button type="submit" fullWidth variant="raised" color="primary" className={this.classes.submit} 
+                                        <Button type="submit" fullWidth variant="contained" color="primary" className={this.classes.submit} 
                                             disabled={isSubmitting}>
                                             Request access
                                         </Button>
