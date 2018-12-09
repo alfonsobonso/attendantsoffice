@@ -186,14 +186,14 @@ class UserEdit extends React.Component {
 
                                     <FormControl margin="normal" fullWidth>
                                         <InputLabel htmlFor="userStatus">Status</InputLabel>
-                                        <NativeSelect name="userStatus" value={values.userStatus}>
+                                        <NativeSelect name="userStatus" value={values.userStatus} onChange={handleChange} onBlur={handleBlur}>
                                             <option value="DISABLED">Disabled</option>
                                         </NativeSelect>
                                     </FormControl>
 
                                     <FormControl margin="normal" fullWidth>
                                         <InputLabel htmlFor="position">Position</InputLabel>
-                                        <NativeSelect name="position" value={values.position}>
+                                        <NativeSelect name="position" value={values.position} onChange={handleChange} onBlur={handleBlur}>
                                             <option value="BAPTISEDBRO">Baptised Brother</option>
                                             <option value="BAPTISEDSIS">Baptised Sister</option>
                                             <option value="MS">Ministerial Servant</option>
@@ -203,7 +203,7 @@ class UserEdit extends React.Component {
 
                                     <FormControl margin="normal" fullWidth>
                                         <InputLabel htmlFor="role">Role</InputLabel>
-                                        <NativeSelect name="role" value={values.role}>
+                                        <NativeSelect name="role" value={values.role} onChange={handleChange} onBlur={handleBlur}>
                                             <option value="USER">User</option>
                                             <option value="ADMIN">Admin</option>
                                         </NativeSelect>

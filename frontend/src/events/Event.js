@@ -20,6 +20,7 @@ import HeadlineWithAction from '../common/HeadlineWithAction'
 import Headline from '../common/Headline'
 import DateFormat from '../common/DateFormat'
 
+import EventEdit from './EventEdit'
 import EventTeamList from './teams/EventTeamList'
 
 
@@ -85,7 +86,7 @@ class Event extends React.Component {
 
 	render() {
         const { classes } = this.props;
-        const { event, reauthenticate } = this.state;
+        const { event, reauthenticate, editDialogOpen } = this.state;
 
         if(reauthenticate) {
             return (
@@ -102,6 +103,11 @@ class Event extends React.Component {
         return (
             <div className={classes.root}>
                 {reauthenticate && <ReauthenticateModal onReauthenticated={this.componentDidMount.bind(this)} />}
+                {editDialogOpen && <EventEdit 
+                    event={event} 
+                    onClosed={this.onCloseDialog.bind(this)} 
+                    onUpdated={this.onUpdated.bind(this)} />
+                }
                 <HeadlineWithAction 
                     headline={event.location + ": " + event.name }
                     subheading={

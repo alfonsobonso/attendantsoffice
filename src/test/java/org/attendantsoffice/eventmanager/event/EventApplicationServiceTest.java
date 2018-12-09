@@ -16,6 +16,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import com.google.common.collect.Lists;
+
 /**
  * Test the {@code EventApplicationService} class.
  */
@@ -141,6 +143,71 @@ public class EventApplicationServiceTest {
         EventEntity entity = eventEntity(1);
         when(eventRepository.findAllEvents()).thenReturn(Collections.singletonList(entity));
         service.createEvent(input);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testUpdateEventNotFound() {
+        ImmutableUpdateEventInput input = ImmutableUpdateEventInput.builder()
+                .name("my event")
+                .location("my location")
+                .startDate(LocalDate.now())
+                .endDate(LocalDate.now().plusDays(2))
+                .eventStatus(EventStatus.COMPLETED)
+                .build();
+
+        EventEntity entity = eventEntity(1);
+        when(eventRepository.findAllEvents()).thenReturn(Collections.singletonList(entity));
+
+        service.updateEvent(2, input);
+    }
+
+    @Test(expected = DuplicateEventNameException.class)
+    public void testUpdateEventNameConflict() {
+        ImmutableUpdateEventInput input = ImmutableUpdateEventInput.builder()
+                .name("Event#1")
+                .location("my location")
+                .startDate(LocalDate.now())
+                .endDate(LocalDate.now().plusDays(2))
+                .eventStatus(EventStatus.COMPLETED)
+                .build();
+
+        when(eventRepository.findAllEvents()).thenReturn(Lists.newArrayList(eventEntity(1), eventEntity(2)));
+
+        service.updateEvent(2, input);
+    }
+
+    @Test
+    public void testUpdateEventNameNotChanged() {
+        ImmutableUpdateEventInput input = ImmutableUpdateEventInput.builder()
+                .name("Event#2")
+                .location("my location")
+                .startDate(LocalDate.now())
+                .endDate(LocalDate.now().plusDays(2))
+                .eventStatus(EventStatus.COMPLETED)
+                .build();
+
+        when(eventRepository.findAllEvents()).thenReturn(Lists.newArrayList(eventEntity(1), eventEntity(2)));
+
+        service.updateEvent(2, input);
+
+        verify(eventRepository, times(1)).saveEvent(any());
+    }
+
+    @Test
+    public void testUpdateEventNameChanged() {
+        ImmutableUpdateEventInput input = ImmutableUpdateEventInput.builder()
+                .name("Event#2 changed")
+                .location("my location")
+                .startDate(LocalDate.now())
+                .endDate(LocalDate.now().plusDays(2))
+                .eventStatus(EventStatus.COMPLETED)
+                .build();
+
+        when(eventRepository.findAllEvents()).thenReturn(Lists.newArrayList(eventEntity(1), eventEntity(2)));
+
+        service.updateEvent(2, input);
+
+        verify(eventRepository, times(1)).saveEvent(any());
     }
 
     private EventEntity eventEntity(int id) {

@@ -1,6 +1,8 @@
 
 package org.attendantsoffice.eventmanager.user;
 
+import javax.validation.Valid;
+
 import org.attendantsoffice.eventmanager.common.paging.PageOutput;
 import org.attendantsoffice.eventmanager.mvc.error.ErrorResponse;
 import org.springframework.http.HttpStatus;
@@ -46,7 +48,7 @@ public class UserController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping(path = "/users/{userId}")
-    public void updateUser(@PathVariable Integer userId, @RequestBody UpdateUserInput input) {
+    public void updateUser(@PathVariable Integer userId, @Valid @RequestBody UpdateUserInput input) {
         userApplicationService.updateUser(userId, input);
     }
 

@@ -2,6 +2,8 @@ package org.attendantsoffice.eventmanager.event;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.attendantsoffice.eventmanager.mvc.error.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +31,7 @@ public class EventController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping(path = "/events")
-    public EventOutput createEvent(@RequestBody CreateEventInput input) {
+    public EventOutput createEvent(@Valid @RequestBody CreateEventInput input) {
         return eventApplicationService.createEvent(input);
     }
 
@@ -37,6 +39,12 @@ public class EventController {
     @GetMapping(path = "/events/{eventId}")
     public EventOutput findEvents(@PathVariable Integer eventId) {
         return eventApplicationService.findEvent(eventId);
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PostMapping(path = "/events/{eventId}")
+    public void updateEvent(@PathVariable Integer eventId, @RequestBody UpdateEventInput input) {
+        eventApplicationService.updateEvent(eventId, input);
     }
 
     @ExceptionHandler({ DuplicateEventNameException.class, InvalidEventDateException.class })

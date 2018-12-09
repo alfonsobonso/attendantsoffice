@@ -1,5 +1,6 @@
 package org.attendantsoffice.eventmanager.event;
 
+import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
@@ -35,17 +36,15 @@ public class EventApplicationService {
         List<EventEntity> entityList = eventRepository.findAllEvents();
 
         // make sure we don't have an event with the same name already
-        Optional<EventEntity> matchingEvent = entityList.stream().filter(e -> e.getName().equalsIgnoreCase(input
-                .getName().trim())).findAny();
+        Optional<EventEntity> matchingEvent = entityList.stream()
+                .filter(e -> e.getName().equalsIgnoreCase(input.getName().trim()))
+                .findAny();
         if (matchingEvent.isPresent()) {
             throw new DuplicateEventNameException(matchingEvent.get().getEventId(), matchingEvent.get().getName());
         }
 
         // make sure the dates are sensible. Give it a bit if slack for the actual checks
-        long daysBetween = ChronoUnit.DAYS.between(input.getStartDate(), input.getEndDate());
-        if (daysBetween > 4 || daysBetween < 2) {
-            throw new InvalidEventDateException(input.getStartDate(), input.getEndDate(), daysBetween);
-        }
+        assertInputDatesValid(input.getStartDate(), input.getEndDate());
 
         EventEntity entity = new EventEntity();
         entity.setName(input.getName());
@@ -79,6 +78,42 @@ public class EventApplicationService {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Unknown Event#" + eventId));
         return entity.getName();
+    }
+
+    public void updateEvent(Integer eventId, UpdateEventInput input) {
+        List<EventEntity> entityList = eventRepository.findAllEvents();
+        EventEntity entity = entityList.stream()
+                .filter(c -> c.getEventId().equals(eventId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Unknown Event#" + eventId));
+
+        // some basic validation
+        // make sure we don't have a different event with the same name already
+        Optional<EventEntity> matchingEvent = entityList.stream()
+                .filter(e -> e.getName().equalsIgnoreCase(input.getName().trim()))
+                .filter(e -> !e.getEventId().equals(eventId))
+                .findAny();
+        if (matchingEvent.isPresent()) {
+            throw new DuplicateEventNameException(matchingEvent.get().getEventId(), matchingEvent.get().getName());
+        }
+
+        // make sure the dates are sensible. Give it a bit if slack for the actual checks
+        assertInputDatesValid(input.getStartDate(), input.getEndDate());
+
+        entity.setName(input.getName());
+        entity.setLocation(input.getLocation());
+        entity.setStartDate(input.getStartDate());
+        entity.setEndDate(input.getEndDate());
+        entity.setEventStatus(input.getEventStatus());
+
+        eventRepository.saveEvent(entity);
+    }
+
+    private void assertInputDatesValid(LocalDate startDate, LocalDate endDate) {
+        long daysBetween = ChronoUnit.DAYS.between(startDate, endDate);
+        if (daysBetween > 4 || daysBetween < 2) {
+            throw new InvalidEventDateException(startDate, endDate, daysBetween);
+        }
     }
 
 }

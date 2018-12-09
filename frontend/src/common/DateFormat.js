@@ -2,9 +2,11 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { FormattedDate } from 'react-intl';
 
+// Date format in dd-MMMM-yyyy format, e.g 16 July 2019
 class DateFormat extends Component {
 	render() {
-		return (<FormattedDate value={new Date()} day="numeric" month="long" year="numeric" />);
+		let date = this.props.date;
+		return (<FormattedDate value={date} day="numeric" month="long" year="numeric" />);
 	}
 }
 
