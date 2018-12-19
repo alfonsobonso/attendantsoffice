@@ -64,7 +64,7 @@ class EventTeams extends Component {
     		return 	{  
     			"id": row.eventTeamId, 
     			"name" : row.name, 
-                "parent": row.parent?row.parent.name:''
+                "parent": row.parentEventTeam?row.parentEventTeam.name:''
 				};
     		});
     }

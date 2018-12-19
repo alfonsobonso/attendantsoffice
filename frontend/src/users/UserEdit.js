@@ -226,6 +226,7 @@ class UserEdit extends React.Component {
 UserEdit.propTypes = {
     classes: PropTypes.object.isRequired,
     theme: PropTypes.object.isRequired,
+    user: PropTypes.object.isRequired,
     onUpdated: PropTypes.func.isRequired,
     onClosed: PropTypes.func.isRequired,
 };

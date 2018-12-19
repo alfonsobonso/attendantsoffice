@@ -178,6 +178,7 @@ class EventEdit extends React.Component {
 EventEdit.propTypes = {
     classes: PropTypes.object.isRequired,
     theme: PropTypes.object.isRequired,
+    event: PropTypes.object.isRequired,
     onUpdated: PropTypes.func.isRequired,
     onClosed: PropTypes.func.isRequired,
 };

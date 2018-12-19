@@ -29,7 +29,7 @@ class HeadlineWithAction extends Component {
 
 	render() {
 		const { classes, headline, headlineVariant, subheading, subheadingVariant, 
-                buttonLabel, buttonOnClick } = this.props;
+                buttonLabel, buttonOnClick, buttonSize } = this.props;
 
 		return (
 			<div className={classes.header}>
@@ -46,6 +46,7 @@ class HeadlineWithAction extends Component {
         		<Button variant="contained" color="primary"
             		onClick={buttonOnClick}
             		className={classNames(classes.headerButton)}
+                    size={buttonSize || 'medium'}
         		>
             		{buttonLabel}
         		</Button>

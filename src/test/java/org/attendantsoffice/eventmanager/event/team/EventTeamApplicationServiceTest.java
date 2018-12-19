@@ -2,6 +2,7 @@ package org.attendantsoffice.eventmanager.event.team;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -29,11 +30,14 @@ public class EventTeamApplicationServiceTest {
     @Mock
     private EventTeamMapper eventTeamMapper;
 
+    @Mock
+    private EventTeamParentValidator eventTeamParentValidator;
+
     private EventTeamApplicationService service;
 
     @Before
     public void setUp() {
-        service = new EventTeamApplicationService(eventTeamRepository, eventTeamMapper);
+        service = new EventTeamApplicationService(eventTeamRepository, eventTeamMapper, eventTeamParentValidator);
     }
 
     @Test
@@ -76,6 +80,28 @@ public class EventTeamApplicationServiceTest {
         assertEquals(10, outputs.get(0).getEventTeamId().intValue());
 
         verify(eventTeamMapper, times(2)).map(any(), any());
+    }
+
+    @Test
+    public void testCreateEventTeam() {
+        EventTeamEntity team = eventTeamEntity(10, 2, null);
+        when(eventTeamRepository.findAllEventTeams()).thenReturn(Lists.newArrayList(team));
+
+        service.createEventTeam(2, ImmutableCreateEventTeamInput.builder().name("EventTeam#1").build());
+
+        verify(eventTeamParentValidator, times(1)).assertEventTeamParentValid(any(), any());
+        verify(eventTeamRepository, times(1)).saveEventTeam(any());
+    }
+
+    @Test(expected = DuplicateEventTeamNameException.class)
+    public void testCreateEventTeamDuplicateName() {
+        EventTeamEntity team = eventTeamEntity(10, 2, null);
+        when(eventTeamRepository.findAllEventTeams()).thenReturn(Lists.newArrayList(team));
+
+        service.createEventTeam(2, ImmutableCreateEventTeamInput.builder().name("EventTeam#10").build());
+
+        verify(eventTeamParentValidator, never()).assertEventTeamParentValid(any(), any());
+        verify(eventTeamRepository, never()).saveEventTeam(any());
     }
 
     @Test

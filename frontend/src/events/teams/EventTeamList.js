@@ -8,9 +8,13 @@ import { Grid, Table, TableHeaderRow, TableFilterRow } from '@devexpress/dx-reac
 import { withStyles } from '@material-ui/core/styles';
 
 // components
+import HeadlineWithAction from '../../common/HeadlineWithAction'
+import { displayActionMessage } from '../../common/ActionNotifier.js'
 import ReauthenticateModal from '../../login/ReauthenticateModal'
 import AuthenticationService from '../../authentication/AuthenticationService'
 import { displayErrorMessage } from '../../error/ErrorNotifier';
+
+import EventTeamAdd from './EventTeamAdd'
 
 // the number of event teams is small, so the data is loaded in a single request, 
 // and the sorting/filtering is controlled client side. 
@@ -32,14 +36,16 @@ class EventTeamList extends Component {
         this.state = {"rows": []};
     }
 
-    state = {};
+    state = {
+        addTeamDialogOpen: false,
+    };
 
     componentDidMount() {
-        this.fetchTeams(this.eventId);
+        this.fetchTeams();
     }
 
-    fetchTeams = (eventId) => {   	
-        this.AuthService.fetch('/api/events/' + eventId + '/teams', {})
+    fetchTeams = () => {   	
+        this.AuthService.fetch('/api/events/' + this.eventId + '/teams', {})
         .then(response => {
             if(response.ok) {
                 return response.json().then((json) => {
@@ -59,16 +65,49 @@ class EventTeamList extends Component {
     		return 	{  
     			"id": row.eventTeamId, 
     			"name" : row.nameWithCaptain, 
-                "parent": row.parent ? row.parent.name : ''
+                "parent": row.parentEventTeam ? row.parentEventTeam.name : ''
 				};
     		});
     }
 
+    openAddTeamDialog() {
+        this.setState({addTeamDialogOpen: true});
+    }
+
+    onCloseAddTeamDialog() {
+        this.setState({addTeamDialogOpen: false});   
+    }
+
+    onTeamAdded(eventTeam) {
+        this.setState({addTeamDialogOpen: false});
+
+        // display a notification indicating we have added a new team
+        let message = 'Added ' + eventTeam.name;
+        let actionUri = '/event-teams/' + eventTeam.eventTeamId;
+        displayActionMessage({message, actionUri});
+
+        // refetch the event with updated team information
+        this.fetchTeams();
+    }
+
 
 	render() {
+        const { reauthenticate, addTeamDialogOpen } = this.state;
 		return (
             <React.Fragment>
-                {this.state.reauthenticate && <ReauthenticateModal onReauthenticated={this.componentDidMount.bind(this)} />}
+                {reauthenticate && <ReauthenticateModal onReauthenticated={this.componentDidMount.bind(this)} />}
+                {addTeamDialogOpen && <EventTeamAdd 
+                    eventId={this.eventId} 
+                    onClosed={this.onCloseAddTeamDialog.bind(this)} 
+                    onAdded={this.onTeamAdded.bind(this)} />
+                }
+                <HeadlineWithAction 
+                    headline="Teams" 
+                    headlineVariant="h6" 
+                    buttonLabel="Add Team"
+                    buttonOnClick={this.openAddTeamDialog.bind(this)}
+                    buttonSize="small"
+                    />
 				<Grid
 				    rows={this.state.rows}
 				    columns={[

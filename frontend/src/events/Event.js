@@ -17,7 +17,6 @@ import ReauthenticateModal from '../login/ReauthenticateModal'
 import AuthenticationService from '../authentication/AuthenticationService'
 import { displayErrorMessage } from '../error/ErrorNotifier';
 import HeadlineWithAction from '../common/HeadlineWithAction'
-import Headline from '../common/Headline'
 import DateFormat from '../common/DateFormat'
 
 import EventEdit from './EventEdit'
@@ -43,16 +42,17 @@ class Event extends React.Component {
     }   
 
     state = {
-        editDialogOpen: false,
+        editDialogOpen: false
     };
 
     componentDidMount() {
         const { match: { params } } = this.props;
-        this.fetchEvent(params.eventId);
+        this.eventId = params.eventId;
+        this.fetchEvent();
     }
 
-    fetchEvent(eventId) {
-        this.AuthService.fetch('/api/events/' + eventId, {})
+    fetchEvent() {
+        this.AuthService.fetch('/api/events/' + this.eventId, {})
         .then(response => {
             if(response.ok) {
                 return response.json().then((json) => {
@@ -79,9 +79,7 @@ class Event extends React.Component {
     // close the dialog, re-fetch the data
     onUpdated() {
         this.setState({editDialogOpen: false});
-
-        const { match: { params } } = this.props;
-        this.fetchEvent(params.eventId);
+        this.fetchEvent();
     }
 
 	render() {
@@ -128,9 +126,7 @@ class Event extends React.Component {
                             </ListItem>
                         </List>
                     </Grid>
-                </Grid>
-
-                <Headline headline="Teams" headlineVariant="h6" />
+                </Grid>              
                 <EventTeamList eventId={event.eventId} />
             </div>
         );

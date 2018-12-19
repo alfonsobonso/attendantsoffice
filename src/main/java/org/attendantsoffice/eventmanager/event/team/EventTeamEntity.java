@@ -17,6 +17,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.attendantsoffice.eventmanager.event.EventEntity;
+import org.attendantsoffice.eventmanager.user.security.SecurityContext;
 
 /**
  * Definition of a team defined for a specific event.
@@ -57,11 +58,14 @@ public class EventTeamEntity {
     private void prePersist() {
         createdDateTime = Instant.now();
         updatedDateTime = Instant.now();
+        createdByUserId = SecurityContext.extractUserId();
+        updatedByUserId = SecurityContext.extractUserId();
     }
 
     @PreUpdate
     private void preUpdate() {
         updatedDateTime = Instant.now();
+        updatedByUserId = SecurityContext.extractUserId();
     }
 
     public Integer getEventTeamId() {

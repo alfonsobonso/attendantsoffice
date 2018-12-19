@@ -43,11 +43,12 @@ class User extends React.Component {
 
     componentDidMount() {
         const { match: { params } } = this.props;
-        this.fetchUser(params.userId);
+        this.userId = params.userId;
+        this.fetchUser();
     }
 
     fetchUser(userId) {
-        this.AuthService.fetch('/api/users/' + userId, {})
+        this.AuthService.fetch('/api/users/' + this.userId, {})
         .then(response => {
             if(response.ok) {
                 return response.json().then((json) => {
@@ -75,8 +76,7 @@ class User extends React.Component {
     onUpdated() {
         this.setState({editDialogOpen: false});
 
-        const { match: { params } } = this.props;
-        this.fetchUser(params.userId);
+        this.fetchUser();
     }
 
     render() {
