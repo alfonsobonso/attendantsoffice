@@ -52,8 +52,20 @@ public class EventApplicationService {
         entity.setStartDate(input.getStartDate());
         entity.setEndDate(input.getEndDate());
         entity.setEventStatus(EventStatus.ANNOUNCED);
+        entity.setCurrent(input.isCurrent() || entityList.isEmpty());
 
         eventRepository.saveEvent(entity);
+
+        // if we have explicitly asked this event to be current, ensure no others are
+        // in reality, there will be only one, but looping through all is fine.
+        if (input.isCurrent()) {
+            entityList.forEach(otherEvent -> {
+                if (otherEvent.isCurrent()) {
+                    otherEvent.setCurrent(false);
+                    eventRepository.saveEvent(otherEvent);
+                }
+            });
+        }
 
         EventOutput output = eventMapper.map(entity);
         return output;
@@ -100,11 +112,25 @@ public class EventApplicationService {
         // make sure the dates are sensible. Give it a bit if slack for the actual checks
         assertInputDatesValid(input.getStartDate(), input.getEndDate());
 
+        // record whether we are switching the current event to this one
+        boolean markAsCurrent = input.isCurrent() && !entity.isCurrent();
+
         entity.setName(input.getName());
         entity.setLocation(input.getLocation());
         entity.setStartDate(input.getStartDate());
         entity.setEndDate(input.getEndDate());
         entity.setEventStatus(input.getEventStatus());
+        entity.setCurrent(input.isCurrent() || entity.isCurrent()); // we can't mark this as not current if it is.
+
+        if (markAsCurrent) {
+            entityList.stream()
+                    .filter(c -> !c.getEventId().equals(eventId))
+                    .filter(EventEntity::isCurrent)
+                    .forEach(otherEvent -> {
+                        otherEvent.setCurrent(false);
+                        eventRepository.saveEvent(otherEvent);
+                    });
+        }
 
         eventRepository.saveEvent(entity);
     }

@@ -45,6 +45,8 @@ public class EventEntity {
     @Enumerated(EnumType.STRING)
     private EventStatus eventStatus;
 
+    private boolean current;
+
     @Column(updatable = false)
     private Integer createdByUserId;
 
@@ -114,6 +116,18 @@ public class EventEntity {
 
     public void setEventStatus(EventStatus eventStatus) {
         this.eventStatus = eventStatus;
+    }
+
+    /**
+     * @return indicate this is the current event, so will be used for the default view or sub-data, such as teams.
+     * The application is responsible for ensuring we have one current event.
+     */
+    public boolean isCurrent() {
+        return current;
+    }
+
+    public void setCurrent(boolean current) {
+        this.current = current;
     }
 
     public Integer getCreatedByUserId() {

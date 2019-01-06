@@ -5,6 +5,8 @@ import javax.validation.Valid;
 
 import org.attendantsoffice.eventmanager.common.paging.PageOutput;
 import org.attendantsoffice.eventmanager.mvc.error.ErrorResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class UserController {
+    private static final Logger LOG = LoggerFactory.getLogger(UserController.class);
     private final UserApplicationService userApplicationService;
 
     public UserController(UserApplicationService userApplicationService) {
@@ -55,6 +58,7 @@ public class UserController {
     @ExceptionHandler(DuplicateUserEmailAddressException.class)
     protected ResponseEntity<Object> handleDuplicateUserEmailAddressException(
             DuplicateUserEmailAddressException ex) {
+        LOG.error(ex.getMessage());
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage(), ex);
         return new ResponseEntity<>(errorResponse, errorResponse.getStatus());
     }

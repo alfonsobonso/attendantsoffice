@@ -3,6 +3,8 @@ package org.attendantsoffice.eventmanager.event.team;
 import java.util.List;
 
 import org.attendantsoffice.eventmanager.mvc.error.ErrorResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class EventTeamController {
-
+    private static final Logger LOG = LoggerFactory.getLogger(EventTeamController.class);
     private final EventTeamApplicationService eventTeamApplicationService;
 
     public EventTeamController(EventTeamApplicationService eventTeamApplicationService) {
@@ -52,6 +54,7 @@ public class EventTeamController {
 
     @ExceptionHandler(DuplicateEventTeamNameException.class)
     protected ResponseEntity<Object> handleDuplicateEventTeamNameException(Exception ex) {
+        LOG.error(ex.getMessage());
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage(), ex);
         return new ResponseEntity<>(errorResponse, errorResponse.getStatus());
     }

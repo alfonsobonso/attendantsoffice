@@ -8,6 +8,7 @@ import org.attendantsoffice.eventmanager.DefaultStyle;
 import org.immutables.value.Value;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 /**
@@ -30,5 +31,12 @@ public interface CreateEventInput {
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     LocalDate getEndDate();
+
+    /**
+     * @return indicate this is the current event, so will be used for the default view or sub-data, such as teams.
+     * The application is responsible for ensuring we have one current event.
+     */
+    @JsonProperty("current")
+    boolean isCurrent();
 
 }

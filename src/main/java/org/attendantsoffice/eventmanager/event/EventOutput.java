@@ -26,4 +26,10 @@ public interface EventOutput {
     LocalDate getEndDate();
 
     EventStatus getEventStatus();
+
+    /**
+     * @return indicate this is the current event, so will be used for the default view or sub-data, such as teams.
+     * The application is responsible for ensuring we have one current event.
+     */
+    boolean isCurrent();
 }

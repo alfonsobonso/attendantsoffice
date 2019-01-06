@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom'
 // material ui components
 import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
+import CheckIcon from '@material-ui/icons/Check';
 
 import { SortingState, IntegratedSorting, DataTypeProvider } from '@devexpress/dx-react-grid';
 import { Grid, Table, TableHeaderRow } from '@devexpress/dx-react-grid-material-ui';
@@ -34,6 +35,19 @@ const DateFormatter = ({ value }) => value;
 const DateTypeProvider = props => (
   <DataTypeProvider
     formatterComponent={DateFormatter}
+    {...props}
+  />
+);
+
+const BooleanFormatter = ({ value }) => {
+    if(value === true) {
+        return <CheckIcon />;      
+    } 
+    return '';
+} 
+const BooleanTypeProvider = props => (
+  <DataTypeProvider
+    formatterComponent={BooleanFormatter}
     {...props}
   />
 );
@@ -102,7 +116,8 @@ class Events extends Component {
     			"location": row.location,
     			"startDate": row.startDate,
     			"endDate": row.endDate,
-    			"status": row.eventStatus
+    			"status": row.eventStatus,
+                "current": row.current
 				};
     		});
     }
@@ -129,10 +144,14 @@ class Events extends Component {
     				      	{ name: 'startDate', title: 'Start Date' },
     				      	{ name: 'endDate', title: 'End Date' },
     				      	{ name: 'status', title: 'Status' },
+                            { name: 'current', title: 'Current' },
     				    ]}>
     				    <DateTypeProvider
     	            		for={['startDate', 'endDate']}
     	          		/>
+                        <BooleanTypeProvider
+                            for={['current']}
+                        />
     				    <SortingState
     	            		defaultSorting={[{ columnName: 'startDate', direction: 'desc' }]}
     	          		/>

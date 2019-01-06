@@ -17,6 +17,7 @@ public class EventMapper {
                 .startDate(entity.getStartDate())
                 .endDate(entity.getEndDate())
                 .eventStatus(entity.getEventStatus())
+                .current(entity.isCurrent())
                 .build();
         return output;
     }

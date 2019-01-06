@@ -9,6 +9,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
+import Checkbox from '@material-ui/core/Checkbox';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import NativeSelect from '@material-ui/core/NativeSelect';
@@ -90,7 +91,8 @@ class EventEdit extends React.Component {
                             location: event.location,
                             startDate: event.startDate,
                             endDate: event.endDate,
-                            eventStatus: event.eventStatus
+                            eventStatus: event.eventStatus,
+                            current: event.current
                         }}
                         validationSchema = {
                              Yup.object().shape({
@@ -160,6 +162,13 @@ class EventEdit extends React.Component {
                                             <option value="COMPLETED">Completed</option>
                                         </NativeSelect>
                                     </FormControl>
+
+                                    <FormControl margin="normal" required fullWidth>
+                                            <InputLabel htmlFor="current">Current</InputLabel>
+                                            <Checkbox id="current" name="current" onChange={handleChange} onBlur={handleBlur} 
+                                                checked={values.current} />
+                                    </FormControl>
+                                    {touched.current && errors.current && <FormHelperText id="current-text" error>{errors.current}</FormHelperText>}
 
                                     <Button type="submit" fullWidth variant="contained" color="primary" 
                                         disabled={isSubmitting}>

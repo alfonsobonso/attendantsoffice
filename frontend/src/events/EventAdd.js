@@ -9,6 +9,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
+import Checkbox from '@material-ui/core/Checkbox';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 
@@ -89,6 +90,7 @@ class EventAdd extends React.Component {
                             location: '',
                             startDate: '',
                             endDate: '',
+                            current: false
                         }}
                         validationSchema = {
                              Yup.object().shape({
@@ -145,11 +147,18 @@ class EventAdd extends React.Component {
                                     {touched.startDate && errors.startDate && <FormHelperText id="startDate-text" error>{errors.startDate}</FormHelperText>}
 
                                     <FormControl margin="normal" required fullWidth>
-                                            <InputLabel htmlFor="endDate">Start Date</InputLabel>
+                                            <InputLabel htmlFor="endDate">End Date</InputLabel>
                                             <Input id="endDate" name="endDate" onChange={handleChange} onBlur={handleBlur} 
                                                 value={values.endDate} />
                                     </FormControl>
                                     {touched.endDate && errors.endDate && <FormHelperText id="endDate-text" error>{errors.endDate}</FormHelperText>}
+
+                                    <FormControl margin="normal" required fullWidth>
+                                            <InputLabel htmlFor="current">Current</InputLabel>
+                                            <Checkbox id="current" name="current" onChange={handleChange} onBlur={handleBlur} 
+                                                checked={values.current} />
+                                    </FormControl>
+                                    {touched.current && errors.current && <FormHelperText id="current-text" error>{errors.current}</FormHelperText>}
 
                                     <Button type="submit" fullWidth variant="contained" color="primary" 
                                         disabled={isSubmitting}>

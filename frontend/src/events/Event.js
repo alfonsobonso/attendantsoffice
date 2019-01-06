@@ -98,6 +98,13 @@ class Event extends React.Component {
             return (<div style={{position: 'relative'}}><CircularProgress size={50} left={-25} style={{marginLeft: '50%'}} /></div>);
         }
 
+        var status
+        if(event.current) {
+            status = event.eventStatus + " (current event)"
+        } else {
+            status = event.eventStatus
+        }
+
         return (
             <div className={classes.root}>
                 {reauthenticate && <ReauthenticateModal onReauthenticated={this.componentDidMount.bind(this)} />}
@@ -107,7 +114,7 @@ class Event extends React.Component {
                     onUpdated={this.onUpdated.bind(this)} />
                 }
                 <HeadlineWithAction 
-                    headline={event.location + ": " + event.name }
+                    headline={event.location + ": " + event.name}
                     subheading={
                         <React.Fragment>
                             <DateFormat date={event.startDate} /> - <DateFormat date={event.endDate} />
@@ -122,7 +129,7 @@ class Event extends React.Component {
                                 <Avatar>
                                     <TimelineIcon />
                                 </Avatar>
-                                <ListItemText primary={event.eventStatus} />
+                                <ListItemText primary={status} />
                             </ListItem>
                         </List>
                     </Grid>

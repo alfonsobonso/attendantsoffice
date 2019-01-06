@@ -39,7 +39,7 @@ public class EventApplicationServiceTest {
 
     @Test
     public void testFindEvents() {
-        EventEntity entity = eventEntity(1);
+        EventEntity entity = eventEntity(1, true);
 
         when(eventRepository.findAllEvents()).thenReturn(Collections.singletonList(entity));
 
@@ -55,7 +55,7 @@ public class EventApplicationServiceTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testFindEventNotFound() {
-        EventEntity entity = eventEntity(1);
+        EventEntity entity = eventEntity(1, true);
 
         when(eventRepository.findAllEvents()).thenReturn(Collections.singletonList(entity));
 
@@ -64,7 +64,7 @@ public class EventApplicationServiceTest {
 
     @Test
     public void testFindEvent() {
-        EventEntity entity = eventEntity(1);
+        EventEntity entity = eventEntity(1, true);
 
         when(eventRepository.findAllEvents()).thenReturn(Collections.singletonList(entity));
 
@@ -79,7 +79,7 @@ public class EventApplicationServiceTest {
 
     @Test
     public void testFindName() {
-        EventEntity entity = eventEntity(1);
+        EventEntity entity = eventEntity(1, true);
 
         when(eventRepository.findAllEvents()).thenReturn(Collections.singletonList(entity));
         String name = service.findName(1);
@@ -93,9 +93,10 @@ public class EventApplicationServiceTest {
                 .location("my location")
                 .startDate(LocalDate.now())
                 .endDate(LocalDate.now().plusDays(2))
+                .current(false)
                 .build();
 
-        EventEntity entity = eventEntity(1);
+        EventEntity entity = eventEntity(1, true);
         when(eventRepository.findAllEvents()).thenReturn(Collections.singletonList(entity));
         when(eventMapper.map(any())).thenReturn(eventOutput(2));
 
@@ -113,8 +114,9 @@ public class EventApplicationServiceTest {
                 .location("my location")
                 .startDate(LocalDate.now())
                 .endDate(LocalDate.now().plusDays(2))
+                .current(false)
                 .build();
-        EventEntity entity = eventEntity(1);
+        EventEntity entity = eventEntity(1, true);
         when(eventRepository.findAllEvents()).thenReturn(Collections.singletonList(entity));
         service.createEvent(input);
     }
@@ -126,8 +128,9 @@ public class EventApplicationServiceTest {
                 .location("my location")
                 .startDate(LocalDate.now())
                 .endDate(LocalDate.now().plusDays(5))
+                .current(false)
                 .build();
-        EventEntity entity = eventEntity(1);
+        EventEntity entity = eventEntity(1, true);
         when(eventRepository.findAllEvents()).thenReturn(Collections.singletonList(entity));
         service.createEvent(input);
     }
@@ -139,8 +142,9 @@ public class EventApplicationServiceTest {
                 .location("my location")
                 .startDate(LocalDate.now())
                 .endDate(LocalDate.now().plusDays(1))
+                .current(false)
                 .build();
-        EventEntity entity = eventEntity(1);
+        EventEntity entity = eventEntity(1, true);
         when(eventRepository.findAllEvents()).thenReturn(Collections.singletonList(entity));
         service.createEvent(input);
     }
@@ -153,9 +157,10 @@ public class EventApplicationServiceTest {
                 .startDate(LocalDate.now())
                 .endDate(LocalDate.now().plusDays(2))
                 .eventStatus(EventStatus.COMPLETED)
+                .current(false)
                 .build();
 
-        EventEntity entity = eventEntity(1);
+        EventEntity entity = eventEntity(1, true);
         when(eventRepository.findAllEvents()).thenReturn(Collections.singletonList(entity));
 
         service.updateEvent(2, input);
@@ -169,9 +174,11 @@ public class EventApplicationServiceTest {
                 .startDate(LocalDate.now())
                 .endDate(LocalDate.now().plusDays(2))
                 .eventStatus(EventStatus.COMPLETED)
+                .current(false)
                 .build();
 
-        when(eventRepository.findAllEvents()).thenReturn(Lists.newArrayList(eventEntity(1), eventEntity(2)));
+        when(eventRepository.findAllEvents())
+                .thenReturn(Lists.newArrayList(eventEntity(1, true), eventEntity(2, false)));
 
         service.updateEvent(2, input);
     }
@@ -184,9 +191,11 @@ public class EventApplicationServiceTest {
                 .startDate(LocalDate.now())
                 .endDate(LocalDate.now().plusDays(2))
                 .eventStatus(EventStatus.COMPLETED)
+                .current(false)
                 .build();
 
-        when(eventRepository.findAllEvents()).thenReturn(Lists.newArrayList(eventEntity(1), eventEntity(2)));
+        when(eventRepository.findAllEvents())
+                .thenReturn(Lists.newArrayList(eventEntity(1, true), eventEntity(2, false)));
 
         service.updateEvent(2, input);
 
@@ -201,19 +210,41 @@ public class EventApplicationServiceTest {
                 .startDate(LocalDate.now())
                 .endDate(LocalDate.now().plusDays(2))
                 .eventStatus(EventStatus.COMPLETED)
+                .current(false)
                 .build();
 
-        when(eventRepository.findAllEvents()).thenReturn(Lists.newArrayList(eventEntity(1), eventEntity(2)));
+        when(eventRepository.findAllEvents())
+                .thenReturn(Lists.newArrayList(eventEntity(1, true), eventEntity(2, false)));
 
         service.updateEvent(2, input);
 
         verify(eventRepository, times(1)).saveEvent(any());
     }
 
-    private EventEntity eventEntity(int id) {
+    @Test
+    public void testUpdateEventNameCurrent() {
+        ImmutableUpdateEventInput input = ImmutableUpdateEventInput.builder()
+                .name("Event#2 changed")
+                .location("my location")
+                .startDate(LocalDate.now())
+                .endDate(LocalDate.now().plusDays(2))
+                .eventStatus(EventStatus.COMPLETED)
+                .current(true)
+                .build();
+
+        when(eventRepository.findAllEvents())
+                .thenReturn(Lists.newArrayList(eventEntity(1, true), eventEntity(2, false)));
+
+        service.updateEvent(2, input);
+
+        verify(eventRepository, times(2)).saveEvent(any()); // this event, and Event#1
+    }
+
+    private EventEntity eventEntity(int id, boolean current) {
         EventEntity entity = new EventEntity();
         entity.setEventId(id);
         entity.setName("Event#" + id);
+        entity.setCurrent(current);
         return entity;
     }
 
@@ -225,6 +256,7 @@ public class EventApplicationServiceTest {
                 .startDate(LocalDate.now())
                 .endDate(LocalDate.now())
                 .eventStatus(EventStatus.ANNOUNCED)
+                .current(false)
                 .build();
         return output;
     }

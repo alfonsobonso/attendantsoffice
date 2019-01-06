@@ -46,6 +46,7 @@ CREATE TABLE event (
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
     event_status VARCHAR(12) NOT NULL,
+    current BOOLEAN NOT NULL,
     created_by_user_id INT,
     created_date_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_by_user_id INT,

@@ -10,6 +10,7 @@ import org.immutables.value.Value.Style;
  * Immutables style override. We keep this as basic as possible
  */
 @Retention(RetentionPolicy.CLASS)
-@Style(optionalAcceptNullable = true, strictBuilder = true)
+@Style(optionalAcceptNullable = true, strictBuilder = true, get = { "is*", "get*" }, forceJacksonPropertyNames = false)
 public @interface DefaultStyle {
+
 }
