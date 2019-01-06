@@ -107,6 +107,27 @@ public class EventApplicationServiceTest {
         verify(eventRepository, times(1)).saveEvent(any());
     }
 
+    @Test
+    public void testCreateEventCurrent() {
+        ImmutableCreateEventInput input = ImmutableCreateEventInput.builder()
+                .name("my event")
+                .location("my location")
+                .startDate(LocalDate.now())
+                .endDate(LocalDate.now().plusDays(2))
+                .current(true)
+                .build();
+
+        EventEntity entity = eventEntity(1, true);
+        when(eventRepository.findAllEvents()).thenReturn(Collections.singletonList(entity));
+        when(eventMapper.map(any())).thenReturn(eventOutput(2));
+
+        EventOutput eventOutput = service.createEvent(input);
+
+        assertEquals("Event#2", eventOutput.getName()); // comes from the mocked eventMapper
+
+        verify(eventRepository, times(2)).saveEvent(any()); // this event, and Event#1
+    }
+
     @Test(expected = DuplicateEventNameException.class)
     public void testCreateEventDuplicateName() {
         ImmutableCreateEventInput input = ImmutableCreateEventInput.builder()
