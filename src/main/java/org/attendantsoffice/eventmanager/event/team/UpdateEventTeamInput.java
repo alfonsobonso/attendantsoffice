@@ -14,8 +14,8 @@ import com.google.common.base.Preconditions;
  */
 @DefaultStyle
 @Value.Immutable
-@JsonDeserialize(as = ImmutableCreateEventTeamInput.class)
-public interface CreateEventTeamInput {
+@JsonDeserialize(as = ImmutableUpdateEventTeamInput.class)
+public interface UpdateEventTeamInput {
     String getName();
 
     /**
@@ -27,5 +27,4 @@ public interface CreateEventTeamInput {
     default void check() {
         Preconditions.checkArgument(getName().trim().length() >= 2, "Name must be 2 characters or longer");
     }
-
 }

@@ -38,6 +38,12 @@ public class EventTeamController {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PostMapping(path = "/event-teams/{eventTeamId}")
+    public void updateEventTeam(@PathVariable int eventTeamId, @RequestBody UpdateEventTeamInput input) {
+        eventTeamApplicationService.updateEventTeam(eventTeamId, input);
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping(path = "/events/{eventId}/teams")
     public EventTeamOutput createEventTeam(@PathVariable int eventId, @RequestBody CreateEventTeamInput input) {
         return eventTeamApplicationService.createEventTeam(eventId, input);

@@ -93,6 +93,11 @@ public class EventTeamApplicationServiceTest {
         verify(eventTeamRepository, times(1)).saveEventTeam(any());
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateEventTeamNameTooShort() {
+        service.createEventTeam(2, ImmutableCreateEventTeamInput.builder().name("     ").build());
+    }
+
     @Test(expected = DuplicateEventTeamNameException.class)
     public void testCreateEventTeamDuplicateName() {
         EventTeamEntity team = eventTeamEntity(10, 2, null);
@@ -105,7 +110,48 @@ public class EventTeamApplicationServiceTest {
     }
 
     @Test
-    public void findEventName() {
+    public void testUpdateEventTeam() {
+        EventTeamEntity team1 = eventTeamEntity(10, 2, null);
+        EventTeamEntity team2 = eventTeamEntity(11, 2, null);
+        when(eventTeamRepository.findAllEventTeams()).thenReturn(Lists.newArrayList(team1, team2));
+
+        service.updateEventTeam(11, ImmutableUpdateEventTeamInput.builder().name("EventTeam#11 New").build());
+
+        verify(eventTeamParentValidator, times(1)).assertEventTeamParentValid(any(), any());
+        verify(eventTeamRepository, times(1)).saveEventTeam(any());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testUpdateEventTeamNameTooShort() {
+        service.updateEventTeam(11, ImmutableUpdateEventTeamInput.builder().name("   ").build());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testUpdateEventTeamNotExists() {
+        EventTeamEntity team1 = eventTeamEntity(10, 2, null);
+        EventTeamEntity team2 = eventTeamEntity(11, 2, null);
+        when(eventTeamRepository.findAllEventTeams()).thenReturn(Lists.newArrayList(team1, team2));
+
+        service.updateEventTeam(10000, ImmutableUpdateEventTeamInput.builder().name("EventTeam#10000").build());
+
+        verify(eventTeamParentValidator, never()).assertEventTeamParentValid(any(), any());
+        verify(eventTeamRepository, never()).saveEventTeam(any());
+    }
+
+    @Test(expected = DuplicateEventTeamNameException.class)
+    public void testUpdateEventTeamDuplicateName() {
+        EventTeamEntity team1 = eventTeamEntity(10, 2, null);
+        EventTeamEntity team2 = eventTeamEntity(11, 2, null);
+        when(eventTeamRepository.findAllEventTeams()).thenReturn(Lists.newArrayList(team1, team2));
+
+        service.updateEventTeam(11, ImmutableUpdateEventTeamInput.builder().name("EventTeam#10").build());
+
+        verify(eventTeamParentValidator, never()).assertEventTeamParentValid(any(), any());
+        verify(eventTeamRepository, never()).saveEventTeam(any());
+    }
+
+    @Test
+    public void findEventTeamName() {
         EventTeamEntity team = eventTeamEntity(10, 2, null);
         when(eventTeamRepository.findAllEventTeams()).thenReturn(Lists.newArrayList(team));
         String name = service.findName(10);

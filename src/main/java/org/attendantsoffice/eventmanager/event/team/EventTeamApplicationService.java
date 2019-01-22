@@ -70,6 +70,31 @@ public class EventTeamApplicationService {
         return output;
     }
 
+    void updateEventTeam(int eventTeamId, UpdateEventTeamInput input) {
+        List<EventTeamEntity> allEventTeams = eventTeamRepository.findAllEventTeams();
+        EventTeamEntity entity = allEventTeams.stream()
+                .filter(c -> c.getEventTeamId().equals(eventTeamId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Unknown EventTeam#" + eventTeamId));
+
+        // some basic validation
+        // make sure we don't have a different event with the same name already
+        Optional<EventTeamEntity> matchingEventTeam = allEventTeams.stream()
+                .filter(e -> e.getName().equalsIgnoreCase(input.getName().trim()))
+                .filter(e -> !e.getEventTeamId().equals(eventTeamId))
+                .findAny();
+        if (matchingEventTeam.isPresent()) {
+            throw new DuplicateEventTeamNameException(matchingEventTeam.get().getEventTeamId(),
+                    matchingEventTeam.get().getName());
+        }
+
+        entity.setName(input.getName().trim());
+        entity.setParentEventTeamId(input.getParentEventTeamId().orElse(null));
+
+        eventTeamParentValidator.assertEventTeamParentValid(entity, allEventTeams);
+        eventTeamRepository.saveEventTeam(entity);
+    }
+
     @Transactional(readOnly = true)
     public String findName(Integer eventTeamId) {
         List<EventTeamEntity> eventTeams = eventTeamRepository.findAllEventTeams();
