@@ -11,6 +11,8 @@ import AuthenticationService from '../../authentication/AuthenticationService'
 import { displayErrorMessage } from '../../error/ErrorNotifier';
 import HeadlineWithAction from '../../common/HeadlineWithAction'
 
+import EventTeamEdit from './EventTeamEdit'
+
 const styles = theme => ({
     root: {
         flexGrow: 1,
@@ -73,7 +75,7 @@ class EventTeam extends React.Component {
 
 	render() {
         const { classes } = this.props;
-        const { eventTeam, reauthenticate } = this.state;
+        const { eventTeam, reauthenticate, editDialogOpen } = this.state;
 
         if(reauthenticate) {
             return (
@@ -90,6 +92,11 @@ class EventTeam extends React.Component {
         return (
             <div className={classes.root}>
                 {reauthenticate && <ReauthenticateModal onReauthenticated={this.componentDidMount.bind(this)} />}
+                {editDialogOpen && <EventTeamEdit 
+                    eventTeam={eventTeam} 
+                    onClosed={this.onCloseDialog.bind(this)} 
+                    onUpdated={this.onUpdated.bind(this)} />
+                }
                 <HeadlineWithAction 
                     headline={eventTeam.name}
                     subheading={eventTeam.event.name}

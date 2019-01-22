@@ -1,7 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
+import { Link } from 'react-router-dom'
+
 // material ui components
+import Button from '@material-ui/core/Button';
+
 import { SortingState, IntegratedSorting, FilteringState, IntegratedFiltering } from '@devexpress/dx-react-grid';
 import { Grid, Table, TableHeaderRow, TableFilterRow } from '@devexpress/dx-react-grid-material-ui';
 
@@ -62,8 +66,9 @@ class EventTeamList extends Component {
 
 	transformEventTeamRows(rows) {
     	return rows.map(row => {
+            let url = '/event-teams/' + row.eventTeamId
     		return 	{  
-    			"id": row.eventTeamId, 
+    			"id": <Button color="primary" size="small" component={Link} to={url}>{row.eventTeamId}</Button>, 
     			"name" : row.nameWithCaptain, 
                 "parent": row.parentEventTeam ? row.parentEventTeam.name : ''
 				};
