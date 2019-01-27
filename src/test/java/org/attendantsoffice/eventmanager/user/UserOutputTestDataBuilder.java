@@ -11,7 +11,7 @@ public final class UserOutputTestDataBuilder {
                 .lastName("last")
                 .email("first.last@example.com")
                 .congregation(ImmutableEntityListOutput.builder().id(100).name("cong100").build())
-                .userStatus(UserStatus.DISABLED)
+                .userStatus(UserStatus.UNAVAILABLE)
                 .position(UserPosition.BAPTISEDSIS)
                 .role(UserRole.USER)
                 .build();

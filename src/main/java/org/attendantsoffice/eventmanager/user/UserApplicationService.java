@@ -76,7 +76,7 @@ public class UserApplicationService {
         entity.setCongregation(congregation);
         entity.setPosition(input.getPosition());
 
-        entity.setUserStatus(UserStatus.ACTIVE); // active - may be requested to be approved by the cong.
+        entity.setUserStatus(UserStatus.AVAILABLE); // active - may be requested to be approved by the cong.
         entity.setRole(UserRole.USER); // default user. Must be further edited to grant admin access
 
         userRepository.save(entity);

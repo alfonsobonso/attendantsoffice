@@ -67,3 +67,48 @@ CREATE TABLE event_team (
     FOREIGN KEY fk_parent_event_team(parent_event_team_id) REFERENCES event_team(event_team_id),
     CONSTRAINT uq_name UNIQUE(event_id, name)
 );
+
+-- assignment types, linked to the user team assignment
+-- we use codes rather than IDs because there is logic in the application around
+-- who can be assigned, and the impact of that
+CREATE TABLE assignment (
+	assignment_code CHAR(5) PRIMARY KEY,
+	name VARCHAR(100) NOT NULL
+);
+
+INSERT INTO assignment(assignment_code, name)
+VALUES 
+	('AOVRR', 'Attendants Overseer'),
+	('AAOVR', 'Asst Overseer'),
+	('DCAPN', 'Division Captain'),
+	('ADCPN', 'Asst Division Captain'),
+	('TCAPN', 'Team Captain'),
+	('ATCPN', 'Asst Team Captain'),
+	('ATNDT', 'Attendant'),
+	('CRAST', 'Care Assistant'),
+	('ROVRR', 'Registration Overseer'),
+	('AROVR', 'Asst Registration Overseer'),
+	('OFSPT', 'Office Support'),
+	('IICTR', 'IBSA Incident Controller'),
+	('POVRR', 'PMR Overseer'),
+	('APOVR', 'Asst PMR Overseer');
+	
+-- assign a user to an event team
+-- we denormalise the event and event team for easy searching	
+CREATE TABLE event_team_user_assignment (
+    event_team_user_assignment_id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id INT UNSIGNED NOT NULL,
+    event_id INT UNSIGNED NOT NULL,
+    event_team_id INT UNSIGNED NOT NULL,
+    assignment_code CHAR(5) NOT NULL,
+    assignment_status_code CHAR(3) NOT NULL,
+    created_by_user_id INT NOT NULL,
+    created_date_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_by_user_id INT,
+    updated_date_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY fk_user_id(user_id) REFERENCES user(user_id),
+    FOREIGN KEY fk_event_id(event_id) REFERENCES event(event_id),
+    FOREIGN KEY fk_event_team_id(event_team_id) REFERENCES event_team(event_team_id),
+    FOREIGN KEY fk_assignment_code(assignment_code) REFERENCES assignment(assignment_code),
+    CONSTRAINT uq_user_event_team UNIQUE(user_id, event_team_id)
+);

@@ -71,7 +71,7 @@ public class UserMapperTest {
         entity.setFirstName("first");
         entity.setLastName("last");
         entity.setEmail("email@email.com");
-        entity.setUserStatus(UserStatus.DISABLED);
+        entity.setUserStatus(UserStatus.UNAVAILABLE);
         entity.setPosition(UserPosition.ELDER);
         entity.setRole(UserRole.USER);
 

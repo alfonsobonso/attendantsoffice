@@ -177,7 +177,7 @@ public class UserApplicationServiceTest {
         assertEquals("12345678", updated.getHomePhone());
         assertEquals("87654321", updated.getMobilePhone());
         assertEquals("new@email.com", updated.getEmail());
-        assertEquals(UserStatus.ACTIVE, updated.getUserStatus());
+        assertEquals(UserStatus.AVAILABLE, updated.getUserStatus());
         assertEquals(UserPosition.BAPTISEDSIS, updated.getPosition());
         assertEquals(UserRole.USER, updated.getRole());
     }
@@ -202,7 +202,7 @@ public class UserApplicationServiceTest {
         assertEquals("12345678", updated.getHomePhone());
         assertEquals("87654321", updated.getMobilePhone());
         assertEquals("new@email.com", updated.getEmail());
-        assertEquals(UserStatus.DISABLED, updated.getUserStatus());
+        assertEquals(UserStatus.UNAVAILABLE, updated.getUserStatus());
         assertEquals(UserPosition.BAPTISEDSIS, updated.getPosition());
         assertEquals(UserRole.ADMIN, updated.getRole());
 
@@ -232,7 +232,7 @@ public class UserApplicationServiceTest {
                 .mobilePhone("87654321")
                 .email("new@email.com")
                 .congregationId(1)
-                .userStatus(UserStatus.DISABLED)
+                .userStatus(UserStatus.UNAVAILABLE)
                 .position(UserPosition.BAPTISEDSIS)
                 .role(UserRole.ADMIN)
                 .build();
